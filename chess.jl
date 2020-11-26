@@ -1,4 +1,6 @@
-const FIELDS = Dict{Char, String}(
+FieldSymbol = Char
+
+const FIELDS = Dict{FieldSymbol, String}(
     'a' => "a1",
     'b' => "b1",
     'c' => "c1",
@@ -66,22 +68,44 @@ const FIELDS = Dict{Char, String}(
 )
 
 
-index_for_fields = Dict{String, Char}()
+Field = String
+
+fti = Dict{Field, FieldSymbol}()
 for (k,v) in FIELDS
-    index_for_fields[v] = k
+    fti[v] = k
 end
-const FtI = index_for_fields # Field to Index , a1 -> a etc
+const FtI = fti # Field to Index , a1 -> a etc
 
-const PAWN = 1
-const BISHOP = 2
-const KNIGHT = 3
-const ROOK = 4
-const QUEEN = 5
-const KING = 6
-const WHITE = 7
-const BLACK = 8 # redundant but whatever
+function symbol(field::Field)::FieldSymbol
+    FtI[field]
+end
 
-const PIECES = Dict{Char, Int}(
+function cartesian(sn::Field)
+    # conversion from ASCII Chars
+    s = Int(sn[1]) - 96 # = a, ..., g
+    n = Int(sn[2]) - 48 # = 1, ..., 8
+
+    return (n, s)
+end
+
+function field(rank::Int, file::Int)::Field
+    Char(96+file) * string(rank)
+end
+
+symbol(rank::Int, file::Int) = symbol(field(rank,file))
+field(symbol::FieldSymbol) = FIELDS[symbol]
+
+Piece = UInt8
+const PAWN = Piece(1)
+const BISHOP = Piece(2)
+const KNIGHT = Piece(3)
+const ROOK = Piece(4)
+const QUEEN = Piece(5)
+const KING = Piece(6)
+const WHITE = Piece(7)
+const BLACK = Piece(8) # redundant but whatever
+
+const PIECES = Dict{Char, Piece}(
     'P' => PAWN,
     'B' => BISHOP,
     'N' => KNIGHT,
@@ -95,99 +119,9 @@ const SYMBOLS = [
     "p" "b" "n" "r" "q" "k"
 ]
 
-struct Board
-    position::BitArray{3}
-    # rows are ranks
-    # columns are files
-    # c2 -> (2,c) -> (2, 3)
-    function Board()
-        position = falses(8, 8, 8)
-        position[[2,7],:,PAWN] .= 1
-        position[[1,8], [3,6], BISHOP] .= 1
-        position[[1,8], [2,7], KNIGHT] .= 1
-        position[[1,8], [1,8], ROOK] .= 1
-        position[[1,8], 4, QUEEN] .= 1 # d für dame
-        position[[1,8], 5, KING] .= 1
-        position[[1,2], :, WHITE] .= 1
-        position[[7,8], :, BLACK] .= 1
-        return new(position)
-    end
-end
-
-import Base.getindex
-function Base.getindex(b::Board, I...)
-    Base.getindex(b.position, I...)
-end
-import Base.setindex!
-function Base.setindex!(b::Board, I...)
-    Base.setindex!(b.position, I...)
-end
-
-function cartesian(sn::String)
-    # conversion from ASCII Chars
-    s = Int(sn[1]) - 96 # = a, ..., g
-    n = Int(sn[2]) - 48 # = 1, ..., 8
-
-    return (n, s)
-end
-
-#=
-    r1, f1: current field
-    r2, f2: target field
-    piece: 1-6
-=#
-function move!(board::Board, white::Bool, piece::Int, r1::Int, f1::Int, r2::Int, f2::Int)
-    player = 7 + !white
-    opponent = 7 + white
-    @assert board[r1,f1,player] "No piece for player at $r1, $(f1)!"
-    @assert !board[r2,f2,player] "Player tried to capture own piece!"
-    if board[r2,f2,opponent]
-        println("Captures!")
-    end
-
-    board[r2,f2,:] .= false # remove all figures from target field
-
-    board[r1,f1,piece] = false
-    board[r2,f2,piece] = true
-
-    board[r1,f1,player] = false
-    board[r2,f2,player] = true
-end
-
-#=
-    rf1: current field as per FIELDS
-    rf2: target field as per FIELDS
-    p: piece as per PIECES
-=#
-function move!(board::Board, white::Bool, p::Char, rf1::Char, rf2::Char)
-    move!(board, white, PIECES[p], cartesian(FIELDS[rf1])..., cartesian(FIELDS[rf2])...)
-end
-
-function move!(board::Board, white::Bool, p::Char, rf1::String, rf2::String)
-    move!(board, white, PIECES[p], cartesian(rf1)..., cartesian(rf2)...)
-end
+# AS OF NOW AUTOQUEEN
 
 
-
-import Base.show
-function Base.show(io::IO, board::Board)
-
-    println(io, "Chess Board")
-    for rank in 8:-1:1
-        print(io,"$rank ")
-        for file in 1:8
-            s = "⋅"
-            if sum(board[rank,file,:]) != 0
-                piece = argmax(board[rank,file,1:6])
-                s = SYMBOLS[board[rank,file,BLACK]+1, piece]
-            end
-
-            print(io,"$s ")
-        end
-        print(io,"\n")
-    end
-    println(io,"  a b c d e f g h")
-end
 
 b = Board()
 
