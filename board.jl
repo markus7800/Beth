@@ -69,6 +69,7 @@ end
 
 import Base.show
 function Base.show(io::IO, board::Board)
+    cols = [:white, :blue]
 
     println(io, "Chess Board")
     for rank in 8:-1:1
@@ -79,13 +80,61 @@ function Base.show(io::IO, board::Board)
                 piece = argmax(board[rank,file,1:6])
                 if any(board[rank,file,7:8])
                     si = findfirst(board[rank,file,7:8])
-                    s = SYMBOLS[si, piece]
+                    s = SYMBOLS[1, piece]
+
+                    printstyled(io, "$s ", color=cols[si], bold=true)
+                    continue
                 end
             end
 
-            print(io,"$s ")
+            printstyled(io,"$s ", bold=true)
         end
         print(io,"\n")
     end
     println(io,"  a b c d e f g h")
+end
+
+function print_board(board::Board; highlight=nothing, player=:white)
+    cols = [:white, :blue]
+
+    highlight_fields = []
+    if highlight != nothing && player != nothing
+        p = PIECES[highlight[1]]
+        rf = symbol(highlight[2:3])
+        moves = get_moves(board, player==:white)
+        highlight_moves = filter(m -> m[1] == p && m[2] == rf, moves)
+        highlight_fields = map(m -> cartesian(field(m[3])), highlight_moves)
+        println(highlight_moves)
+    end
+
+    println("Chess Board")
+    for rank in 8:-1:1
+        print("$rank ")
+        for file in 1:8
+            s = "•" #"⦿" # "⋅"
+            if sum(board[rank,file,:]) != 0
+                piece = argmax(board[rank,file,1:6])
+                if any(board[rank,file,7:8])
+                    si = findfirst(board[rank,file,7:8])
+                    s = SYMBOLS[1, piece]
+
+                    col = cols[si]
+                    if (rank, file) in highlight_fields
+                        col = :red
+                    end
+
+                    printstyled("$s ", color=col, bold=true)
+                    continue
+                end
+            end
+            col = :white
+            if (rank, file) in highlight_fields
+                col = :green
+            end
+
+            printstyled("$s ", bold=true, color=col)
+        end
+        print("\n")
+    end
+    println("  a b c d e f g h")
 end

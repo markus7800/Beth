@@ -14,4 +14,8 @@ println(board)
 
 string.(get_moves(board, true))
 
-printstyled("Hello", color=:green)
+printstyled("Hello", color=:blue, bold=true)
+
+print_board(board, highlight="Qg1")
+
+get_moves(board, true)
