@@ -241,3 +241,103 @@ function is_check(board::Board, player; kw...)
     end
     return is_check(board, player, opponent, (r,f); kw...)
 end
+
+function short_to_long(board::Board, white::Bool, s::String)
+    println("Input: $s")
+    # todo
+    if s == "O-O"
+        return (KING, symbol("e1"), symbol("g1"))
+    end
+    if s == "O-O-O"
+        return (KING, symbol("e1"), symbol("c1"))
+    end
+
+    s = replace(s, "x" => "") # remove captures
+    s = replace(s, "+" => "") # remove check
+
+    # handle pawn
+    if islowercase(s[1])
+        s = 'P' * s
+    end
+
+    p = s[1]
+    @assert p in PIECES.keys "Invalid piece!"
+    s = s[2:end]
+
+    println("Piece: $p")
+
+    ms = get_moves(board, white)
+
+    piece = PIECES[p]
+    f = s[end-1:end] # field
+    piece_moves = filter(m->m[1]==piece && m[3] == symbol(f), ms)
+
+    if length(s) == 2
+        println("Move unique because of target tile.")
+        @assert length(piece_moves) == 1 "Not unique move!"
+        return first(piece_moves)
+    else
+        id = s[1:end-2]
+        if length(id) == 1
+            x = Int(id[1])
+            if x ≥ 96
+                println("Move unique because file given.")
+                # file given
+                file = x - 96
+                filtered_moves = filter(m-> cartesian(field(m[2]))[2] == file, piece_moves)
+                @assert length(filtered_moves) == 1 "Not unique move!"
+                return first(filtered_moves)
+            else
+                println("Move unique because rank given.")
+                # rank given
+                rank = x - 48
+                filtered_moves = filter(m-> cartesian(field(m[2]))[1] == rank, piece_moves)
+                @assert length(filtered_moves) == 1 "Not unique move!"
+                return first(filtered_moves)
+            end
+        else
+            @assert length(id) == 2
+            println("Move unique because rank and file given.")
+            # rank and file given
+            filtered_moves = filter(m-> field(m[2]) == id, piece_moves)
+            @assert length(filtered_moves) == 1
+            return first(filtered_moves)
+        end
+    end
+end
+
+
+board = Board()
+print_board(board)
+
+short_to_long(board, true, "Nc3")
+
+board = Board(false)
+board.position[cartesian("c5")..., [KNIGHT, WHITE]] .= 1
+board.position[cartesian("c7")..., [KNIGHT, WHITE]] .= 1
+board.position[cartesian("d6")..., [KNIGHT, WHITE]] .= 1
+board.position[cartesian("e3")..., [KNIGHT, WHITE]] .= 1
+board.position[cartesian("g7")..., [KNIGHT, WHITE]] .= 1
+
+print_board(board)
+
+string(short_to_long(board, true, "Na8"))
+
+string(short_to_long(board, true, "Na6"))
+string(short_to_long(board, true, "N7a6"))
+
+string(short_to_long(board, true, "Nb5"))
+string(short_to_long(board, true, "Ncb5"))
+
+string(short_to_long(board, true, "Nb5"))
+string(short_to_long(board, true, "Ncd5"))
+
+string(short_to_long(board, true, "Ne6"))
+string(short_to_long(board, true, "Nce6"))
+string(short_to_long(board, true, "N7e6"))
+string(short_to_long(board, true, "Nc7e6"))
+
+string(short_to_long(board, true, "Ne8"))
+string(short_to_long(board, true, "Nce8"))
+
+string(short_to_long(board, true, "O-O"))

@@ -70,4 +70,47 @@ end
     @test !((KING, symbol("e1"), symbol("c1")) in ms)
     @test !((KING, symbol("e1"), symbol("g1")) in ms)
 
+
+    board = Board(false)
+    board.position[cartesian("e1")..., [KING, WHITE]] .= 1
+    board.position[cartesian("a1")..., [ROOK, WHITE]] .= 1
+    board.position[cartesian("h1")..., [ROOK, WHITE]] .= 1
+    move!(board, true, 'K', "e1", "d1")
+    move!(board, true, 'K', "d1", "e1")
+
+    @test !((KING, symbol("e1"), symbol("c1")) in ms)
+    @test !((KING, symbol("e1"), symbol("g1")) in ms)
+
+end
+
+@testset "Chess notation" begin
+    board = Board(false)
+    board.position[cartesian("c5")..., [KNIGHT, WHITE]] .= 1
+    board.position[cartesian("c7")..., [KNIGHT, WHITE]] .= 1
+    board.position[cartesian("d6")..., [KNIGHT, WHITE]] .= 1
+    board.position[cartesian("e3")..., [KNIGHT, WHITE]] .= 1
+    board.position[cartesian("g7")..., [KNIGHT, WHITE]] .= 1
+
+    @test (short_to_long(board, true, "Na8") == (KNIGHT, symbol("c7"), symbol("a8")))
+
+    #string(short_to_long(board, true, "Na6"))
+    @test (short_to_long(board, true, "N7a6") == (KNIGHT, symbol("c7"), symbol("a6")))
+
+    #string(short_to_long(board, true, "Nb5"))
+    @test (short_to_long(board, true, "Ncb5") == (KNIGHT, symbol("c7"), symbol("b5")))
+
+    #string(short_to_long(board, true, "Nb5"))
+    @test (short_to_long(board, true, "Ncd5") == (KNIGHT, symbol("c7"), symbol("d5")))
+
+    #string(short_to_long(board, true, "Ne6"))
+    #string(short_to_long(board, true, "Nce6"))
+    #string(short_to_long(board, true, "N7e6"))
+    @test (short_to_long(board, true, "Nc7e6") == (KNIGHT, symbol("c7"), symbol("e6")))
+
+    #string(short_to_long(board, true, "Ne8"))
+    @test (short_to_long(board, true, "Nce8") == (KNIGHT, symbol("c7"), symbol("e8")))
+
+    @test (short_to_long(board, true, "O-O") == (KING, symbol("e1"), symbol("g1")))
+
+    @test (short_to_long(board, true, "O-O-O") == (KING, symbol("e1"), symbol("c1")))
 end

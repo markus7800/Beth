@@ -185,7 +185,7 @@ function undo!(board::Board, white::Bool, p::Piece, rf1::FieldSymbol, rf2::Field
 end
 
 function move!(board::Board, white::Bool, p::PieceSymbol, rf1::Field, rf2::Field; verbose=false)
-    # TODO: check if move is valid
+    @assert (PIECES[p], symbol(rf1), symbol(rf2)) in get_moves(board, white) "Invalid move!"
 
     captured, can_en_passant, can_castle = move!(board, white, PIECES[p], cartesian(rf1)..., cartesian(rf2)...)
     if verbose

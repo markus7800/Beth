@@ -20,3 +20,9 @@ printstyled("Hello", color=:blue, bold=true)
 print_board(board, highlight="Qg1")
 
 get_moves(board, true)
+
+
+board = Board()
+
+print_board(board)
+move!(board, true, 'P', "e2", "e6")
