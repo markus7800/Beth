@@ -31,3 +31,5 @@ is_check(board, BLACK, verbose=true)
 
 print_board(board)
 move!(board, true, 'N', "c3", "d5", verbose=true)
+
+print_board(board)

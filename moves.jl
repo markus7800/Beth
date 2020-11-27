@@ -54,10 +54,18 @@ end
 
 function pawn_moves(board, white, rank, file)
     moves = Move[]
+    # normal moves
     if white && !any(board[rank+1, file, 7:8])
         push!(moves, (PAWN, symbol(rank, file), symbol(rank+1, file)))
     elseif !white && !any(board[rank-1, file, 7:8])
         push!(moves, (PAWN, symbol(rank, file), symbol(rank-1, file)))
+    end
+
+    # start moves
+    if white && rank == 2 && !any(board[rank+2, file, 7:8])
+        push!(moves, (PAWN, symbol(rank, file), symbol(rank+2, file)))
+    elseif !white && rank == 7 && !any(board[rank-2, file, 7:8])
+        push!(moves, (PAWN, symbol(rank, file), symbol(rank-2, file)))
     end
 
     # captures
@@ -71,8 +79,21 @@ function pawn_moves(board, white, rank, file)
         push!(moves, (PAWN, symbol(rank, file), symbol(rank-1, file+1)))
     end
 
-    # TODO: EN PASSANT
-    # TODO: Start move
+    # en passant
+    if white && rank == 5
+        if file+1≤8 && board.can_en_passant[2,file+1] && all(board[rank, file+1, [PAWN, BLACK]])
+            push!(moves, (PAWN, symbol(rank, file), symbol(rank+1, file+1)))
+        elseif file-1≥1 && board.can_en_passant[2,file-1] && all(board[rank, file-1, [PAWN, BLACK]])
+            push!(moves, (PAWN, symbol(rank, file), symbol(rank+1, file-1)))
+        end
+    elseif !white && rank == 7
+        if file+1≤8 && board.can_en_passant[1,file+1] && all(board[rank, file+1, [PAWN, WHITE]])
+            push!(moves, (PAWN, symbol(rank, file), symbol(rank-1, file+1)))
+        elseif file-1≥1 && board.can_en_passant[1,file-1] && all(board[rank, file-1, [PAWN, WHITE]])
+            push!(moves, (PAWN, symbol(rank, file), symbol(rank-1, file-1)))
+        end
+    end
+
     return moves
 end
 
@@ -109,13 +130,13 @@ end
 # kingpos is position of king before move
 function is_check(board::Board, player::Int, opponent::Int, king_pos::Tuple{Int,Int}, move::Move)
     p, rf1, rf2 = move
-    captured = move!(board, player==WHITE, p, rf1, rf2)
+    captured, can_enpassant, can_castle = move!(board, player==WHITE, p, rf1, rf2)
     if p == KING
         # update king position for king move
         king_pos = cartesian(field(rf2))
     end
     b = is_check(board, player, opponent, king_pos)
-    undo!(board, player==WHITE, p, rf1, rf2, captured)
+    undo!(board, player==WHITE, p, rf1, rf2, captured, can_enpassant, can_castle)
     return b
 end
 
