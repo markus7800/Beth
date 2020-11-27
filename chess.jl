@@ -105,7 +105,9 @@ const KING = Piece(6)
 const WHITE = Piece(7)
 const BLACK = Piece(8) # redundant but whatever
 
-const PIECES = Dict{Char, Piece}(
+PieceSymbol = Char
+
+const PIECES = Dict{PieceSymbol, Piece}(
     'P' => PAWN,
     'B' => BISHOP,
     'N' => KNIGHT,
@@ -122,7 +124,7 @@ const SYMBOLS = [
 # AS OF NOW AUTOQUEEN
 
 
-
+#=
 b = Board()
 
 move!(b, true, 'P', "e2", "e4")
@@ -168,3 +170,4 @@ s = "cxd8+"
 s .in ["x","+"]
 
 short_to_long.(examples)
+=#

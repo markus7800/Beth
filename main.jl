@@ -1,3 +1,4 @@
+include("chess.jl")
 include("board.jl")
 include("moves.jl")
 

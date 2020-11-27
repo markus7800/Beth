@@ -3,6 +3,8 @@ struct Board
     # rows are ranks
     # columns are files
     # c2 -> (2,c) -> (2, 3)
+
+    # TODO: validate by xoring
     function Board(start=true)
         position = falses(8, 8, 8)
         if start
@@ -34,22 +36,43 @@ end
     r2, f2: target field
     piece: 1-6
 =#
-function move!(board::Board, white::Bool, piece::Int, r1::Int, f1::Int, r2::Int, f2::Int)
+function move!(board::Board, white::Bool, piece::Piece, r1::Int, f1::Int, r2::Int, f2::Int)
     player = 7 + !white
     opponent = 7 + white
     @assert board[r1,f1,player] "No piece for player at $r1, $(f1)!"
-    @assert !board[r2,f2,player] "Player tried to capture own piece!"
-    if board[r2,f2,opponent]
-        println("Captures!")
-    end
+    @assert !board[r2,f2,player] "Player tried to capture own piece! $(SYMBOLS[1,piece]) $(field(r1,f1)) $(field(r2,f2))"
 
-    board[r2,f2,:] .= false # remove all figures from target field
+    captured = nothing
+    if board[r2,f2,opponent]
+        # remove captured piece
+        captured = findfirst(board[r2,f2,1:6])
+        board[r2,f2,captured] = false
+        board[r2,f2,opponent] = false
+    end
 
     board[r1,f1,piece] = false
     board[r2,f2,piece] = true
 
     board[r1,f1,player] = false
     board[r2,f2,player] = true
+
+    return captured
+end
+
+function undo!(board::Board, white::Bool, piece::Piece, r1::Int, f1::Int, r2::Int, f2::Int, captured)
+    player = 7 + !white
+    opponent = 7 + white
+
+    board[r1,f1,piece] = true
+    board[r2,f2,piece] = false
+
+    board[r1,f1,player] = true
+    board[r2,f2,player] = false
+
+    if captured != nothing
+        board[r2,f2,opponent] = true
+        board[r2,f2,captured] = true
+    end
 end
 
 #=
@@ -57,15 +80,31 @@ end
     rf2: target field as per FIELDS
     p: piece as per PIECES
 =#
-function move!(board::Board, white::Bool, p::Char, rf1::Char, rf2::Char)
-    move!(board, white, PIECES[p], cartesian(FIELDS[rf1])..., cartesian(FIELDS[rf2])...)
+function move!(board::Board, white::Bool, p::Piece, rf1::FieldSymbol, rf2::FieldSymbol)
+    move!(board, white, p, cartesian(FIELDS[rf1])..., cartesian(FIELDS[rf2])...)
 end
 
-function move!(board::Board, white::Bool, p::Char, rf1::String, rf2::String)
-    move!(board, white, PIECES[p], cartesian(rf1)..., cartesian(rf2)...)
+function undo!(board::Board, white::Bool, p::Piece, rf1::FieldSymbol, rf2::FieldSymbol, captured)
+    undo!(board, white, p, cartesian(FIELDS[rf1])..., cartesian(FIELDS[rf2])..., captured)
 end
 
+function move!(board::Board, white::Bool, p::PieceSymbol, rf1::Field, rf2::Field; verbose=false)
+    captured = move!(board, white, PIECES[p], cartesian(rf1)..., cartesian(rf2)...)
+    if verbose
+        captured != nothing && println("Captured $(SYMBOLS[1,captured]).")
+        opponent = 7 + white
+        check = is_check(board, opponent)
+        n_moves = length(get_moves(board, !white))
+        (check && n_moves > 0) && println("Check!")
+        (check && n_moves == 0) && println("Checkmate!")
+        (!check && n_moves == 0) && println("Stalemate!")
+    end
+    return captured
+end
 
+function undo!(board::Board, white::Bool, p::PieceSymbol, rf1::Field, rf2::Field, captured)
+    undo!(board, white, PIECES[p], cartesian(rf1)..., cartesian(rf2)..., captured)
+end
 
 import Base.show
 function Base.show(io::IO, board::Board)
@@ -104,12 +143,11 @@ function print_board(board::Board; highlight=nothing, player=:white)
         moves = get_moves(board, player==:white)
         highlight_moves = filter(m -> m[1] == p && m[2] == rf, moves)
         highlight_fields = map(m -> cartesian(field(m[3])), highlight_moves)
-        println(highlight_moves)
     end
 
     println("Chess Board")
     for rank in 8:-1:1
-        print("$rank ")
+        printstyled("$rank ", color=13)
         for file in 1:8
             s = "•" #"⦿" # "⋅"
             if sum(board[rank,file,:]) != 0
@@ -127,7 +165,7 @@ function print_board(board::Board; highlight=nothing, player=:white)
                     continue
                 end
             end
-            col = :white
+            col = 8
             if (rank, file) in highlight_fields
                 col = :green
             end
@@ -136,5 +174,5 @@ function print_board(board::Board; highlight=nothing, player=:white)
         end
         print("\n")
     end
-    println("  a b c d e f g h")
+    printstyled("  a b c d e f g h", color=13)
 end
