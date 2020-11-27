@@ -1,7 +1,7 @@
 struct Board
     position::BitArray{3}
     can_en_passant::BitArray{2}
-    can_castle::BitVector
+    can_castle::BitArray{2} # first index player second LEFT/RIGHT
     # rows are ranks
     # columns are files
     # c2 -> (2,c) -> (2, 3)
@@ -10,7 +10,7 @@ struct Board
     function Board(start=true)
         position = falses(8, 8, 8)
         can_en_passant = falses(2, 8)
-        can_castle = trues(2)
+        can_castle = trues(2,2)
         if start
             position[[2,7],:,PAWN] .= 1
             position[[1,8], [3,6], BISHOP] .= 1
@@ -61,10 +61,10 @@ function move!(board::Board, white::Bool, piece::Piece, r1::Int, f1::Int, r2::In
     @assert !board[r2,f2,player] "Player tried to capture own piece! $(SYMBOLS[1,piece]) $(field(r1,f1)) $(field(r2,f2))"
     @assert board[r1,f1,piece] "Piece not at field! $(SYMBOLS[1,piece]) $(field(r1,f1)) $(field(r2,f2))"
 
-    # TODO: check if move is valid
-
     captured = nothing
-    can_en_passant, can_castle = copy(board.can_en_passant), copy(board.can_castle)
+    en_passant = copy(board.can_en_passant)
+    castle = nothing
+
     if board[r2,f2,opponent]
         # remove captured piece
         captured = findfirst(board[r2,f2,1:6])
@@ -85,10 +85,42 @@ function move!(board::Board, white::Bool, piece::Piece, r1::Int, f1::Int, r2::In
     end
     board.can_en_passant[white+1, :] .= false
 
-    return captured, can_en_passant, can_castle
+    # handle caslte
+    if piece == KING
+        bcastle = board.can_castle[white+1,:]
+        board.can_castle[white+1,:] .= false
+        if f2 - f1 == 2 # castle short
+            board.position[r1, 8, ROOK] = false
+            board.position[r1, 6, ROOK] = true
+
+            board.position[r1, 8, player] = false
+            board.position[r1, 6, player] = true
+
+            castle = (2, bcastle)
+        elseif f1 - f2 == 2 # castle long
+            board.position[r1, 1, ROOK] = false
+            board.position[r1, 4, ROOK] = true
+
+            board.position[r1, 1, player] = false
+            board.position[r1, 4, player] = true
+
+            castle = (1, bcastle)
+        end
+    elseif piece == ROOK
+        if f1 == 1
+            board.can_castle[white+1,1] = false
+            castle = (white+1, 1)
+        elseif f2 == 8
+            board.can_castle[white+1,2] = false
+            castle = (white+1, 2)
+        end
+    end
+
+
+    return captured, en_passant, castle
 end
 
-function undo!(board::Board, white::Bool, piece::Piece, r1::Int, f1::Int, r2::Int, f2::Int, captured, can_en_passant, can_castle)
+function undo!(board::Board, white::Bool, piece::Piece, r1::Int, f1::Int, r2::Int, f2::Int, captured, en_passant, castle)
     player = 7 + !white
     opponent = 7 + white
 
@@ -103,8 +135,39 @@ function undo!(board::Board, white::Bool, piece::Piece, r1::Int, f1::Int, r2::In
         board.position[r2,f2,captured] = true
     end
 
-    board.can_en_passant .= can_en_passant
-    board.can_castle .= can_castle
+    if en_passant != nothing
+        board.can_en_passant .= en_passant
+    end
+
+    if castle != nothing
+        if piece == KING
+            i, bcastle = castle
+            if i == 1 # long castle
+                board.position[r1, 1, ROOK] = true
+                board.position[r1, 4, ROOK] = false
+
+                board.position[r1, 1, player] = true
+                board.position[r1, 4, player] = false
+
+            end
+
+            if i == 2 # short castle
+                board.position[r1, 8, ROOK] = true
+                board.position[r1, 6, ROOK] = false
+
+                board.position[r1, 8, player] = true
+                board.position[r1, 6, player] = false
+            end
+
+            board.can_castle[white+1, :] = bcastle
+        end
+
+        if piece == ROOK
+            if castle isa Tuple
+                board.can_castle[castle...] = true
+            end
+        end
+    end
 end
 
 #=
@@ -113,6 +176,7 @@ end
     p: piece as per PIECES
 =#
 function move!(board::Board, white::Bool, p::Piece, rf1::FieldSymbol, rf2::FieldSymbol)
+    # moves are assumed to be valid
     move!(board, white, p, cartesian(FIELDS[rf1])..., cartesian(FIELDS[rf2])...)
 end
 
@@ -121,6 +185,8 @@ function undo!(board::Board, white::Bool, p::Piece, rf1::FieldSymbol, rf2::Field
 end
 
 function move!(board::Board, white::Bool, p::PieceSymbol, rf1::Field, rf2::Field; verbose=false)
+    # TODO: check if move is valid
+
     captured, can_en_passant, can_castle = move!(board, white, PIECES[p], cartesian(rf1)..., cartesian(rf2)...)
     if verbose
         captured != nothing && println("Captured $(SYMBOLS[1,captured]).")
@@ -134,8 +200,8 @@ function move!(board::Board, white::Bool, p::PieceSymbol, rf1::Field, rf2::Field
     return captured, can_en_passant, can_castle
 end
 
-function undo!(board::Board, white::Bool, p::PieceSymbol, rf1::Field, rf2::Field, captured, can_en_passant, can_castle)
-    undo!(board, white, PIECES[p], cartesian(rf1)..., cartesian(rf2)..., captured, can_en_passant, can_castle)
+function undo!(board::Board, white::Bool, p::PieceSymbol, rf1::Field, rf2::Field, captured, cen_passant, castle)
+    undo!(board, white, PIECES[p], cartesian(rf1)..., cartesian(rf2)..., captured, en_passant, castle)
 end
 
 import Base.show

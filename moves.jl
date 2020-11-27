@@ -40,16 +40,29 @@ function get_moves(board::Board, white::Bool)
 
         elseif board[rank, file, KING]
             kingpos = (rank, file)
-            kingmoves = direction_moves(board,player,opponent,KING,rank,file,vcat(DIAG, CROSS),1)
+            kingmoves = king_moves(board,white,player,opponent,rank,file)
             append!(moves, kingmoves)
         end
-
-        # TODO: castling
     end
 
     filter!(m -> !is_check(board, player, opponent, kingpos, m), moves)
 
     return moves
+end
+
+
+function king_moves(board, white, player, opponent, rank, file)
+    kingmoves = direction_moves(board,player,opponent,KING,rank,file,vcat(DIAG, CROSS),1)
+
+    if board.can_castle[white+1, 1] && !any(board[rank, 2:4, player])
+        # castle long
+        push!(kingmoves, (KING, symbol(rank, file), symbol(rank, file-2)))
+    end
+    if board.can_castle[white+1, 2] && !any(board[rank, 6:7, player])
+        # castle short
+        push!(kingmoves, (KING, symbol(rank, file), symbol(rank, file+2)))
+    end
+    return kingmoves
 end
 
 function pawn_moves(board, white, rank, file)
