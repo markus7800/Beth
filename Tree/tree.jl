@@ -19,6 +19,19 @@ mutable struct Node
     end
 end
 
+function print_tree(root::Node; depth=0, max_depth=Inf, has_to_have_children=true)
+    println("\t"^depth * string(root))
+    if depth + 1 > max_depth
+        return
+    end
+    for c in root.children
+        if isempty(c.children) && has_to_have_children
+            continue
+        end
+        print_tree(c, depth=depth+1, max_depth=max_depth)
+    end
+end
+
 
 import Base.show
 function Base.show(io::IO, n::Node)
@@ -153,79 +166,104 @@ function TreeSearch(board=Board(), white=true; N=10^5, kind=:BFS)
     return root
 end
 
-function MCTreeSearch(board=Board(), white=true; N=10^5)
-    _board = deepcopy(board)
+function my_argmax(f, A)
+    a = A[1]
+    fa = f(a)
+    for a´ in A
+        fa´ = f(a´)
+        if fa´ > fa
+            a = a´
+            fa = fa´
+        end
+    end
+    return a
+end
+
+function UCB1(node::Node)
+    if node.visits == 0
+        return Inf
+    else
+        return node.score + √(2 * log(node.parent.visits) / node.visits)
+    end
+end
+
+function negUCB1(node::Node)
+    if node.visits == 0
+        return Inf
+    else
+        return -node.score + √(2 * log(node.parent.visits) / node.visits)
+    end
+end
+
+
+function select_node!(root::Node, white::Bool)
+    node = root
     _white = white
+    while !isempty(node.children)
+        if _white
+            node = my_argmax(UCB1, node.children)
+        else
+            node = my_argmax(negUCB1, node.children)
+        end
+        _white = !_white
+    end
+    return node
+end
+
+function backpropagate!(leaf::Node)
+    node = leaf
+    v = leaf.score
+    while node.parent != nothing
+        node = node.parent
+        n = node.visits
+        node.score = (v - node.score) / (n+1)
+        node.visits = n + 1
+    end
+end
+
+function MCTreeSearch(board=Board(), white=true; N=10)
+    _board = deepcopy(board)    # board used to play in tree search
+    _white = white              # keep track of player in tree search
     root = Node()
 
     n = 0
     max_depth = 0
-    while !isempty(Q) && n < N
-        node, depth = get_node!(Q)
-        if depth > max_depth && kind == :BFS
-            @info("Depth $depth reached.")
-            max_depth = depth
-        end
+    while n < N
+        # println("ITER $n: ")
+        # print_tree(root)
+        node = select_node!(root, white) # select node
         n += 1
 
-        _white = restore_board_position(board, white, _board, node)
+        _white, depth = restore_board_position(board, white, _board, node)
+
+        v, ms = simple_piece_count(_board, _white)
+
+        node.score = v
+        node.visits = 1
+        backpropagate!(node)
 
         # expand new moves
-        expand!(node, _board, _white)
-        for c in node.children
-            push!(Q, (c, depth+1))
+        for m in ms
+            c = Node(move=m, parent=node, score=0, visits=0)
+            push!(node.children, c)
+        end
+
+
+        if depth > max_depth
+            @info("Depth $depth reached.")
+            max_depth = depth
         end
     end
     return root
 end
 
 
-@time root = BFS(N=10^4) # 18s
-
-count_nodes(root)
-
 Base.summarysize(Board())
 Base.summarysize(Node())
 
 
-root.children[3]
 
-n = Node()
-expand!(n, Board(), true)
-
-n.children[1]
-
-@time node = TreeSearch(N=10^5, kind=:BFS)
-
-count_nodes(node)
-
-for (i,c) in enumerate(node.children[14].children[10].children)
-    println(i,": ", c)
-end
-
-board = Board()
-move!(board, true, 'P', "e2", "e4")
-move!(board, false, 'P', "e7", "e5")
-print_board(board, highlight = ".")
-string.(get_moves(board, true))
-
-test_node = Node()
-expand!(test_node, board, false)
-test_node
-
-map(c->string(c.move), node.children[14].children[10].children)
-
-node = TreeSearchSlow(N=10^4, kind=:BFS)
-
-get_parents(node.children[1].children[1].children[1])
-
-Juno.profiler()
-
-if undef
-    print("s")
-end
-
-node1 = TreeSearchSlow(N=1000, kind=:BFS)
+node1 = TreeSearchSlow(N=100, kind=:BFS)
 node2 = TreeSearch(N=1000, kind=:BFS)
 count_nodes(node1)
 count_nodes(node2)
@@ -246,3 +284,5 @@ treesize = Base.summarysize(root)
 
 treesize / 10^6 # MB
 treesize / count_nodes(root) # byte per node
+
+@time MCTreeSearch(N=10^5) # 7.702969 seconds (70.67 M allocations: 3.192 GiB, 21.73% gc time)
