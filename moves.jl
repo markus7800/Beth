@@ -271,13 +271,25 @@ function short_to_long(board::Board, white::Bool, s::String)
 
     p = s[1]
     @assert p in PIECES.keys "Invalid piece!"
+    piece = PIECES[p]
+
+    # handle promotion
+    if s[end] in PIECES.keys && s[1] == 'P'
+        if s[end] == 'N'
+            piece = PAWNTOKNIGHT
+        else
+            piece = PAWNTOQUEEN
+        end
+        s = s[1:end-1]
+    end
+
+
     s = s[2:end]
 
     # println("Piece: $p")
 
     ms = get_moves(board, white)
 
-    piece = PIECES[p]
     f = s[end-1:end] # field
     piece_moves = filter(m->m[1]==piece && m[3] == symbol(f), ms)
     @assert length(piece_moves) > 0 "No moves!"

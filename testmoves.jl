@@ -128,4 +128,14 @@ end
     @test (short_to_long(board, true, "O-O") == (KING, symbol("e1"), symbol("g1")))
 
     @test (short_to_long(board, true, "O-O-O") == (KING, symbol("e1"), symbol("c1")))
+
+
+    board = Board(false)
+    board.position[cartesian("c7")..., [PAWN, WHITE]] .= 1
+    board.position[cartesian("g2")..., [PAWN, BLACK]] .= 1
+
+    m = short_to_long(board, true, "c8Q")
+    @test m in get_moves(board, true)
+    m = short_to_long(board, false, "g1N")
+    @test m in get_moves(board, false)
 end

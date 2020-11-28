@@ -260,15 +260,19 @@ function Base.show(io::IO, board::Board)
     println(io,"  a b c d e f g h")
 end
 
-function print_board(board::Board; highlight=nothing, player=:white)
+function print_board(board::Board; highlight=nothing, white=true)
     cols = [:white, :blue]
 
     highlight_fields = []
-    if highlight != nothing && player != nothing
-        p = PIECES[highlight[1]]
-        rf = symbol(highlight[2:3])
-        moves = get_moves(board, player==:white)
-        highlight_moves = filter(m -> m[1] == p && m[2] == rf, moves)
+    if highlight != nothing && white != nothing
+        if highlight != "."
+            p = PIECES[highlight[1]]
+            rf = symbol(highlight[2:3])
+            moves = get_moves(board, white)
+            highlight_moves = filter(m -> m[1] == p && m[2] == rf, moves)
+        else
+            highlight_moves = get_moves(board, white)
+        end
         highlight_fields = map(m -> cartesian(field(m[3])), highlight_moves)
     end
 
@@ -329,8 +333,14 @@ function start_game()
         while !got_move
             try
                 print(white ? "White: " : "Black: ")
-                short = readline()
-                p, rf1, rf2 = short_to_long(board, white, short)
+                s = readline()
+                if occursin("highlight ", s)
+                    print_board(board, highlight=s[11:end], white=white)
+                    println()
+                    continue
+                end
+
+                p, rf1, rf2 = short_to_long(board, white, s)
                 got_move = true
             catch e
                 println(e.msg)
@@ -343,3 +353,7 @@ function start_game()
 end
 
 start_game()
+
+board = Board()
+print_board(board)
+print_board(board, highlight="Pe2", white=true)
