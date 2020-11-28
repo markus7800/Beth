@@ -73,10 +73,6 @@ function TreeSearchSlow(board=Board(); N=10^5, kind=:BFS)
         end
         n += 1
 
-        if depth == 4 && kind == :BFS
-            break
-        end
-
         expand!(node, _board, white)
         for c in node.children
             c_board = deepcopy(_board)
@@ -109,14 +105,10 @@ function TreeSearch(board=Board(), white=true; N=10^5, kind=:BFS)
     while !isempty(Q) && n < N
         node, depth = get_node!(Q)
         if depth > max_depth && kind == :BFS
-            #@info("Depth $depth reached.")
+            @info("Depth $depth reached.")
             max_depth = depth
         end
         n += 1
-
-        if depth == 4 && kind == :BFS
-            break
-        end
 
         # restore root board position
         _board.position .= board.position
@@ -226,3 +218,11 @@ using BenchmarkTools
 
 @btime TreeSearchSlow(N=1000, kind=:BFS) # 173.067 ms (1300939 allocations: 67.89 MiB)
 @btime TreeSearch(N=1000, kind=:BFS) # 51.722 ms (732223 allocations: 32.94 MiB)
+
+@time root = TreeSearch(N=10^5, kind=:BFS) # 7.924567 seconds (77.93 M allocations: 3.377 GiB, 22.01% gc time)
+@time TreeSearchSlow(N=10^5, kind=:BFS) # 25.268137 seconds (138.03 M allocations: 6.890 GiB, 24.82% gc time)
+
+treesize = Base.summarysize(root)
+
+treesize / 10^6 # MB
+treesize / count_nodes(root) # byte per node
