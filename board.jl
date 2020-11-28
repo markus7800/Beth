@@ -313,7 +313,7 @@ end
 function start_game()
     board = Board()
     white = true
-    print_board(board)
+
     while true
         println()
         #print("\u1b[10F")
@@ -343,7 +343,13 @@ function start_game()
                 p, rf1, rf2 = short_to_long(board, white, s)
                 got_move = true
             catch e
-                println(e.msg)
+                if e isa InterruptException
+                    println("Game aborted!")
+                elseif e isa AssertionError
+                    println(e.msg)
+                else
+                    println(e)
+                end
             end
         end
 

@@ -134,11 +134,15 @@ function direction_moves(board, player, opponent, piece, rank, file, directions,
                 continue
             end
 
-            if board[r2, f2, opponent] || !board[r2, f2, player]
-                # capture || free tile
+            if board[r2, f2, opponent]
+                # capture
                 push!(moves, (piece, symbol(rank, file), symbol(r2, f2)))
-            else # == board[r2, f2, player]
-                # directiob blocked by own piece
+                dirs_finished[d] = true
+            elseif !board[r2, f2, player]
+                # free tile
+                push!(moves, (piece, symbol(rank, file), symbol(r2, f2)))
+            elseif board[r2, f2, player]
+                # direction blocked by own piece
                 dirs_finished[d] = true
             end
         end
