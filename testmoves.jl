@@ -36,6 +36,21 @@ using Test
     move!(board, false, 'P', "f7", "f5")
     # check yes en passant
     @test !((PAWN, symbol("e5"), symbol("f6")) in ms)
+
+    # check promotions
+    board = Board(false)
+    board.position[cartesian("c7")..., [PAWN, WHITE]] .= 1
+    board.position[cartesian("g2")..., [PAWN, BLACK]] .= 1
+
+    @test (PAWNTOQUEEN, symbol("c7"), symbol("c8")) in get_moves(board, true)
+    @test (PAWNTOKNIGHT, symbol("g2"), symbol("g1")) in get_moves(board, false)
+
+    move!(board, true, 'q', "c7", "c8")
+    move!(board, false, 'n', "g2", "g1")
+
+    @test all(board[cartesian("c8")..., [QUEEN, WHITE]])
+    @test all(board[cartesian("g1")..., [KNIGHT, BLACK]])
+
 end
 
 @testset "Moves:King" begin

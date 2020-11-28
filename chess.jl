@@ -68,6 +68,9 @@ const FIELDS = Dict{FieldSymbol, String}(
 )
 
 
+# fields = Dict()
+
+
 Field = String
 
 fti = Dict{Field, FieldSymbol}()
@@ -105,6 +108,10 @@ const KING = Piece(6)
 const WHITE = Piece(7)
 const BLACK = Piece(8) # redundant but whatever
 
+# promotions
+const PAWNTOQUEEN = Piece(9)
+const PAWNTOKNIGHT = Piece(10)
+
 PieceSymbol = Char
 
 const PIECES = Dict{PieceSymbol, Piece}(
@@ -113,12 +120,14 @@ const PIECES = Dict{PieceSymbol, Piece}(
     'N' => KNIGHT,
     'R' => ROOK,
     'Q' => QUEEN,
-    'K' => KING
+    'K' => KING,
+    'n' => PAWNTOKNIGHT,
+    'q' => PAWNTOQUEEN
 )
 
 const SYMBOLS = [
-    "P" "B" "N" "R" "Q" "K";
-    "p" "b" "n" "r" "q" "k"
+    "P" "B" "N" "R" "Q" "K" "W" "B" "PQ" "PN";
+    "p" "b" "n" "r" "q" "k" "W" "B" "pq" "pn"
 ]
 
 # AS OF NOW AUTOQUEEN

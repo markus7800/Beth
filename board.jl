@@ -6,7 +6,6 @@ struct Board
     # columns are files
     # c2 -> (2,c) -> (2, 3)
 
-    # TODO: validate by xoring
     function Board(start=true)
         position = falses(8, 8, 8)
         can_en_passant = falses(2, 8)
@@ -55,15 +54,33 @@ end
     piece: 1-6
 =#
 function move!(board::Board, white::Bool, piece::Piece, r1::Int, f1::Int, r2::Int, f2::Int)
-    player = 7 + !white
-    opponent = 7 + white
-    @assert board[r1,f1,player] "No piece for player at $r1, $(f1)!"
-    @assert !board[r2,f2,player] "Player tried to capture own piece! $(SYMBOLS[1,piece]) $(field(r1,f1)) $(field(r2,f2))"
-    @assert board[r1,f1,piece] "Piece not at field! $(SYMBOLS[1,piece]) $(field(r1,f1)) $(field(r2,f2))"
-
     captured = nothing
     en_passant = copy(board.can_en_passant)
     castle = nothing
+
+    player = 7 + !white
+    opponent = 7 + white
+
+    @assert board[r1,f1,player] "No piece for player at $r1, $(f1)!"
+    @assert !board[r2,f2,player] "Player tried to capture own piece! $(SYMBOLS[1,piece]) $(field(r1,f1)) $(field(r2,f2))"
+
+    # handle promotions
+    if piece == PAWNTOQUEEN || piece == PAWNTOKNIGHT
+        @assert board[r1,f1,PAWN] "Piece not at field! $(SYMBOLS[1,piece]) $(field(r1,f1)) $(field(r2,f2))"
+        @assert (white && r1 == 7) || (!white && r1 == 2)
+
+        board.position[r1,f1,PAWN] = false
+        board.position[r1,f1,player] = false
+
+        newpiece = piece == PAWNTOQUEEN ? QUEEN : KNIGHT
+        board.position[r2,f2,newpiece] = true
+        board.position[r2,f2,player] = true
+
+        return captured, en_passant, castle
+    end
+
+    @assert board[r1,f1,piece] "Piece not at field! $(SYMBOLS[1,piece]) $(field(r1,f1)) $(field(r2,f2))"
+
 
     if board[r2,f2,opponent]
         # remove captured piece
@@ -123,6 +140,18 @@ end
 function undo!(board::Board, white::Bool, piece::Piece, r1::Int, f1::Int, r2::Int, f2::Int, captured, en_passant, castle)
     player = 7 + !white
     opponent = 7 + white
+
+    # handle promotions
+    if piece == PAWNTOQUEEN || piece == PAWNTOKNIGHT
+
+        board.position[r1,f1,PAWN] = true
+        board.position[r1,f1,player] = true
+
+        newpiece = piece == PAWNTOQUEEN ? QUEEN : KNIGHT
+        board.position[r2,f2,newpiece] = false
+        board.position[r2,f2,player] = false
+        return
+    end
 
     board.position[r1,f1,piece] = true
     board.position[r2,f2,piece] = false

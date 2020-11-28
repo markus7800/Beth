@@ -26,3 +26,24 @@ board = Board()
 
 print_board(board)
 move!(board, true, 'P', "e2", "e6")
+
+
+m = (KING, symbol("e1"), symbol("c1"))
+
+Base.summarysize(m)
+Base.summarysize(KING)
+Base.summarysize('e')
+Base.summarysize('c')
+
+Base.sizeof(m)
+
+Base.summarysize(board)
+Base.sizeof(board)
+
+
+Base.summarysize(board.position)
+Base.sizeof(board.position)
+
+m = 0x01
+Base.summarysize((m,m,m))
+Base.summarysize(('A','c','d'))

@@ -107,6 +107,15 @@ function pawn_moves(board, white, rank, file)
         end
     end
 
+    # promotions
+    if white && rank == 7 && !any(board[8, file, [WHITE, BLACK]])
+        push!(moves, (PAWNTOQUEEN, symbol(rank, file), symbol(8, file)))
+        push!(moves, (PAWNTOKNIGHT, symbol(rank, file), symbol(8, file)))
+    elseif !white && rank == 2 && !any(board[1, file, [WHITE, BLACK]])
+        push!(moves, (PAWNTOQUEEN, symbol(rank, file), symbol(1, file)))
+        push!(moves, (PAWNTOKNIGHT, symbol(rank, file), symbol(1, file)))
+    end
+
     return moves
 end
 
@@ -305,39 +314,3 @@ function short_to_long(board::Board, white::Bool, s::String)
         end
     end
 end
-
-
-board = Board()
-print_board(board)
-
-short_to_long(board, true, "Nc3")
-
-board = Board(false)
-board.position[cartesian("c5")..., [KNIGHT, WHITE]] .= 1
-board.position[cartesian("c7")..., [KNIGHT, WHITE]] .= 1
-board.position[cartesian("d6")..., [KNIGHT, WHITE]] .= 1
-board.position[cartesian("e3")..., [KNIGHT, WHITE]] .= 1
-board.position[cartesian("g7")..., [KNIGHT, WHITE]] .= 1
-
-print_board(board)
-
-string(short_to_long(board, true, "Na8"))
-
-string(short_to_long(board, true, "Na6"))
-string(short_to_long(board, true, "N7a6"))
-
-string(short_to_long(board, true, "Nb5"))
-string(short_to_long(board, true, "Ncb5"))
-
-string(short_to_long(board, true, "Nb5"))
-string(short_to_long(board, true, "Ncd5"))
-
-string(short_to_long(board, true, "Ne6"))
-string(short_to_long(board, true, "Nce6"))
-string(short_to_long(board, true, "N7e6"))
-string(short_to_long(board, true, "Nc7e6"))
-
-string(short_to_long(board, true, "Ne8"))
-string(short_to_long(board, true, "Nce8"))
-
-string(short_to_long(board, true, "O-O"))
