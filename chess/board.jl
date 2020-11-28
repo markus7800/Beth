@@ -344,7 +344,8 @@ function start_game()
                 got_move = true
             catch e
                 if e isa InterruptException
-                    println("Game aborted!")
+                    println("\nGame aborted!")
+                    return
                 elseif e isa AssertionError
                     println(e.msg)
                 else
@@ -357,9 +358,3 @@ function start_game()
         white = !white
     end
 end
-
-start_game()
-
-board = Board()
-print_board(board)
-print_board(board, highlight="Pe2", white=true)

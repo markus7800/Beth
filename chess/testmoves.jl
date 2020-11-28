@@ -139,3 +139,5 @@ end
     m = short_to_long(board, false, "g1N")
     @test m in get_moves(board, false)
 end
+
+nothing
