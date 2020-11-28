@@ -36,19 +36,6 @@ function expand!(node::Node, board::Board, white::Bool)
 end
 
 
-n = Node()
-board = Board()
-
-expand!(n, board, true)
-
-Base.summarysize(n)
-Base.sizeof(n) * 21
-
-
-for c in n.children
-    println(c)
-end
-
 function TreeSearchSlow(board=Board(); N=10^5, kind=:BFS)
     _board = deepcopy(board)
     root = Node()
@@ -85,62 +72,6 @@ function TreeSearchSlow(board=Board(); N=10^5, kind=:BFS)
 end
 
 
-function TreeSearch(board=Board(), white=true; N=10^5, kind=:BFS)
-    _board = deepcopy(board)
-    _white = white
-    root = Node()
-
-    Q = [(root, 0)]
-    n = 0
-    max_depth = 0
-
-    if kind == :BFS
-        get_node! = popfirst!
-    elseif kind == :DFS
-        get_node! = pop!
-    else
-        error("Unknown search kind!")
-    end
-
-    while !isempty(Q) && n < N
-        node, depth = get_node!(Q)
-        if depth > max_depth && kind == :BFS
-            @info("Depth $depth reached.")
-            max_depth = depth
-        end
-        n += 1
-
-        # restore root board position
-        _board.position .= board.position
-        _board.can_castle .= board.can_castle
-        _board.can_en_passant .= board.can_en_passant
-        _white = white
-
-        # update board to current position
-
-        if node.move != (0x00, 0x00, 0x00)
-            parents = get_parents(node)
-            for p in parents
-                if p.move != (0x00, 0x00, 0x00)
-                    move!(_board, _white, p.move[1], p.move[2], p.move[3])
-                    _white = !_white
-                end
-            end
-            move!(_board, _white, node.move[1], node.move[2], node.move[3])
-            _white = !_white
-        end
-
-
-        # expand new moves
-        expand!(node, _board, _white)
-        for c in node.children
-            push!(Q, (c, depth+1))
-        end
-    end
-    return root
-end
-
-
 function get_parents(node::Node, parents=Node[])
     if node.parent != nothing
         pushfirst!(parents, node.parent)
@@ -159,6 +90,95 @@ function count_nodes(node::Node)
         return sum(count_nodes(c) for c in node.children)
     end
 end
+
+function restore_board_position(board::Board, white::Bool, _board::Board, node::Node)
+    # restore root board position
+    _board.position .= board.position
+    _board.can_castle .= board.can_castle
+    _board.can_en_passant .= board.can_en_passant
+    _white = white
+    depth = 0
+
+    # update board to current position
+    if node.move != (0x00, 0x00, 0x00)
+        parents = get_parents(node)
+        for p in parents
+            if p.move != (0x00, 0x00, 0x00)
+                move!(_board, _white, p.move[1], p.move[2], p.move[3])
+                _white = !_white
+            end
+        end
+        move!(_board, _white, node.move[1], node.move[2], node.move[3])
+        _white = !_white
+        depth = length(parents) - 1
+    end
+
+    return _white, depth
+end
+
+function TreeSearch(board=Board(), white=true; N=10^5, kind=:BFS)
+    _board = deepcopy(board)
+    _white = white
+    root = Node()
+
+    Q = [root]
+    n = 0
+    max_depth = 0
+
+    if kind == :BFS
+        get_node! = popfirst!
+    elseif kind == :DFS
+        get_node! = pop!
+    else
+        error("Unknown search kind!")
+    end
+
+    while !isempty(Q) && n < N
+        node = get_node!(Q)
+        n += 1
+
+        _white, depth = restore_board_position(board, white, _board, node)
+
+        if depth > max_depth && kind == :BFS
+            @info("Depth $depth reached.")
+            max_depth = depth
+        end
+
+        # expand new moves
+        expand!(node, _board, _white)
+        for c in node.children
+            push!(Q, c)
+        end
+    end
+    return root
+end
+
+function MCTreeSearch(board=Board(), white=true; N=10^5)
+    _board = deepcopy(board)
+    _white = white
+    root = Node()
+
+    n = 0
+    max_depth = 0
+    while !isempty(Q) && n < N
+        node, depth = get_node!(Q)
+        if depth > max_depth && kind == :BFS
+            @info("Depth $depth reached.")
+            max_depth = depth
+        end
+        n += 1
+
+        _white = restore_board_position(board, white, _board, node)
+
+        # expand new moves
+        expand!(node, _board, _white)
+        for c in node.children
+            push!(Q, (c, depth+1))
+        end
+    end
+    return root
+end
+
 
 @time root = BFS(N=10^4) # 18s
 
