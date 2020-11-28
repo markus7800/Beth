@@ -3,7 +3,15 @@
 Move = Tuple{Piece, FieldSymbol, FieldSymbol}
 
 function Base.show(io::IO, m::Move)
-    print(io, "$(SYMBOLS[1,m[1]]): $(FIELDS[m[2]])-$(FIELDS[m[3]])")
+    if m == (0x00, 0x00, 0x00)
+        print(io, "Empty Move")
+    else
+        try
+            print(io, "$(SYMBOLS[1,m[1]]): $(FIELDS[m[2]])-$(FIELDS[m[3]])")
+        catch
+            print(io, "Unknown Move")
+        end
+    end
 end
 
 const DIAG = [(-1,-1), (1,-1), (-1, 1), (1, 1)]
