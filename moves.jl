@@ -252,7 +252,7 @@ function is_check(board::Board, player; kw...)
 end
 
 function short_to_long(board::Board, white::Bool, s::String)
-    println("Input: $s")
+    # println("Input: $s")
     # todo
     if s == "O-O"
         return (KING, symbol("e1"), symbol("g1"))
@@ -273,16 +273,17 @@ function short_to_long(board::Board, white::Bool, s::String)
     @assert p in PIECES.keys "Invalid piece!"
     s = s[2:end]
 
-    println("Piece: $p")
+    # println("Piece: $p")
 
     ms = get_moves(board, white)
 
     piece = PIECES[p]
     f = s[end-1:end] # field
     piece_moves = filter(m->m[1]==piece && m[3] == symbol(f), ms)
+    @assert length(piece_moves) > 0 "No moves!"
 
     if length(s) == 2
-        println("Move unique because of target tile.")
+        # println("Move unique because of target tile.")
         @assert length(piece_moves) == 1 "Not unique move!"
         return first(piece_moves)
     else
@@ -290,14 +291,14 @@ function short_to_long(board::Board, white::Bool, s::String)
         if length(id) == 1
             x = Int(id[1])
             if x ≥ 96
-                println("Move unique because file given.")
+                # println("Move unique because file given.")
                 # file given
                 file = x - 96
                 filtered_moves = filter(m-> cartesian(field(m[2]))[2] == file, piece_moves)
                 @assert length(filtered_moves) == 1 "Not unique move!"
                 return first(filtered_moves)
             else
-                println("Move unique because rank given.")
+                # println("Move unique because rank given.")
                 # rank given
                 rank = x - 48
                 filtered_moves = filter(m-> cartesian(field(m[2]))[1] == rank, piece_moves)
@@ -306,7 +307,7 @@ function short_to_long(board::Board, white::Bool, s::String)
             end
         else
             @assert length(id) == 2
-            println("Move unique because rank and file given.")
+            # println("Move unique because rank and file given.")
             # rank and file given
             filtered_moves = filter(m-> field(m[2]) == id, piece_moves)
             @assert length(filtered_moves) == 1

@@ -303,3 +303,43 @@ function print_board(board::Board; highlight=nothing, player=:white)
     end
     printstyled("  a b c d e f g h", color=13)
 end
+
+
+
+function start_game()
+    board = Board()
+    white = true
+    print_board(board)
+    while true
+        println()
+        #print("\u1b[10F")
+        print_board(board)
+        println()
+
+        n_moves = length(get_moves(board, white))
+        check = is_check(board, white ? WHITE : BLACK)
+        done = n_moves == 0
+        !done && check && println("Check!")
+        done && check && println("Checkmate!")
+        done && !check && println("Stalemate!")
+        done && break
+
+        got_move = false
+        p, rf1, rf2 = (nothing, nothing, nothing)
+        while !got_move
+            try
+                print(white ? "White: " : "Black: ")
+                short = readline()
+                p, rf1, rf2 = short_to_long(board, white, short)
+                got_move = true
+            catch e
+                println(e.msg)
+            end
+        end
+
+        move!(board, white, p, rf1, rf2)
+        white = !white
+    end
+end
+
+start_game()
