@@ -27,7 +27,7 @@ function simple_piece_count(board::Board, white::Bool)
     if length(ms) == 0
         if check
             # checkmate
-            score = white ? -1000 : + 1000
+            score = white ? -1000 : 1000
         else
             # stalemate
             score = 0.

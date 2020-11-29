@@ -265,18 +265,18 @@ function MCTreeSearch(board=Board(), white=true; N=10)
     n = 0
     max_depth = 0
     while n < N
-        node = select_node!(root, white) # select node
+        node = select_node!(root, white) # select leaf node
         n += 1
-        # println("ITER $n:")
+        #println("ITER $n:")
         # print_tree(root)
-        # println("selected node: $node")
+        #println("selected node: $node")
 
         _white, depth = restore_board_position(board, white, _board, node)
 
         v, ms = simple_piece_count(_board, _white)
 
         node.score = v
-        node.visits = 1
+        node.visits += 1
         backpropagate!(node)
 
         # expand new moves
