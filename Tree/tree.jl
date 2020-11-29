@@ -19,23 +19,43 @@ mutable struct Node
     end
 end
 
-function print_tree(root::Node; depth=0, max_depth=Inf, has_to_have_children=true)
-    println("\t"^depth * string(root))
+function print_tree(root::Node; number=0, depth=0, max_depth=Inf, has_to_have_children=true, highlight_best=5, expand_best=Inf, white=true, color=:white)
+    printstyled("\t"^depth * "$number. " * string(root)  * "\n", color=color)
     if depth + 1 > max_depth
         return
     end
-    for c in root.children
+    if white
+        cs = sort(root.children, lt=(x,y)->UCB1(x)<UCB1(y))
+    else
+        cs = sort(root.children, lt=(x,y)->negUCB1(x)<negUCB1(y))
+    end
+
+    count = 0
+    for (i,c) in enumerate(cs)
         if isempty(c.children) && has_to_have_children
             continue
         end
-        print_tree(c, depth=depth+1, max_depth=max_depth)
+        if count < expand_best
+            color = :white
+            if count < highlight_best
+                color = white ? :light_blue : :magenta
+            end
+            print_tree(c, number=i, depth=depth+1, max_depth=max_depth, has_to_have_children=has_to_have_children,
+                highlight_best=highlight_best, expand_best=expand_best, white=!white, color=color)
+            count += 1
+        end
     end
 end
 
 using Printf
 import Base.show
 function Base.show(io::IO, n::Node)
-    print(io, @sprintf "%s, score: %.4f, visits: %d, %d children" n.move n.score n.visits (length(n.children)))
+    if n.move == (0x00, 0x00, 0x00)
+        print(io, @sprintf "Root Node, score: %.4f, visits: %d, %d children" n.score n.visits (length(n.children)))
+
+    else
+        print(io, @sprintf "%s, score: %.4f, visits: %d, UCB1: %.4f, %d children" n.move n.score n.visits (UCB1(n)) (length(n.children)))
+    end
 end
 
 
@@ -179,11 +199,19 @@ function my_argmax(f, A)
     return a
 end
 
+const λ = 2.55
+
+# factor 8 leads to ≈35 of 10000 visits if one can capture rook and 0 for other
+# 8: Rook capture gets 8757 others 33
+# 15: Rook capture gets 6058 orhers 113
+# 20: Rook capture gets 4128 others 170
+
+
 function UCB1(node::Node)
     if node.visits == 0
         return Inf
     else
-        return node.score + √(2 * log(node.parent.visits) / node.visits)
+        return node.score + 20 * √(2 * log(node.parent.visits) / node.visits)
     end
 end
 
@@ -191,9 +219,18 @@ function negUCB1(node::Node)
     if node.visits == 0
         return Inf
     else
-        return -node.score + √(2 * log(node.parent.visits) / node.visits)
+        return -node.score + 20 * √(2 * log(node.parent.visits) / node.visits)
     end
 end
+
+exploration_UCB1(ratio, λ) = λ * √(2 * log(1/ratio))‚
+power_UCB1(v, λ) = exp(-(v/λ)^2 / 2)
+
+power_UCB1(1, 3)
+power_UCB1(3, 3)
+power_UCB1(5, 3)
+power_UCB1(9, 3)
+# Example:
 
 
 function select_node!(root::Node, white::Bool)
@@ -216,7 +253,7 @@ function backpropagate!(leaf::Node)
     while node.parent != nothing
         node = node.parent
         n = node.visits
-        node.score = (v - node.score) / (n+1)
+        node.score += (v - node.score) / (n+1)
         node.visits = n + 1
     end
 end
@@ -229,10 +266,11 @@ function MCTreeSearch(board=Board(), white=true; N=10)
     n = 0
     max_depth = 0
     while n < N
-        # println("ITER $n: ")
-        # print_tree(root)
         node = select_node!(root, white) # select node
         n += 1
+        # println("ITER $n:")
+        # print_tree(root)
+        # println("selected node: $node")
 
         _white, depth = restore_board_position(board, white, _board, node)
 
@@ -288,4 +326,4 @@ treesize / count_nodes(root) # byte per node
 
 @time MCTreeSearch(N=10^5) # 7.702969 seconds (70.67 M allocations: 3.192 GiB, 21.73% gc time)
 =#
-# @time MCTreeSearch(N=10^5)
+#@time MCTreeSearch(N=10^5)

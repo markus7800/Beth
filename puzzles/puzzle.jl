@@ -82,11 +82,12 @@ function print_puzzle(puzzle::Puzzle)
         s2 = puzzle.solution[i+1]
         println("$(i): $(s1), $(s2)")
 
-        i = i+1
+        i = i+2
     end
 
 end
 
+# 133
 puzzle_1 = Puzzle(
     white=["Kg1", "Pa2", "Pb2", "Nd2", "Ph2", "Pe3", "Pg3", "Rd5", "Rd8"],
     black=["Ra8", "Pg7", "Kh7", "Pb6", "Rf6", "Ph6", "Pa5", "Pe4", "Bd3"],
@@ -98,12 +99,63 @@ print_puzzle(puzzle_1)
 
 simple_piece_count(puzzle_1.board, puzzle_1.white_to_move)
 
-@time root = MCTreeSearch(puzzle1.board, puzzle1.white_to_move, N=10^5)
+@time root = MCTreeSearch(puzzle_2.board, puzzle_2.white_to_move, N=10^4)
 
 print_tree(root, max_depth=1)
 
 print_board(puzzle1.board, highlight="Rd5")
 
-Board().can_en_passant
+print_board(puzzle_1.board)
+simple_piece_count(puzzle_1.board, puzzle_1.white_to_move)
 
-puzzle_1.board.can_castle
+move!(puzzle_1.board, true, 'R', "d8", "a8")
+print_board(puzzle_1.board)
+simple_piece_count(puzzle_1.board, puzzle_1.white_to_move)
+
+
+
+
+puzzle = Puzzle(
+    white=[],
+    black=[],
+    solution=[""],
+    white_to_move = true
+    )
+print_puzzle(puzzle)
+
+
+# 175
+puzzle = Puzzle(
+    white=["Kf1", "Re1", "Rf2", "Pc2", "Pa3", "Pe5", "Nf6", "Ne6"],
+    black=["Pb7", "Bh6", "Kb6", "Ph5", "Pb5", "Rh3", "Bf3"],
+    solution=["Rh1"],
+    white_to_move = false
+    )
+print_puzzle(puzzle)
+
+# 297
+puzzle = Puzzle(
+    white=["Ra3", "Qe3", "Nf3", "Kg3", "Pf4", "Pg4", "Pa5", "Pd6", "Rb7"],
+    black=["Rc2", "Pf5", "Qh5", "Pe6", "Ph6", "Pa7", "Pd7", "Rc8", "Kg8"],
+    solution=["Qg4"],
+    white_to_move = false
+    )
+print_puzzle(puzzle)
+
+# 341
+puzzle_2 = Puzzle(
+    white=["Kg1", "Ra1", "Ph2", "Pg2", "Pf2", "Qg3", "Pa3", "Nf5", "Re8"],
+    black=["Kg8", "Rf8", "Pd7", "Pa7", "Qf6", "Pc6", "Pb6", "Na6", "Pg5"],
+    solution=["Qa1", "Re1", "Qe1"],
+    white_to_move = false
+    )
+print_puzzle(puzzle_2)
+
+# 381
+puzzle = Puzzle(
+    white=["Kg1", "Ph3", "Pg2",  "Pf2", "Pb2", "Pa2", "Re5", "Rd8"],
+    black=["Ph7", "Kg7", "Pf7", "Pg6", "Bh6", "Pa7", "Rc2"],
+    solution=["Rc1", "Kh2", "Bf6", "g3", "Be5"],
+    white_to_move = false
+    )
+print_puzzle(puzzle)
