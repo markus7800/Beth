@@ -59,6 +59,9 @@ const BLACK = Piece(8) # redundant but whatever
 const PAWNTOQUEEN = Piece(9)
 const PAWNTOKNIGHT = Piece(10)
 
+const LONGCASTLE = 1
+const SHORTCASTLE = 2
+
 PieceSymbol = Char
 
 const PIECES = Dict{PieceSymbol, Piece}(

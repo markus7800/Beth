@@ -223,14 +223,13 @@ function negUCB1(node::Node)
     end
 end
 
-exploration_UCB1(ratio, λ) = λ * √(2 * log(1/ratio))‚
+exploration_UCB1(ratio, λ) = λ * √(2 * log(1/ratio))
 power_UCB1(v, λ) = exp(-(v/λ)^2 / 2)
 
-power_UCB1(1, 3)
-power_UCB1(3, 3)
-power_UCB1(5, 3)
-power_UCB1(9, 3)
-# Example:
+# power_UCB1(1, 3)
+# power_UCB1(3, 3)
+# power_UCB1(5, 3)
+# power_UCB1(9, 3)
 
 
 function select_node!(root::Node, white::Bool)

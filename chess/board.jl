@@ -127,7 +127,7 @@ function move!(board::Board, white::Bool, piece::Piece, r1::Int, f1::Int, r2::In
             board.position[r1, 8, player] = false
             board.position[r1, 6, player] = true
 
-            castle = (2, castle)
+            castle = (SHORTCASTLE, castle)
         elseif f1 - f2 == 2 # castle long
             board.position[r1, 1, ROOK] = false
             board.position[r1, 4, ROOK] = true
@@ -135,14 +135,14 @@ function move!(board::Board, white::Bool, piece::Piece, r1::Int, f1::Int, r2::In
             board.position[r1, 1, player] = false
             board.position[r1, 4, player] = true
 
-            castle = (1, castle)
+            castle = (LONGCASTLE, castle)
         end
     elseif piece == ROOK
         if (white && r1 == 1) || (!white && r1 == 8)
             if f1 == 1
-                board.can_castle[white+1,1] = false
+                board.can_castle[white+1,LONGCASTLE] = false
             elseif f2 == 8
-                board.can_castle[white+1,2] = false
+                board.can_castle[white+1,SHORTCASTLE] = false
             end
         end
     end
@@ -184,7 +184,7 @@ function undo!(board::Board, white::Bool, piece::Piece, r1::Int, f1::Int, r2::In
     if castle != nothing
         if piece == KING && castle isa Tuple
             i, bcastle = castle
-            if i == 1 # long castle
+            if i == LONGCASTLE # long castle
                 board.position[r1, 1, ROOK] = true
                 board.position[r1, 4, ROOK] = false
 
@@ -192,7 +192,7 @@ function undo!(board::Board, white::Bool, piece::Piece, r1::Int, f1::Int, r2::In
                 board.position[r1, 4, player] = false
             end
 
-            if i == 2 # short castle
+            if i == SHORTCASTLE # short castle
                 board.position[r1, 8, ROOK] = true
                 board.position[r1, 6, ROOK] = false
 
@@ -284,9 +284,13 @@ function print_board(board::Board; highlight=nothing, white=true)
     end
 
     println("Chess Board")
-    for rank in 8:-1:1
+
+    ranks = white ? (8:-1:1) : (1:8)
+    files = white ? (1:8) : (8:-1:1)
+
+    for rank in ranks
         printstyled("$rank ", color=13)
-        for file in 1:8
+        for file in files
             s = "•" #"⦿" # "⋅"
             if sum(board[rank,file,:]) != 0
                 piece = argmax(board[rank,file,1:6])
