@@ -1,4 +1,4 @@
-
+include("evaluation.jl")
 
 mutable struct Node
     move::Move
@@ -32,10 +32,10 @@ function print_tree(root::Node; depth=0, max_depth=Inf, has_to_have_children=tru
     end
 end
 
-
+using Printf
 import Base.show
 function Base.show(io::IO, n::Node)
-    print(io, "$(n.move), score: $(n.score), visits: $(n.visits), $(length(n.children)) children")
+    print(io, @sprintf "%s, score: %.4f, visits: %d, %d children" n.move n.score n.visits (length(n.children)))
 end
 
 
@@ -258,6 +258,7 @@ function MCTreeSearch(board=Board(), white=true; N=10)
 end
 
 
+#=
 Base.summarysize(Board())
 Base.summarysize(Node())
 
@@ -286,3 +287,5 @@ treesize / 10^6 # MB
 treesize / count_nodes(root) # byte per node
 
 @time MCTreeSearch(N=10^5) # 7.702969 seconds (70.67 M allocations: 3.192 GiB, 21.73% gc time)
+=#
+# @time MCTreeSearch(N=10^5)

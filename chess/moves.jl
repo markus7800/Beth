@@ -53,7 +53,23 @@ function get_moves(board::Board, white::Bool)
         end
     end
 
+
+    # for m in moves
+    #     try
+    #         is_check(board, player, opponent, kingpos, m)
+    #     catch
+    #         print_board(board)
+    #         println()
+    #         @info("Move $m throws.")
+    #         r1,f1 = cartesian(field(m[2]))
+    #         r2,f2 = cartesian(field(m[3]))
+    #         @info("FROM: $(board[r1,f1,:])")
+    #         @info("TO: $(board[r2,f2,:])")
+    #     end
+    # end
+
     filter!(m -> !is_check(board, player, opponent, kingpos, m), moves)
+
 
     return moves
 end
@@ -61,6 +77,8 @@ end
 
 function king_moves(board, white, player, opponent, rank, file)
     kingmoves = direction_moves(board,player,opponent,KING,rank,file,vcat(DIAG, CROSS),1)
+
+    # TODO: check for checks
 
     if board.can_castle[white+1, 1] && !any(board[rank, 2:4, player])
         # castle long
@@ -164,6 +182,10 @@ end
 # kingpos is position of king before move
 function is_check(board::Board, player::Int, opponent::Int, king_pos::Tuple{Int,Int}, move::Move)
     p, rf1, rf2 = move
+
+    # # TODO: remove
+    # _board = deepcopy(board)
+
     captured, can_enpassant, can_castle = move!(board, player==WHITE, p, rf1, rf2)
     if p == KING
         # update king position for king move
@@ -171,6 +193,30 @@ function is_check(board::Board, player::Int, opponent::Int, king_pos::Tuple{Int,
     end
     b = is_check(board, player, opponent, king_pos)
     undo!(board, player==WHITE, p, rf1, rf2, captured, can_enpassant, can_castle)
+
+    # if any(board.position .!= _board.position)
+    #     @info("Undo failed: Position $player $king_pos $move")
+    #     print_board(board)
+    #     println()
+    #     print_board(_board)
+    #     println()
+    # end
+    # if any(board.can_en_passant .!= _board.can_en_passant)
+    #     @info("Undo failed: Enpassant $player $king_pos $move")
+    #     print_board(board)
+    #     println()
+    #     display(board.can_en_passant)
+    #     display(_board.can_en_passant)
+    # end
+    # if any(board.can_castle .!= _board.can_castle)
+    #     @info("Undo failed: Castle $player $king_pos $move")
+    #     print_board(board)
+    #     println()
+    #     display(board.can_castle)
+    #     display(_board.can_castle)
+    # end
+
+
     return b
 end
 

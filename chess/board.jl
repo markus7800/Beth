@@ -1,7 +1,13 @@
 struct Board
     position::BitArray{3}
+
+    # first index player second LEFT/RIGHT
+    # if pawn moves up 2 rows it sets to true
     can_en_passant::BitArray{2}
-    can_castle::BitArray{2} # first index player second LEFT/RIGHT
+
+    # first index player second LEFT/RIGHT
+    # if king or rook moves will be set to false accordingly
+    can_castle::BitArray{2}
     # rows are ranks
     # columns are files
     # c2 -> (2,c) -> (2, 3)
@@ -25,13 +31,22 @@ struct Board
 end
 
 function is_valid(board::Board)
-    A = sum(board.position[:,:,1:6], dims=3) .== 1
-    B = board.position[:,:,WHITE]
-    C = board.position[:,:,BLACK]
-    #println(A)
-    #println(B)
-    #println(C)
-    all(xor.(A, B) .== C) && all(xor.(A, C) .== B)
+    b1 = !any(sum(board.position[:,:,1:6], dims=3) .> 1) # no more than one piece per tile
+    T = sum(board.position[:,:,1:6], dims=3) .== 1 # 1 if piece at tile
+    W = board.position[:,:,WHITE]
+    B = board.position[:,:,BLACK]
+
+    b2 = !any(W .& B) # white and black cannot have piece at same tile
+
+    b3 = all(xor.(T, W) .== B) && all(xor.(T, B) .== W) # if piece is not black it is white and vice versa
+
+    # println(A)
+    # println(B)
+    # println(C)
+    # println(xor.(A, B))
+    # println(xor.(A, C))
+
+    b1 && b2 && b3
 end
 
 import Base.getindex
@@ -56,7 +71,7 @@ end
 function move!(board::Board, white::Bool, piece::Piece, r1::Int, f1::Int, r2::Int, f2::Int)
     captured = nothing
     en_passant = copy(board.can_en_passant)
-    castle = nothing
+    castle = copy(board.can_castle)
 
     player = 7 + !white
     opponent = 7 + white
@@ -104,7 +119,6 @@ function move!(board::Board, white::Bool, piece::Piece, r1::Int, f1::Int, r2::In
 
     # handle caslte
     if piece == KING
-        bcastle = board.can_castle[white+1,:]
         board.can_castle[white+1,:] .= false
         if f2 - f1 == 2 # castle short
             board.position[r1, 8, ROOK] = false
@@ -113,7 +127,7 @@ function move!(board::Board, white::Bool, piece::Piece, r1::Int, f1::Int, r2::In
             board.position[r1, 8, player] = false
             board.position[r1, 6, player] = true
 
-            castle = (2, bcastle)
+            castle = (2, castle)
         elseif f1 - f2 == 2 # castle long
             board.position[r1, 1, ROOK] = false
             board.position[r1, 4, ROOK] = true
@@ -121,18 +135,17 @@ function move!(board::Board, white::Bool, piece::Piece, r1::Int, f1::Int, r2::In
             board.position[r1, 1, player] = false
             board.position[r1, 4, player] = true
 
-            castle = (1, bcastle)
+            castle = (1, castle)
         end
     elseif piece == ROOK
-        if f1 == 1
-            board.can_castle[white+1,1] = false
-            castle = (white+1, 1)
-        elseif f2 == 8
-            board.can_castle[white+1,2] = false
-            castle = (white+1, 2)
+        if (white && r1 == 1) || (!white && r1 == 8)
+            if f1 == 1
+                board.can_castle[white+1,1] = false
+            elseif f2 == 8
+                board.can_castle[white+1,2] = false
+            end
         end
     end
-
 
     return captured, en_passant, castle
 end
@@ -169,7 +182,7 @@ function undo!(board::Board, white::Bool, piece::Piece, r1::Int, f1::Int, r2::In
     end
 
     if castle != nothing
-        if piece == KING
+        if piece == KING && castle isa Tuple
             i, bcastle = castle
             if i == 1 # long castle
                 board.position[r1, 1, ROOK] = true
@@ -177,7 +190,6 @@ function undo!(board::Board, white::Bool, piece::Piece, r1::Int, f1::Int, r2::In
 
                 board.position[r1, 1, player] = true
                 board.position[r1, 4, player] = false
-
             end
 
             if i == 2 # short castle
@@ -187,14 +199,9 @@ function undo!(board::Board, white::Bool, piece::Piece, r1::Int, f1::Int, r2::In
                 board.position[r1, 8, player] = true
                 board.position[r1, 6, player] = false
             end
-
-            board.can_castle[white+1, :] = bcastle
-        end
-
-        if piece == ROOK
-            if castle isa Tuple
-                board.can_castle[castle...] = true
-            end
+            board.can_castle .= bcastle
+        else
+            board.can_castle .= castle
         end
     end
 end

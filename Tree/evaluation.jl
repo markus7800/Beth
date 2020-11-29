@@ -37,14 +37,14 @@ function simple_piece_count(board::Board, white::Bool)
     return score, ms
 end
 
-simple_piece_count(Board(), true)
-
-board = Board()
-move!(board, true, 'P', "e2", "e4")
-move!(board, false, 'P', "e7", "e5")
-move!(board, true, 'B', "f1", "c4")
-move!(board, false, 'P', "d7", "d6")
-move!(board, true, 'Q', "d1", "f3")
-move!(board, false, 'N', "b8", "c6")
-move!(board, true, 'Q', "f3", "f7")
-simple_piece_count(board, false)
+# simple_piece_count(Board(), true)
+#
+# board = Board()
+# move!(board, true, 'P', "e2", "e4")
+# move!(board, false, 'P', "e7", "e5")
+# move!(board, true, 'B', "f1", "c4")
+# move!(board, false, 'P', "d7", "d6")
+# move!(board, true, 'Q', "d1", "f3")
+# move!(board, false, 'N', "b8", "c6")
+# move!(board, true, 'Q', "f3", "f7")
+# simple_piece_count(board, false)
