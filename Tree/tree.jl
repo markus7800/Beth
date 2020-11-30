@@ -19,16 +19,44 @@ mutable struct Node
     end
 end
 
-function print_tree(root::Node; number=0, depth=0, max_depth=Inf, has_to_have_children=true, highlight_best=5, expand_best=Inf, white=true, color=:white)
-    printstyled("\t"^depth * "$number. " * string(root)  * "\n", color=color)
-    if root.parent == nothing
-        white = !white # preserve player
+import Base.getindex
+# s is long notation
+function Base.getindex(node::Node, s::String)
+    p = PIECES[s[1]]
+    rf1 = symbol(s[2:3])
+    rf2 = symbol(s[4:5])
+    m = (p, rf1, rf2)
+    for c in node.children
+        if c.move == m
+            return c
+        end
     end
+end
+
+
+function lt_children(x,y,white)
+    if x.visits == y.visits
+        if white
+            UCB1(x) < UCB1(y)
+        else
+            negUCB1(x) < negUCB1(y)
+        end
+    else
+        x.visits < y.visits
+    end
+end
+
+function print_tree(root::Node; number=0, depth=0, max_depth=Inf, has_to_have_children=true, highlight_best=5, expand_best=Inf, white=true, color=:white)
+    if root.parent == nothing
+        color = :yellow
+    end
+    printstyled("\t"^depth * "$number. " * string(root)  * "\n", color=color)
+
     if depth + 1 > max_depth
         return
     end
 
-    cs = sort(root.children, lt=(x,y)->x.visits<y.visits, rev=true)
+    cs = sort(root.children, lt=(x,y)->lt_children(x,y,white), rev=true)
 
     count = 0
     for (i,c) in enumerate(cs)
@@ -36,14 +64,61 @@ function print_tree(root::Node; number=0, depth=0, max_depth=Inf, has_to_have_ch
             continue
         end
         if count < expand_best
-            color = :white
+            color = :light_gray
             if count < highlight_best
-                color = white ? :light_blue : :magenta
+                color = white ? :white : :light_blue
             end
             print_tree(c, number=i, depth=depth+1, max_depth=max_depth, has_to_have_children=has_to_have_children,
                 highlight_best=highlight_best, expand_best=expand_best, white=!white, color=color)
             count += 1
         end
+    end
+end
+
+using DataStructures
+function find_most_visited(root::Node, N::Int)
+    explore = [root]
+    sorted = SortedSet([root], Base.Order.ReverseOrdering())
+    while !isempty(explore)
+        node = pop!(explore)
+        push!(sorted, node)
+        append!(explore, node.children)
+    end
+
+    return collect(sorted)[1:N]
+end
+
+import Base.isless
+function isless(n1::Node, n2::Node)
+    return n1.visits < n2.visits
+end
+
+ss = SortedSet([Node(visits=1), Node(), Node(visits=2)], Base.Order.ReverseOrdering())
+
+
+function print_most_visited(root::Node, N=100; number=0, white=true, nodes=[], depth=0, n_alternatives=0)
+
+    color = white ? :white : :light_blue
+
+    if root.parent == nothing
+        color = :yellow
+        white = !white
+        nodes = find_most_visited(root, N)
+    end
+
+    printstyled("\t"^depth * "$number. " * string(root)  * "\n", color=color)
+
+    cs = sort(root.children, lt=(x,y)->x.visits<y.visits, rev=true)
+
+    count = 0
+    for (i,c) in enumerate(cs)
+        if c in nodes
+            print_most_visited(c, number=i, white=!white, nodes=nodes, depth=depth+1, n_alternatives=n_alternatives)
+        elseif count < n_alternatives
+            print_most_visited(c, number=i, white=!white, nodes=nodes, depth=depth+1, n_alternatives=0)
+            count += 1
+        end
+
     end
 end
 
@@ -209,7 +284,10 @@ const λ = 2.55
 
 function UCB1(node::Node)
     if node.visits == 0
-        return node.score # prescore set at init. gets overriden once evaluated
+        # prescore set at init. gets overriden once evaluated
+        # therefore it is not propagated
+        # set to Inf if all children should get evaluated before going deeper
+        return node.score + 20 * √(2 * log(node.parent.visits))
     else
         return node.score + 20 * √(2 * log(node.parent.visits) / node.visits)
     end
@@ -217,7 +295,11 @@ end
 
 function negUCB1(node::Node)
     if node.visits == 0
-        return -node.score # prescore set at init. gets overriden once evaluated
+
+            # prescore set at init. gets overriden once evaluated
+            # therefore it is not propagated
+            # set to Inf if all children should get evaluated before going deeper
+        return -node.score + 20 * √(2 * log(node.parent.visits))
     else
         return -node.score + 20 * √(2 * log(node.parent.visits) / node.visits)
     end

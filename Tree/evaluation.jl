@@ -100,14 +100,14 @@ function rank_moves(board::Board, white::Bool, ms::Vector{Move})
                     else
                         # attack
                         # TODO: maybe remove
-                        score += attacks * (board[r3,f3,PAWN] * 1 + (board[r3,f3,KNIGHT] + board[r3,f3,BISHOP]) * 3 + board[r3,f3,ROOK] * 5 + board[r3,f3,QUEEN] * 9)
+                        # score += attacks * (board[r3,f3,PAWN] * 1 + (board[r3,f3,KNIGHT] + board[r3,f3,BISHOP]) * 3 + board[r3,f3,ROOK] * 5 + board[r3,f3,QUEEN] * 9)
                     end
                     break # direction finished
                 elseif board[r3, f3, player]
                     # defend
                     if !(r3 == r2 && f3 == f3)
                         # cant defend self
-                        score += defends * (board[r3,f3,PAWN] * 1 + (board[r3,f3,KNIGHT] + board[r3,f3,BISHOP]) * 3 + board[r3,f3,ROOK] * 5 + board[r3,f3,QUEEN] * 9)
+                        # score += defends * (board[r3,f3,PAWN] * 1 + (board[r3,f3,KNIGHT] + board[r3,f3,BISHOP]) * 3 + board[r3,f3,ROOK] * 5 + board[r3,f3,QUEEN] * 9)
                         break # direction finished
                     end
                 end # else empty field
