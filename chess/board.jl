@@ -316,7 +316,11 @@ function print_board(board::Board; highlight=nothing, white=true)
         end
         print("\n")
     end
-    printstyled("  a b c d e f g h", color=13)
+    if white
+        printstyled("  a b c d e f g h", color=13)
+    else
+        printstyled("  h g f e d c b a", color=13)
+    end
 end
 
 

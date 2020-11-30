@@ -21,14 +21,14 @@ end
 
 function print_tree(root::Node; number=0, depth=0, max_depth=Inf, has_to_have_children=true, highlight_best=5, expand_best=Inf, white=true, color=:white)
     printstyled("\t"^depth * "$number. " * string(root)  * "\n", color=color)
+    if root.parent == nothing
+        white = !white # preserve player
+    end
     if depth + 1 > max_depth
         return
     end
-    if white
-        cs = sort(root.children, lt=(x,y)->UCB1(x)<UCB1(y))
-    else
-        cs = sort(root.children, lt=(x,y)->negUCB1(x)<negUCB1(y))
-    end
+
+    cs = sort(root.children, lt=(x,y)->x.visits<y.visits, rev=true)
 
     count = 0
     for (i,c) in enumerate(cs)
@@ -209,7 +209,7 @@ const λ = 2.55
 
 function UCB1(node::Node)
     if node.visits == 0
-        return Inf
+        return node.score # prescore set at init. gets overriden once evaluated
     else
         return node.score + 20 * √(2 * log(node.parent.visits) / node.visits)
     end
@@ -217,7 +217,7 @@ end
 
 function negUCB1(node::Node)
     if node.visits == 0
-        return Inf
+        return -node.score # prescore set at init. gets overriden once evaluated
     else
         return -node.score + 20 * √(2 * log(node.parent.visits) / node.visits)
     end
@@ -273,24 +273,25 @@ function MCTreeSearch(board=Board(), white=true; N=10)
 
         _white, depth = restore_board_position(board, white, _board, node)
 
-        v, ms = simple_piece_count(_board, _white)
+        v, rms = simple_piece_count(_board, _white)
 
         node.score = v
         node.visits += 1
         backpropagate!(node)
 
         # expand new moves
-        for m in ms
-            c = Node(move=m, parent=node, score=0, visits=0)
+        for (m, prescore) in rms
+            c = Node(move=m, parent=node, score=prescore, visits=0)
             push!(node.children, c)
         end
 
 
         if depth > max_depth
-            @info("Depth $depth reached.")
+            # @info("Depth $depth reached.")
             max_depth = depth
         end
     end
+    @info("Depth $max_depth reached.")
     return root
 end
 

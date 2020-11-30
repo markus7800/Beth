@@ -14,12 +14,14 @@ function Base.show(io::IO, m::Move)
     end
 end
 
+const PAWNDIAG = [[(-1, 1), (-1, -1)], [(1, 1), (1, -1)]] # black at 1, white at 2
 const DIAG = [(-1,-1), (1,-1), (-1, 1), (1, 1)]
 const CROSS = [(0,1), (0,-1), (1,0), (-1,0)]
 const KNIGHTMOVES = [
         (1,2), (1,-2), (-1,2), (-1,-2),
         (2,1), (2,-1), (-2,1), (-2,-1)
         ]
+const DIAGCROSS = vcat(DIAG, CROSS)
 
 function get_moves(board::Board, white::Bool)
     player = 7 + !white
@@ -44,7 +46,7 @@ function get_moves(board::Board, white::Bool)
             append!(moves, direction_moves(board,player,opponent,ROOK,rank,file,CROSS,8))
 
         elseif board[rank, file, QUEEN]
-            append!(moves, direction_moves(board,player,opponent,QUEEN,rank,file,vcat(DIAG, CROSS),8))
+            append!(moves, direction_moves(board,player,opponent,QUEEN,rank,file,DIAGCROSS,8))
 
         elseif board[rank, file, KING]
             kingpos = (rank, file)
@@ -76,7 +78,7 @@ end
 
 
 function king_moves(board, white, player, opponent, rank, file)
-    kingmoves = direction_moves(board,player,opponent,KING,rank,file,vcat(DIAG, CROSS),1)
+    kingmoves = direction_moves(board,player,opponent,KING,rank,file,DIAGCROSS,1)
 
     # TODO: check for checks
 
@@ -147,36 +149,33 @@ end
 
 function direction_moves(board, player, opponent, piece, rank, file, directions, max_multiple)
     moves = Move[]
-    dirs_finished = falses(length(directions))
-    for i in 1:max_multiple
-        for (d, dir) in enumerate(directions)
-            dirs_finished[d] && continue
+    for dir in directions
+        for i in 1:max_multiple
 
             r2, f2 = (rank, file) .+ i .* dir
 
             if r2 < 1 || r2 > 8 || f2 < 1 || f2 > 8
                 # direction out of bounds
-                dirs_finished[d] = true
-                continue
+                break # direction finished
             end
 
             if board[r2, f2, opponent]
                 # capture
                 push!(moves, (piece, symbol(rank, file), symbol(r2, f2)))
-                dirs_finished[d] = true
+                break # direction finished
             elseif !board[r2, f2, player]
                 # free tile
                 push!(moves, (piece, symbol(rank, file), symbol(r2, f2)))
             elseif board[r2, f2, player]
                 # direction blocked by own piece
-                dirs_finished[d] = true
+                break # direction finished
             end
         end
-
-        all(dirs_finished) && break
     end
     return moves
 end
+
+
 
 # checks if king of player is in check after move
 # kingpos is position of king before move
