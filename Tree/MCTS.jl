@@ -1,5 +1,4 @@
 
-
 function UCB1(node::Node)
     if node.visits == 0
         # prescore set at init. gets overriden once evaluated
@@ -95,3 +94,14 @@ function MCTreeSearch(board=Board(), white=true; N=10)
     @info("Depth $max_depth reached.")
     return root
 end
+function lt_childrenMCTS(x,y,white)
+    if x.visits == y.visits
+        if white
+            UCB1(x) < UCB1(y)
+        else
+            negUCB1(x) < negUCB1(y)
+        end
+    else
+        x.visits < y.visits
+    end
+end # TODO: arg in print_tree

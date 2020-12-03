@@ -9,7 +9,7 @@ function expand!(node::Node, board::Board, white::Bool)
 end
 
 
-function TreeSearchSlow(board=Board(); N=10^5, kind=:BFS)
+function TreeSearchSlow(board=Board(); N=10^5, kind=:BFS, BFSdepth=10)
     _board = deepcopy(board)
     root = Node()
 
@@ -28,8 +28,11 @@ function TreeSearchSlow(board=Board(); N=10^5, kind=:BFS)
     while !isempty(Q) && n < N
         node, _board, white, depth = get_node!(Q)
         if depth > max_depth && kind == :BFS
-            #@info("Depth $depth reached.")
+            @info("Depth $depth reached.")
             max_depth = depth
+            if max_depth > BFSdepth
+                break
+            end
         end
         n += 1
 
@@ -69,7 +72,7 @@ function TreeSearch(board=Board(), white=true; N=10^5, kind=:BFS)
         _white, depth = restore_board_position(board, white, _board, node)
 
         if depth > max_depth && kind == :BFS
-            @info("Depth $depth reached.")
+            #@info("Depth $depth reached.")
             max_depth = depth
         end
 
@@ -81,3 +84,10 @@ function TreeSearch(board=Board(), white=true; N=10^5, kind=:BFS)
     end
     return root
 end
+
+@time root = TreeSearch()
+@time root = TreeSearchSlow(BFSdepth=2)
+
+count_nodes(root)
+
+print_tree(root)

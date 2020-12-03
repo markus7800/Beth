@@ -18,6 +18,19 @@ mutable struct Node
     end
 end
 
+using Printf
+import Base.show
+function Base.show(io::IO, n::Node)
+    if n.move == (0x00, 0x00, 0x00)
+        print(io, @sprintf "Root Node, score: %.4f, visits: %d, %d children" n.score n.visits (length(n.children)))
+
+    else
+        print(io, @sprintf "%s, score: %.4f, visits: %d, %d children" n.move n.score n.visits (length(n.children)))
+    end
+end
+
+
+
 import Base.getindex
 # s is long notation
 function Base.getindex(node::Node, s::String)
@@ -34,14 +47,10 @@ end
 
 
 function lt_children(x,y,white)
-    if x.visits == y.visits
-        if white
-            UCB1(x) < UCB1(y)
-        else
-            negUCB1(x) < negUCB1(y)
-        end
+    if white
+        x.score < y.score
     else
-        x.visits < y.visits
+        y.score < x.score
     end
 end
 
@@ -121,17 +130,6 @@ function print_most_visited(root::Node, N=100; number=0, white=true, nodes=[], d
     end
 end
 
-using Printf
-import Base.show
-function Base.show(io::IO, n::Node)
-    if n.move == (0x00, 0x00, 0x00)
-        print(io, @sprintf "Root Node, score: %.4f, visits: %d, %d children" n.score n.visits (length(n.children)))
-
-    else
-        print(io, @sprintf "%s, score: %.4f, visits: %d, UCB1: %.4f, %d children" n.move n.score n.visits (UCB1(n)) (length(n.children)))
-    end
-end
-
 
 
 
@@ -154,7 +152,7 @@ function count_nodes(node::Node)
         # leaf
         return 1
     else
-        return sum(count_nodes(c) for c in node.children)
+        return sum(count_nodes(c) for c in node.children) + 1
     end
 end
 
