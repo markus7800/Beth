@@ -80,15 +80,17 @@ end
 function king_moves(board, white, player, opponent, rank, file)
     kingmoves = direction_moves(board,player,opponent,KING,rank,file,DIAGCROSS,1)
 
-    # TODO: check for checks
-
     if board.can_castle[white+1, 1] && !any(board[rank, 2:4, player])
-        # castle long
-        push!(kingmoves, (KING, symbol(rank, file), symbol(rank, file-2)))
+        if !is_attacked(board, player, opponent, (rank, 3)) && !is_attacked(board, player, opponent, (rank, 4))
+            # castle long
+            push!(kingmoves, (KING, symbol(rank, file), symbol(rank, file-2)))
+        end
     end
     if board.can_castle[white+1, 2] && !any(board[rank, 6:7, player])
-        # castle short
-        push!(kingmoves, (KING, symbol(rank, file), symbol(rank, file+2)))
+        if !is_attacked(board, player, opponent, (rank, 6)) && !is_attacked(board, player, opponent, (rank, 7))
+            # castle short
+            push!(kingmoves, (KING, symbol(rank, file), symbol(rank, file+2)))
+        end
     end
     return kingmoves
 end

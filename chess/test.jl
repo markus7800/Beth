@@ -119,6 +119,23 @@ end
     move!(board, false, 'R', "g8", "h8")
 
     @test !((KING, symbol("e8"), symbol("g8")) in get_moves(board, false))
+
+    # castle not allowed due to attack
+    board = Board(false)
+    board.position[cartesian("e8")..., [KING, BLACK]] .= 1
+    board.position[cartesian("a8")..., [ROOK, BLACK]] .= 1
+    board.position[cartesian("h8")..., [ROOK, BLACK]] .= 1
+
+    board.position[cartesian("d1")..., [ROOK, WHITE]] .= 1
+
+
+    @test (KING, symbol("e8"), symbol("g8")) in get_moves(board, false)
+    @test !((KING, symbol("e8"), symbol("c8")) in get_moves(board, false))
+
+    board.position[cartesian("a2")..., [BISHOP, WHITE]] .= 1
+
+    @test !((KING, symbol("e8"), symbol("g8")) in get_moves(board, false))
+    @test !((KING, symbol("e8"), symbol("c8")) in get_moves(board, false))
 end
 
 @testset "Chess notation" begin
@@ -192,3 +209,6 @@ end
 end
 
 nothing
+
+bo
+print_board(board)
