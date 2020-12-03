@@ -170,7 +170,7 @@ function solve_puzzle(puzzle::Puzzle; N=10^4)
 
     println("Proposed Solution:")
     println(join(proposed_solution, " "))
-    println("Evaluatation:")
+    println("Evaluation:")
     println(root.score)
 end
 
@@ -284,11 +284,11 @@ puzzle = PuzzleFEN(
 push!(puzzles, puzzle)
 
 
-puzzle = puzzles[10]
-solve_puzzle(puzzle)
+puzzle = puzzles[12]
+solve_puzzle(puzzle, N=10^5)
 
 print_puzzle(puzzle)
-@time root = MCTreeSearch(puzzle.board, puzzle.white_to_move, N=10^4)
+@time root = MCTreeSearch(puzzle.board, puzzle.white_to_move, N=10^5)
 
 print_tree(root, max_depth=5, expand_best=3, has_to_have_children=false)
 
@@ -311,4 +311,6 @@ print_tree(root["Nf3h4"], max_depth=1, expand_best=Inf, has_to_have_children=fal
 root = MCTreeSearch(puzzle.board, puzzle.white_to_move, N=3)
 print_tree(root, max_depth=2, expand_best=Inf, has_to_have_children=false, white=true)
 
+
+print_tree(root["Rf1h1"]["Kh2h1"]["Nf5g3"]["Kh1g1"], max_depth=1, expand_best=Inf, has_to_have_children=false, white=true)
 print_most_visited(root, 100)

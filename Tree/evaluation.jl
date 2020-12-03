@@ -33,9 +33,7 @@ function simple_piece_count(board::Board, white::Bool)
         end
     end
 
-    rms = rank_moves(board, white, ms)
-
-    return score, rms
+    return score, ms
 end
 
 # just a preranking is discarded after evaluation
