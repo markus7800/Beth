@@ -144,6 +144,10 @@ function get_parents(node::Node, parents=Node[])
     end
 end
 
+function is_terminal(node::Node)
+    return length(node.children) == 0 && visited > 0
+end
+
 
 function count_nodes(node::Node)
     if length(node.children) == 0

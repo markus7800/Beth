@@ -20,7 +20,7 @@ function simple_piece_count(board::Board, white::Bool)
     end
     score = white_score - black_score
 
-    check = is_check(board, player, opponent, king_pos)
+    check = is_attacked(board, player, opponent, king_pos)
     ms = get_moves(board, white)
 
     if length(ms) == 0
