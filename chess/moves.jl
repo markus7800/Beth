@@ -190,7 +190,7 @@ function is_check(board::Board, player::Int, opponent::Int, king_pos::Tuple{Int,
         # update king position for king move
         king_pos = cartesian(field(rf2))
     end
-    b = is_check(board, player, opponent, king_pos)
+    b = is_attacked(board, player, opponent, king_pos)
     undo!(board, player==WHITE, p, rf1, rf2, captured, can_enpassant, can_castle)
 
     # if any(board.position .!= _board.position)
@@ -219,9 +219,9 @@ function is_check(board::Board, player::Int, opponent::Int, king_pos::Tuple{Int,
     return b
 end
 
-# checks if king of player os om check at king_pos
-function is_check(board::Board, player, opponent, king_pos; verbose=false)
-    r, f = king_pos
+# checks if field rf (cartesian) is attacked by opponent
+function is_attacked(board::Board, player, opponent, rf; verbose=false)
+    r, f = rf
 
     # check knight moves
     for dir in KNIGHTMOVES
@@ -248,11 +248,16 @@ function is_check(board::Board, player, opponent, king_pos; verbose=false)
                 continue
             end
 
-            if board[r2, f2, opponent] && (board[r2, f2, BISHOP] || board[r2, f2, QUEEN])
-                verbose && println("Diag check from $(field(r2, f2)) ($r2, $f2).")
-                return true
+            if board[r2, f2, opponent]
+                if (board[r2, f2, BISHOP] || board[r2, f2, QUEEN])
+                    verbose && println("Diag check from $(field(r2, f2)) ($r2, $f2).")
+                    return true
+                else
+                    # direction blocked by opponent piece
+                    diags_finished[d] = true
+                end
             elseif board[r2, f2, player]
-                # directiob blocked by own piece
+                # direction blocked by own piece
                 diags_finished[d] = true
             end
         end
@@ -273,9 +278,14 @@ function is_check(board::Board, player, opponent, king_pos; verbose=false)
                 continue
             end
 
-            if board[r2, f2, opponent] && (board[r2, f2, ROOK] || board[r2, f2, QUEEN])
-                verbose && println("Cross check from $(field(r2, f2)) ($r2, $f2).")
-                return true
+            if board[r2, f2, opponent]
+                if (board[r2, f2, ROOK] || board[r2, f2, QUEEN])
+                    verbose && println("Cross check from $(field(r2, f2)) ($r2, $f2).")
+                    return true
+                else
+                    # direction blocked by opponent piece
+                    diags_finished[d] = true
+                end
             elseif board[r2, f2, player]
                 # directiob blocked by own piece
                 crosses_finished[d] = true
@@ -305,7 +315,7 @@ function is_check(board::Board, player; kw...)
     if board[r, f, opponent]
         r, f = Tuple(kingpos[2])
     end
-    return is_check(board, player, opponent, (r,f); kw...)
+    return is_attacked(board, player, opponent, (r,f); kw...)
 end
 
 function short_to_long(board::Board, white::Bool, s::String)

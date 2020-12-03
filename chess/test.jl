@@ -54,6 +54,7 @@ using Test
 end
 
 @testset "Moves:King" begin
+    # Loose castling rights afte king move
     board = Board(false)
     board.position[cartesian("e1")..., [KING, WHITE]] .= 1
     board.position[cartesian("a1")..., [ROOK, WHITE]] .= 1
@@ -72,7 +73,7 @@ end
     @test !((KING, symbol("e1"), symbol("c1")) in ms)
     @test !((KING, symbol("e1"), symbol("g1")) in ms)
 
-
+    # test rook position after castling
     board = Board(false)
     board.position[cartesian("e1")..., [KING, WHITE]] .= 1
     board.position[cartesian("a1")..., [ROOK, WHITE]] .= 1
@@ -86,6 +87,7 @@ end
     @test !((KING, symbol("e1"), symbol("g1")) in ms)
 
 
+    # Move king back and forth
     board = Board(false)
     board.position[cartesian("e1")..., [KING, WHITE]] .= 1
     board.position[cartesian("a1")..., [ROOK, WHITE]] .= 1
@@ -96,6 +98,27 @@ end
     @test !((KING, symbol("e1"), symbol("c1")) in ms)
     @test !((KING, symbol("e1"), symbol("g1")) in ms)
 
+
+    # Move rooks back and forth
+    board = Board(false)
+    board.position[cartesian("e8")..., [KING, BLACK]] .= 1
+    board.position[cartesian("a8")..., [ROOK, BLACK]] .= 1
+    board.position[cartesian("h8")..., [ROOK, BLACK]] .= 1
+
+    move!(board, false, 'R', "a8", "a1")
+
+    @test (KING, symbol("e8"), symbol("g8")) in get_moves(board, false)
+    @test !((KING, symbol("e8"), symbol("c8")) in get_moves(board, false))
+
+    move!(board, false, 'R', "a1", "a8")
+
+    @test (KING, symbol("e8"), symbol("g8")) in get_moves(board, false)
+    @test !((KING, symbol("e8"), symbol("c8")) in get_moves(board, false))
+
+    move!(board, false, 'R', "h8", "g8")
+    move!(board, false, 'R', "g8", "h8")
+
+    @test !((KING, symbol("e8"), symbol("g8")) in get_moves(board, false))
 end
 
 @testset "Chess notation" begin
@@ -138,6 +161,34 @@ end
     @test m in get_moves(board, true)
     m = short_to_long(board, false, "g1N")
     @test m in get_moves(board, false)
+end
+
+@testset "Checks and Attacks" begin
+
+    board = Board(false)
+    # Knight check
+    board.position[cartesian("c5")..., [KNIGHT, WHITE]] .= 1
+    board.position[cartesian("e6")..., [KING, BLACK]] .= 1
+
+    @test is_check(board, BLACK)
+
+    # bishop check and !xray attack
+    board.position[cartesian("c5")..., [KNIGHT, WHITE]] .= 0
+    board.position[cartesian("a2")..., [BISHOP, WHITE]] .= 1
+    board.position[cartesian("g8")..., [QUEEN, BLACK]] .= 1
+
+    @test is_check(board, BLACK)
+
+    @test !is_attacked(board, WHITE, BLACK, cartesian("g8"))
+    @test is_attacked(board, BLACK, WHITE, cartesian("e6"))
+    @test !is_attacked(board, BLACK, WHITE, cartesian("a2"))
+
+    # !xray check, rook attack
+    board.position[cartesian("d5")..., [ROOK, WHITE]] .= 1
+
+    @test !is_check(board, BLACK)
+    @test is_attacked(board, BLACK, WHITE, cartesian("d1"))
+
 end
 
 nothing
