@@ -206,9 +206,22 @@ end
     @test !is_check(board, BLACK)
     @test is_attacked(board, BLACK, WHITE, cartesian("d1"))
 
+    # pawn checks and not checks (own king)
+    board = Board(false)
+
+    board.position[cartesian("c2")..., [KING, WHITE]] .= 1
+    board.position[cartesian("e6")..., [KING, BLACK]] .= 1
+
+    board.position[cartesian("b3")..., [PAWN, BLACK]] .= 1
+
+    board.position[cartesian("d5")..., [PAWN, BLACK]] .= 1
+    board.position[cartesian("f5")..., [PAWN, BLACK]] .= 1
+
+    board.position[cartesian("d7")..., [PAWN, WHITE]] .= 1
+    board.position[cartesian("f7")..., [PAWN, WHITE]] .= 1
+
+    @test !is_check(board, BLACK)
+    @test is_check(board, WHITE)
 end
 
 nothing
-
-bo
-print_board(board)

@@ -237,17 +237,13 @@ function is_attacked(board::Board, player, opponent, rf; verbose=false)
     end
 
     # check diags
-    diags_finished = falses(length(DIAG))
-    for i in 1:8
-        for (d, dir) in enumerate(DIAG)
-            diags_finished[d] && continue
-
+    for (d, dir) in enumerate(DIAG)
+        for i in 1:8
             r2, f2 = (r,f) .+ i .* dir
 
             if r2 < 1 || r2 > 8 || f2 < 1 || f2 > 8
                 # direction out of bounds
-                diags_finished[d] = true
-                continue
+                break
             end
 
             if board[r2, f2, opponent]
@@ -256,28 +252,23 @@ function is_attacked(board::Board, player, opponent, rf; verbose=false)
                     return true
                 else
                     # direction blocked by opponent piece
-                    diags_finished[d] = true
+                    break
                 end
             elseif board[r2, f2, player]
                 # direction blocked by own piece
-                diags_finished[d] = true
+                break
             end
         end
-        all(diags_finished) && break
     end
 
     # check crosses
-    crosses_finished = falses(length(CROSS))
-    for i in 1:8
-        for (d, dir) in enumerate(CROSS)
-            crosses_finished[d] && continue
-
+    for (d, dir) in enumerate(CROSS)
+        for i in 1:8
             r2, f2 = (r,f) .+ i .* dir
 
             if r2 < 1 || r2 > 8 || f2 < 1 || f2 > 8
                 # direction out of bounds
-                crosses_finished[d] = true
-                continue
+                break
             end
 
             if board[r2, f2, opponent]
@@ -286,14 +277,13 @@ function is_attacked(board::Board, player, opponent, rf; verbose=false)
                     return true
                 else
                     # direction blocked by opponent piece
-                    diags_finished[d] = true
+                    break
                 end
             elseif board[r2, f2, player]
                 # directiob blocked by own piece
-                crosses_finished[d] = true
+                break
             end
         end
-        all(crosses_finished) && break
     end
 
     # check pawn
