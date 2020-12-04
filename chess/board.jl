@@ -373,3 +373,60 @@ function start_game()
         white = !white
     end
 end
+
+
+function user_input(board, white)
+    got_move = false
+    p, rf1, rf2 = (nothing, nothing, nothing)
+    while !got_move
+        try
+            print(white ? "White: " : "Black: ")
+            s = readline()
+            if occursin("highlight ", s)
+                print_board(board, highlight=s[11:end], white=white)
+                println()
+                continue
+            end
+
+            p, rf1, rf2 = short_to_long(board, white, s)
+            got_move = true
+        catch e
+            if e isa InterruptException
+                println("\nGame aborted!")
+                return
+            elseif e isa AssertionError
+                println(e.msg)
+            else
+                println(e)
+            end
+        end
+    end
+    return p, rf1, rf2
+end
+
+
+function play_game(board = Board(), white = true; white_player=user_input, black_player=user_input)
+    while true
+        println()
+        #print("\u1b[10F")
+        print_board(board)
+        println()
+
+        n_moves = length(get_moves(board, white))
+        check = is_check(board, white ? WHITE : BLACK)
+        done = n_moves == 0
+        !done && check && println("Check!")
+        done && check && println("Checkmate!")
+        done && !check && println("Stalemate!")
+        done && break
+
+        if white
+            p, rf1, rf2 = white_player(board, true)
+        else
+            p, rf1, rf2 = black_player(board, false)
+        end
+
+        move!(board, white, p, rf1, rf2)
+        white = !white
+    end
+end

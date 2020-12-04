@@ -137,7 +137,7 @@ function pawn_moves(board, white, rank, file)
         end
     end
 
-    # promotions
+    # promotions # TODO
     if white && rank == 7 && !any(board[8, file, [WHITE, BLACK]])
         push!(moves, (PAWNTOQUEEN, symbol(rank, file), symbol(8, file)))
         push!(moves, (PAWNTOKNIGHT, symbol(rank, file), symbol(8, file)))
