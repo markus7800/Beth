@@ -53,6 +53,17 @@ using Test
     @test all(board[cartesian("c8")..., [QUEEN, WHITE]])
     @test all(board[cartesian("g1")..., [KNIGHT, BLACK]])
 
+    # promote with capture
+    board = Board(false)
+    board.position[cartesian("c7")..., [PAWN, WHITE]] .= 1
+    board.position[cartesian("d8")..., [BISHOP, BLACK]] .= 1
+
+    @test (PAWNTOKNIGHT, symbol("c7"), symbol("d8")) in get_moves(board, true)
+
+    move!(board, true, PAWNTOKNIGHT, symbol("c7"), symbol("d8"))
+
+    @test all(board[cartesian("d8")..., [KNIGHT, WHITE]])
+    @test !any(board[cartesian("d8")..., [BISHOP, BLACK]])
 end
 
 @testset "Moves:King" begin
@@ -224,6 +235,57 @@ end
 
     @test !is_check(board, BLACK)
     @test is_check(board, WHITE)
+end
+
+@testset "Undos" begin
+
+    # one pawn move
+    board = Board(false)
+    board.position[cartesian("e7")..., [PAWN, BLACK]] .= 1
+
+    _board = deepcopy(board)
+    capture, en_passant, castle = move!(board, false, PAWN, symbol("e7"), symbol("e6"))
+    undo!(board, false, PAWN, symbol("e7"), symbol("e6"), capture, en_passant, castle)
+
+    @test all(board.position .== _board.position) && all(board.can_en_passant .== _board.can_en_passant) && all(board.can_castle .== _board.can_castle)
+
+
+    # pawn en passant capture
+    board = Board(false)
+    board.position[cartesian("e7")..., [PAWN, BLACK]] .= 1
+    board.position[cartesian("f5")..., [PAWN, WHITE]] .= 1
+    capture, en_passant, castle = move!(board, false, PAWN, symbol("e7"), symbol("e5"))
+
+    _board = deepcopy(board)
+    capture, en_passant, castle = move!(board, true, PAWN, symbol("f5"), symbol("e6"))
+    undo!(board, true, PAWN, symbol("f5"), symbol("e6"), capture, en_passant, castle)
+
+    @test all(board.position .== _board.position) && all(board.can_en_passant .== _board.can_en_passant) && all(board.can_castle .== _board.can_castle)
+
+
+    # same piece capture
+    board = Board(false)
+    board.position[cartesian("e7")..., [ROOK, BLACK]] .= 1
+    board.position[cartesian("e1")..., [ROOK, WHITE]] .= 1
+
+
+    _board = deepcopy(board)
+    capture, en_passant, castle = move!(board, false, ROOK, symbol("e7"), symbol("e1"))
+    undo!(board, false, ROOK, symbol("e7"), symbol("e1"), capture, en_passant, castle)
+
+    @test all(board.position .== _board.position) && all(board.can_en_passant .== _board.can_en_passant) && all(board.can_castle .== _board.can_castle)
+
+
+    # castle
+    board = Board(false)
+    board.position[cartesian("a1")..., [ROOK, WHITE]] .= 1
+    board.position[cartesian("e1")..., [KING, WHITE]] .= 1
+
+    _board = deepcopy(board)
+    capture, en_passant, castle = move!(board, true, KING, symbol("e1"), symbol("c1"))
+    undo!(board, true, KING, symbol("e1"), symbol("c1"), capture, en_passant, castle)
+
+    @test all(board.position .== _board.position) && all(board.can_en_passant .== _board.can_en_passant) && all(board.can_castle .== _board.can_castle)
 end
 
 nothing

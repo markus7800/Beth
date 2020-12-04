@@ -58,6 +58,7 @@ end
 function (beth::Beth)(board::Board, white::Bool)
     root = search(beth, board=board, white=white)
     node = sort(root.children, lt=(x,y)->x.score<y.score, rev=white)[1]
+    println("Computer says: ", node.move)
     return node.move
 end
 
@@ -145,6 +146,8 @@ print_tree(root, has_to_have_children=false, expand_best=1, white=pz.white_to_mo
 
 print_tree(root, white=pz.white_to_move, max_depth=1, has_to_have_children=false)
 
-b(pz.board, pz.white_to_move)
+string(b(pz.board, pz.white_to_move))
 
 play_game(black_player=b)
+
+# e4 d4 Qd3 d5 Qf3 Bc4

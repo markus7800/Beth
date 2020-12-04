@@ -76,12 +76,20 @@ function move!(board::Board, white::Bool, piece::Piece, r1::Int, f1::Int, r2::In
     player = 7 + !white
     opponent = 7 + white
 
-    @assert board[r1,f1,player] "No piece for player at $r1, $(f1)!"
-    @assert !board[r2,f2,player] "Player tried to capture own piece! $(SYMBOLS[1,piece]) $(field(r1,f1)) $(field(r2,f2))"
+    @assert board[r1,f1,player] "No piece for player ($white) at $r1, $(f1)!"
+    @assert !board[r2,f2,player] "Player ($white) tried to capture own piece! $(SYMBOLS[1,piece]) $(field(r1,f1)) $(field(r2,f2))"
+
+    # handle captures
+    if board[r2,f2,opponent]
+        captured = (findfirst(board[r2,f2,1:6]), r2, f2)
+        @assert captured != nothing "Opponent ($(!white)) occupies square $(field(r2,f2)) with no piece!"
+        board.position[r2,f2,captured[1]] = false
+        board.position[r2,f2,opponent] = false
+    end
 
     # handle promotions
     if piece == PAWNTOQUEEN || piece == PAWNTOKNIGHT
-        @assert board[r1,f1,PAWN] "Piece not at field! $(SYMBOLS[1,piece]) $(field(r1,f1)) $(field(r2,f2))"
+        @assert board[r1,f1,PAWN] "Piece not at field! $(SYMBOLS[1,PAWN]) $(field(r1,f1)) $(field(r2,f2))"
         @assert (white && r1 == 7) || (!white && r1 == 2)
 
         board.position[r1,f1,PAWN] = false
@@ -94,45 +102,52 @@ function move!(board::Board, white::Bool, piece::Piece, r1::Int, f1::Int, r2::In
         return captured, en_passant, castle
     end
 
+    # handle piece move
     @assert board[r1,f1,piece] "Piece not at field! $(SYMBOLS[1,piece]) $(field(r1,f1)) $(field(r2,f2))"
 
-
-    if board[r2,f2,opponent]
-        # remove captured piece
-        captured = findfirst(board[r2,f2,1:6])
-        board.position[r2,f2,captured] = false
-        board.position[r2,f2,opponent] = false
-    end
-
-
     board.position[r1,f1,piece] = false
+    board.position[r1,f1,player] = false
+
+    board.position[r2,f2,player] = true
     board.position[r2,f2,piece] = true
 
-    board.position[r1,f1,player] = false
-    board.position[r2,f2,player] = true
-
     # handle en passant
+    # enabled / disable
+    board.can_en_passant[white+1, :] .= false
     if piece == PAWN && abs((r1 - r2) == 2)
         board.can_en_passant[white+1, f1] = true
     end
-    board.can_en_passant[white+1, :] .= false
 
-    # handle caslte
+    # capture en passant
+    if piece == PAWN && abs((f1 - f2) == 1)
+        if captured == nothing
+            # landed on empty field -> must be en passant
+            @assert board.can_en_passant[!white+1, f2] "Pawn moved diagonally but no en passant allowed."
+            dir = white ? -1 : 1
+            @assert board[r2+dir,f2,PAWN] && board[r2+dir,f2,opponent] "No pawn to capture in en passant"
+            captured = (PAWN, r2+dir, f2)
+            board.position[r2+dir,f2,PAWN] = false
+            board.position[r2+dir,f2,opponent] = false
+        end
+    end
+
+
+    # handle castle
     if piece == KING
         board.can_castle[white+1,:] .= false
         if f2 - f1 == 2 # castle short
             board.position[r1, 8, ROOK] = false
-            board.position[r1, 6, ROOK] = true
-
             board.position[r1, 8, player] = false
+
+            board.position[r1, 6, ROOK] = true
             board.position[r1, 6, player] = true
 
             castle = (SHORTCASTLE, castle)
         elseif f1 - f2 == 2 # castle long
             board.position[r1, 1, ROOK] = false
-            board.position[r1, 4, ROOK] = true
-
             board.position[r1, 1, player] = false
+
+            board.position[r1, 4, ROOK] = true
             board.position[r1, 4, player] = true
 
             castle = (LONGCASTLE, castle)
@@ -154,28 +169,32 @@ function undo!(board::Board, white::Bool, piece::Piece, r1::Int, f1::Int, r2::In
     player = 7 + !white
     opponent = 7 + white
 
+
+
     # handle promotions
     if piece == PAWNTOQUEEN || piece == PAWNTOKNIGHT
-
         board.position[r1,f1,PAWN] = true
         board.position[r1,f1,player] = true
 
         newpiece = piece == PAWNTOQUEEN ? QUEEN : KNIGHT
         board.position[r2,f2,newpiece] = false
         board.position[r2,f2,player] = false
-        return
+    else
+        # undo piece move
+        board.position[r1,f1,piece] = true
+        board.position[r1,f1,player] = true
+
+        board.position[r2,f2,player] = false
+        board.position[r2,f2,piece] = false
     end
 
-    board.position[r1,f1,piece] = true
-    board.position[r2,f2,piece] = false
-
-    board.position[r1,f1,player] = true
-    board.position[r2,f2,player] = false
-
+    # undo capture (AFTER piece move (field must be free, important for same piece capture))
     if captured != nothing
-        board.position[r2,f2,opponent] = true
-        board.position[r2,f2,captured] = true
+        p, r, f = captured
+        board.position[r,f,opponent] = true
+        board.position[r,f,p] = true
     end
+
 
     if en_passant != nothing
         board.can_en_passant .= en_passant
@@ -185,18 +204,18 @@ function undo!(board::Board, white::Bool, piece::Piece, r1::Int, f1::Int, r2::In
         if piece == KING && castle isa Tuple
             i, bcastle = castle
             if i == LONGCASTLE # long castle
-                board.position[r1, 1, ROOK] = true
                 board.position[r1, 4, ROOK] = false
-
-                board.position[r1, 1, player] = true
                 board.position[r1, 4, player] = false
+
+                board.position[r1, 1, ROOK] = true
+                board.position[r1, 1, player] = true
             end
 
             if i == SHORTCASTLE # short castle
-                board.position[r1, 8, ROOK] = true
                 board.position[r1, 6, ROOK] = false
-
                 board.position[r1, 8, player] = true
+
+                board.position[r1, 8, ROOK] = true
                 board.position[r1, 6, player] = false
             end
             board.can_castle .= bcastle
@@ -225,7 +244,7 @@ function move!(board::Board, white::Bool, p::PieceSymbol, rf1::Field, rf2::Field
 
     captured, can_en_passant, can_castle = move!(board, white, PIECES[p], cartesian(rf1)..., cartesian(rf2)...)
     if verbose
-        captured != nothing && println("Captured $(SYMBOLS[1,captured]).")
+        captured != nothing && println("Captured $(SYMBOLS[1,captured[1]]).")
         opponent = 7 + white
         check = is_check(board, opponent)
         n_moves = length(get_moves(board, !white))
@@ -293,7 +312,11 @@ function print_board(board::Board; highlight=nothing, white=true)
         for file in files
             s = "•" #"⦿" # "⋅"
             if sum(board[rank,file,:]) != 0
-                piece = argmax(board[rank,file,1:6])
+                piece = findfirst(board[rank,file,1:6])
+                if piece == nothing
+                    printstyled("X ", color=:red, bold=true)
+                    continue
+                end
                 if any(board[rank,file,7:8])
                     si = findfirst(board[rank,file,7:8])
                     s = SYMBOLS[1, piece]
