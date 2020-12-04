@@ -30,6 +30,18 @@ struct Board
     end
 end
 
+import Base.==
+function ==(b1::Board, b2::Board)
+    return b1.position == b2.position && b1.can_en_passant == b2.can_en_passant && b1.can_castle == b2.can_castle
+end
+
+import Base.hash
+function Base.hash(board::Board)
+    h = hash(board.position)
+    h = hash(board.can_en_passant, h)
+    h = hash(board.can_castle, h)
+end
+
 function is_valid(board::Board)
     b1 = !any(sum(board.position[:,:,1:6], dims=3) .> 1) # no more than one piece per tile
     T = sum(board.position[:,:,1:6], dims=3) .== 1 # 1 if piece at tile

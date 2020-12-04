@@ -156,6 +156,7 @@ function count_nodes(node::Node)
     end
 end
 
+# restores board position up to (including) move of node
 function restore_board_position(board::Board, white::Bool, _board::Board, node::Node)
     # restore root board position
     _board.position .= board.position
