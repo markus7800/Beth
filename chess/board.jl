@@ -410,6 +410,9 @@ function user_input(board, white)
                 println()
                 continue
             end
+            if occursin("undo", s)
+                return "undo", false, false
+            end
 
             p, rf1, rf2 = short_to_long(board, white, s)
             got_move = true
@@ -429,8 +432,10 @@ end
 
 
 function play_game(board = Board(), white = true; white_player=user_input, black_player=user_input)
+    game_history = [(deepcopy(board), white, (0x0, 0x0, 0x0))] # current board, white to move, last move
+    move = 1
     while true
-        println()
+        println("Move: $move\n")
         #print("\u1b[10F")
         print_board(board)
         println()
@@ -448,8 +453,16 @@ function play_game(board = Board(), white = true; white_player=user_input, black
         else
             p, rf1, rf2 = black_player(board, false)
         end
+        if p == "undo"
+            pop!(game_history) # opponent move
+            pop!(game_history) # my move
+            board, white, move = game_history[end]
+            continue
+        end
 
         move!(board, white, p, rf1, rf2)
         white = !white
+        push!(game_history, (deepcopy(board), white, (p, rf1, rf2)))
     end
+    return game_history
 end

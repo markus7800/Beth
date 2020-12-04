@@ -1,0 +1,1036 @@
+Chess Board
+8 R N B Q K B N R
+7 P P P P P P P P
+6 • • • • • • • •
+5 • • • • • • • •
+4 • • • • • • • •
+3 • • • • • • • •
+2 P P P P P P P P
+1 R N B Q K B N R
+  a b c d e f g h
+e4
+
+Chess Board
+8 R N B Q K B N R
+7 P P P P P P P P
+6 • • • • • • • •
+5 • • • • • • • •
+4 • • • • P • • •
+3 • • • • • • • •
+2 P P P P • P P P
+1 R N B Q K B N R
+  a b c d e f g h
+[ Info: 15740 nodes (12680 leafes) explored in 1.4827 seconds (10615.46 /s)
+Computer says: P: a7-a6
+
+Chess Board
+8 R N B Q K B N R
+7 • P P P P P P P
+6 P • • • • • • •
+5 • • • • • • • •
+4 • • • • P • • •
+3 • • • • • • • •
+2 P P P P • P P P
+1 R N B Q K B N R
+  a b c d e f g h
+White: undo
+
+Chess Board
+8 R N B Q K B N R
+7 P P P P P P P P
+6 • • • • • • • •
+5 • • • • • • • •
+4 • • • • • • • •
+3 • • • • • • • •
+2 P P P P P P P P
+1 R N B Q K B N R
+  a b c d e f g h
+e4
+
+Chess Board
+8 R N B Q K B N R
+7 P P P P P P P P
+6 • • • • • • • •
+5 • • • • • • • •
+4 • • • • P • • •
+3 • • • • • • • •
+2 P P P P • P P P
+1 R N B Q K B N R
+  a b c d e f g h
+[ Info: 15740 nodes (12680 leafes) explored in 1.4540 seconds (10825.54 /s)
+Computer says: P: a7-a6
+
+Chess Board
+8 R N B Q K B N R
+7 • P P P P P P P
+6 P • • • • • • •
+5 • • • • • • • •
+4 • • • • P • • •
+3 • • • • • • • •
+2 P P P P • P P P
+1 R N B Q K B N R
+  a b c d e f g h
+White: undo
+
+Chess Board
+8 R N B Q K B N R
+7 P P P P P P P P
+6 • • • • • • • •
+5 • • • • • • • •
+4 • • • • • • • •
+3 • • • • • • • •
+2 P P P P P P P P
+1 R N B Q K B N R
+  a b c d e f g h
+White: e4
+
+Chess Board
+8 R N B Q K B N R
+7 P P P P P P P P
+6 • • • • • • • •
+5 • • • • • • • •
+4 • • • • P • • •
+3 • • • • • • • •
+2 P P P P • P P P
+1 R N B Q K B N R
+  a b c d e f g h
+[ Info: 15740 nodes (12680 leafes) explored in 1.4616 seconds (10769.20 /s)
+Computer says: P: a7-a6
+
+Chess Board
+8 R N B Q K B N R
+7 • P P P P P P P
+6 P • • • • • • •
+5 • • • • • • • •
+4 • • • • P • • •
+3 • • • • • • • •
+2 P P P P • P P P
+1 R N B Q K B N R
+  a b c d e f g h
+White: d4
+
+Chess Board
+8 R N B Q K B N R
+7 • P P P P P P P
+6 P • • • • • • •
+5 • • • • • • • •
+4 • • • P P • • •
+3 • • • • • • • •
+2 P P P • • P P P
+1 R N B Q K B N R
+  a b c d e f g h
+[ Info: 18997 nodes (15207 leafes) explored in 1.9330 seconds (9827.48 /s)
+Computer says: P: a6-a5
+
+Chess Board
+8 R N B Q K B N R
+7 • P P P P P P P
+6 • • • • • • • •
+5 P • • • • • • •
+4 • • • P P • • •
+3 • • • • • • • •
+2 P P P • • P P P
+1 R N B Q K B N R
+  a b c d e f g h
+White: Bc4
+
+Chess Board
+8 R N B Q K B N R
+7 • P P P P P P P
+6 • • • • • • • •
+5 P • • • • • • •
+4 • • B P P • • •
+3 • • • • • • • •
+2 P P P • • P P P
+1 R N B Q K • N R
+  a b c d e f g h
+[ Info: 26120 nodes (19907 leafes) explored in 2.8068 seconds (9305.87 /s)
+Computer says: P: d7-d5
+
+Chess Board
+8 R N B Q K B N R
+7 • P P • P P P P
+6 • • • • • • • •
+5 P • • P • • • •
+4 • • B P P • • •
+3 • • • • • • • •
+2 P P P • • P P P
+1 R N B Q K • N R
+  a b c d e f g h
+White: ed5
+
+Chess Board
+8 R N B Q K B N R
+7 • P P • P P P P
+6 • • • • • • • •
+5 P • • P • • • •
+4 • • B P • • • •
+3 • • • • • • • •
+2 P P P • • P P P
+1 R N B Q K • N R
+  a b c d e f g h
+[ Info: 108897 nodes (87825 leafes) explored in 13.6761 seconds (7962.55 /s)
+Computer says: N: b8-c6
+
+Chess Board
+8 R • B Q K B N R
+7 • P P • P P P P
+6 • • N • • • • •
+5 P • • P • • • •
+4 • • B P • • • •
+3 • • • • • • • •
+2 P P P • • P P P
+1 R N B Q K • N R
+  a b c d e f g h
+White: Qf3
+
+Chess Board
+8 R • B Q K B N R
+7 • P P • P P P P
+6 • • N • • • • •
+5 P • • P • • • •
+4 • • B P • • • •
+3 • • • • • Q • •
+2 P P P • • P P P
+1 R N B • K • N R
+  a b c d e f g h
+[ Info: 208843 nodes (171184 leafes) explored in 27.5511 seconds (7580.21 /s)
+Computer says: Q: d8-d6
+
+Chess Board
+8 R • B • K B N R
+7 • P P • P P P P
+6 • • N Q • • • •
+5 P • • P • • • •
+4 • • B P • • • •
+3 • • • • • Q • •
+2 P P P • • P P P
+1 R N B • K • N R
+  a b c d e f g h
+White: de6
+No moves!
+White: dc6
+
+Chess Board
+8 R • B • K B N R
+7 • P P • P P P P
+6 • • P Q • • • •
+5 P • • • • • • •
+4 • • B P • • • •
+3 • • • • • Q • •
+2 P P P • • P P P
+1 R N B • K • N R
+  a b c d e f g h
+[ Info: 296237 nodes (247720 leafes) explored in 42.1287 seconds (7031.71 /s)
+Computer says: K: e8-d8
+
+Chess Board
+8 R • B K • B N R
+7 • P P • P P P P
+6 • • P Q • • • •
+5 P • • • • • • •
+4 • • B P • • • •
+3 • • • • • Q • •
+2 P P P • • P P P
+1 R N B • K • N R
+  a b c d e f g h
+White: cb7
+
+Chess Board
+8 R • B K • B N R
+7 • P P • P P P P
+6 • • • Q • • • •
+5 P • • • • • • •
+4 • • B P • • • •
+3 • • • • • Q • •
+2 P P P • • P P P
+1 R N B • K • N R
+  a b c d e f g h
+[ Info: 53604 nodes (44445 leafes) explored in 8.4323 seconds (6356.97 /s)
+Computer says: Q: d6-b4
+
+Chess Board
+8 R • B K • B N R
+7 • P P • P P P P
+6 • • • • • • • •
+5 P • • • • • • •
+4 • Q B P • • • •
+3 • • • • • Q • •
+2 P P P • • P P P
+1 R N B • K • N R
+  a b c d e f g h
+Check!
+White: Qc3
+
+Chess Board
+8 R • B K • B N R
+7 • P P • P P P P
+6 • • • • • • • •
+5 P • • • • • • •
+4 • Q B P • • • •
+3 • • Q • • • • •
+2 P P P • • P P P
+1 R N B • K • N R
+  a b c d e f g h
+[ Info: 233591 nodes (189499 leafes) explored in 32.9204 seconds (7095.63 /s)
+Computer says: Q: b4-b7
+
+Chess Board
+8 R • B K • B N R
+7 • Q P • P P P P
+6 • • • • • • • •
+5 P • • • • • • •
+4 • • B P • • • •
+3 • • Q • • • • •
+2 P P P • • P P P
+1 R N B • K • N R
+  a b c d e f g h
+White: Nf3
+
+Chess Board
+8 R • B K • B N R
+7 • Q P • P P P P
+6 • • • • • • • •
+5 P • • • • • • •
+4 • • B P • • • •
+3 • • Q • • N • •
+2 P P P • • P P P
+1 R N B • K • • R
+  a b c d e f g h
+[ Info: 139880 nodes (112977 leafes) explored in 20.3530 seconds (6872.70 /s)
+Computer says: Q: b7-b6
+
+Chess Board
+8 R • B K • B N R
+7 • • P • P P P P
+6 • Q • • • • • •
+5 P • • • • • • •
+4 • • B P • • • •
+3 • • Q • • N • •
+2 P P P • • P P P
+1 R N B • K • • R
+  a b c d e f g h
+White: Kg1
+
+Chess Board
+8 R • B K • B N R
+7 • • P • P P P P
+6 • Q • • • • • •
+5 P • • • • • • •
+4 • • B P • • • •
+3 • • Q • • N • •
+2 P P P • • P P P
+1 R N B • • R K •
+  a b c d e f g h
+[ Info: 200152 nodes (159684 leafes) explored in 30.0296 seconds (6665.15 /s)
+Computer says: B: c8-a6
+
+Chess Board
+8 R • • K • B N R
+7 • • P • P P P P
+6 B Q • • • • • •
+5 P • • • • • • •
+4 • • B P • • • •
+3 • • Q • • N • •
+2 P P P • • P P P
+1 R N B • • R K •
+  a b c d e f g h
+White: Ba6
+
+Chess Board
+8 R • • K • B N R
+7 • • P • P P P P
+6 B Q • • • • • •
+5 P • • • • • • •
+4 • • • P • • • •
+3 • • Q • • N • •
+2 P P P • • P P P
+1 R N B • • R K •
+  a b c d e f g h
+[ Info: 123956 nodes (98110 leafes) explored in 19.1113 seconds (6486.01 /s)
+Computer says: P: a5-a4
+
+Chess Board
+8 R • • K • B N R
+7 • • P • P P P P
+6 B Q • • • • • •
+5 • • • • • • • •
+4 P • • P • • • •
+3 • • Q • • N • •
+2 P P P • • P P P
+1 R N B • • R K •
+  a b c d e f g h
+White: Bc4
+
+Chess Board
+8 R • • K • B N R
+7 • • P • P P P P
+6 • Q • • • • • •
+5 • • • • • • • •
+4 P • B P • • • •
+3 • • Q • • N • •
+2 P P P • • P P P
+1 R N B • • R K •
+  a b c d e f g h
+[ Info: 144936 nodes (115653 leafes) explored in 20.9973 seconds (6902.60 /s)
+Computer says: Q: b6-b7
+
+Chess Board
+8 R • • K • B N R
+7 • Q P • P P P P
+6 • • • • • • • •
+5 • • • • • • • •
+4 P • B P • • • •
+3 • • Q • • N • •
+2 P P P • • P P P
+1 R N B • • R K •
+  a b c d e f g h
+White: Ne5
+
+Chess Board
+8 R • • K • B N R
+7 • Q P • P P P P
+6 • • • • • • • •
+5 • • • • N • • •
+4 P • B P • • • •
+3 • • Q • • • • •
+2 P P P • • P P P
+1 R N B • • R K •
+  a b c d e f g h
+[ Info: 240751 nodes (193608 leafes) explored in 34.9314 seconds (6892.11 /s)
+Computer says: P: f7-f6
+
+Chess Board
+8 R • • K • B N R
+7 • Q P • P • P P
+6 • • • • • P • •
+5 • • • • N • • •
+4 P • B P • • • •
+3 • • Q • • • • •
+2 P P P • • P P P
+1 R N B • • R K •
+  a b c d e f g h
+White: Nf7
+
+Chess Board
+8 R • • K • B N R
+7 • Q P • P N P P
+6 • • • • • P • •
+5 • • • • • • • •
+4 P • B P • • • •
+3 • • Q • • • • •
+2 P P P • • P P P
+1 R N B • • R K •
+  a b c d e f g h
+Check!
+[ Info: 20736 nodes (16837 leafes) explored in 2.9207 seconds (7099.69 /s)
+Computer says: K: d8-e8
+
+Chess Board
+8 R • • • K B N R
+7 • Q P • P N P P
+6 • • • • • P • •
+5 • • • • • • • •
+4 P • B P • • • •
+3 • • Q • • • • •
+2 P P P • • P P P
+1 R N B • • R K •
+  a b c d e f g h
+White: Nh8
+
+Chess Board
+8 R • • • K B N N
+7 • Q P • P • P P
+6 • • • • • P • •
+5 • • • • • • • •
+4 P • B P • • • •
+3 • • Q • • • • •
+2 P P P • • P P P
+1 R N B • • R K •
+  a b c d e f g h
+[ Info: 188067 nodes (151950 leafes) explored in 26.4836 seconds (7101.27 /s)
+Computer says: P: e7-e6
+
+Chess Board
+8 R • • • K B N N
+7 • Q P • • • P P
+6 • • • • P P • •
+5 • • • • • • • •
+4 P • B P • • • •
+3 • • Q • • • • •
+2 P P P • • P P P
+1 R N B • • R K •
+  a b c d e f g h
+White: Be2
+
+Chess Board
+8 R • • • K B N N
+7 • Q P • • • P P
+6 • • • • P P • •
+5 • • • • • • • •
+4 P • • P • • • •
+3 • • Q • • • • •
+2 P P P • B P P P
+1 R N B • • R K •
+  a b c d e f g h
+[ Info: 172788 nodes (140854 leafes) explored in 26.1997 seconds (6595.03 /s)
+Computer says: P: e6-e5
+
+Chess Board
+8 R • • • K B N N
+7 • Q P • • • P P
+6 • • • • • P • •
+5 • • • • P • • •
+4 P • • P • • • •
+3 • • Q • • • • •
+2 P P P • B P P P
+1 R N B • • R K •
+  a b c d e f g h
+White: Bf3
+
+Chess Board
+8 R • • • K B N N
+7 • Q P • • • P P
+6 • • • • • P • •
+5 • • • • P • • •
+4 P • • P • • • •
+3 • • Q • • B • •
+2 P P P • • P P P
+1 R N B • • R K •
+  a b c d e f g h
+[ Info: 322283 nodes (266277 leafes) explored in 45.7720 seconds (7041.05 /s)
+Computer says: P: e5-e4
+
+Chess Board
+8 R • • • K B N N
+7 • Q P • • • P P
+6 • • • • • P • •
+5 • • • • • • • •
+4 P • • P P • • •
+3 • • Q • • B • •
+2 P P P • • P P P
+1 R N B • • R K •
+  a b c d e f g h
+White: Qe3
+
+Chess Board
+8 R • • • K B N N
+7 • Q P • • • P P
+6 • • • • • P • •
+5 • • • • • • • •
+4 P • • P P • • •
+3 • • • • Q B • •
+2 P P P • • P P P
+1 R N B • • R K •
+  a b c d e f g h
+[ Info: 83346 nodes (68483 leafes) explored in 11.3083 seconds (7370.36 /s)
+Computer says: Q: b7-d5
+
+Chess Board
+8 R • • • K B N N
+7 • • P • • • P P
+6 • • • • • P • •
+5 • • • Q • • • •
+4 P • • P P • • •
+3 • • • • Q B • •
+2 P P P • • P P P
+1 R N B • • R K •
+  a b c d e f g h
+White: Bf4
+No moves!
+White: Be4
+
+Chess Board
+8 R • • • K B N N
+7 • • P • • • P P
+6 • • • • • P • •
+5 • • • Q • • • •
+4 P • • P B • • •
+3 • • • • Q • • •
+2 P P P • • P P P
+1 R N B • • R K •
+  a b c d e f g h
+[ Info: 254332 nodes (212362 leafes) explored in 35.5993 seconds (7144.29 /s)
+Computer says: Q: d5-e6
+
+Chess Board
+8 R • • • K B N N
+7 • • P • • • P P
+6 • • • • Q P • •
+5 • • • • • • • •
+4 P • • P B • • •
+3 • • • • Q • • •
+2 P P P • • P P P
+1 R N B • • R K •
+  a b c d e f g h
+White: Ba8
+
+Chess Board
+8 B • • • K B N N
+7 • • P • • • P P
+6 • • • • Q P • •
+5 • • • • • • • •
+4 P • • P • • • •
+3 • • • • Q • • •
+2 P P P • • P P P
+1 R N B • • R K •
+  a b c d e f g h
+[ Info: 203134 nodes (169556 leafes) explored in 25.7074 seconds (7901.78 /s)
+Computer says: Q: e6-e7
+
+Chess Board
+8 B • • • K B N N
+7 • • P • Q • P P
+6 • • • • • P • •
+5 • • • • • • • •
+4 P • • P • • • •
+3 • • • • Q • • •
+2 P P P • • P P P
+1 R N B • • R K •
+  a b c d e f g h
+White: Qe7
+
+Chess Board
+8 B • • • K B N N
+7 • • P • Q • P P
+6 • • • • • P • •
+5 • • • • • • • •
+4 P • • P • • • •
+3 • • • • • • • •
+2 P P P • • P P P
+1 R N B • • R K •
+  a b c d e f g h
+Check!
+[ Info: 5347 nodes (3699 leafes) explored in 0.4485 seconds (11920.98 /s)
+Computer says: N: g8-e7
+
+Chess Board
+8 B • • • K B • N
+7 • • P • N • P P
+6 • • • • • P • •
+5 • • • • • • • •
+4 P • • P • • • •
+3 • • • • • • • •
+2 P P P • • P P P
+1 R N B • • R K •
+  a b c d e f g h
+White: Re1
+
+Chess Board
+8 B • • • K B • N
+7 • • P • N • P P
+6 • • • • • P • •
+5 • • • • • • • •
+4 P • • P • • • •
+3 • • • • • • • •
+2 P P P • • P P P
+1 R N B • R • K •
+  a b c d e f g h
+[ Info: 16071 nodes (12414 leafes) explored in 1.4586 seconds (11017.81 /s)
+Computer says: P: c7-c6
+
+Chess Board
+8 B • • • K B • N
+7 • • • • N • P P
+6 • • P • • P • •
+5 • • • • • • • •
+4 P • • P • • • •
+3 • • • • • • • •
+2 P P P • • P P P
+1 R N B • R • K •
+  a b c d e f g h
+White: Bc6
+
+Chess Board
+8 • • • • K B • N
+7 • • • • N • P P
+6 • • B • • P • •
+5 • • • • • • • •
+4 P • • P • • • •
+3 • • • • • • • •
+2 P P P • • P P P
+1 R N B • R • K •
+  a b c d e f g h
+Check!
+[ Info: 6101 nodes (4992 leafes) explored in 0.5461 seconds (11172.64 /s)
+Computer says: K: e8-d8
+
+Chess Board
+8 • • • K • B • N
+7 • • • • N • P P
+6 • • B • • P • •
+5 • • • • • • • •
+4 P • • P • • • •
+3 • • • • • • • •
+2 P P P • • P P P
+1 R N B • R • K •
+  a b c d e f g h
+White: Ba4
+
+Chess Board
+8 • • • K • B • N
+7 • • • • N • P P
+6 • • • • • P • •
+5 • • • • • • • •
+4 B • • P • • • •
+3 • • • • • • • •
+2 P P P • • P P P
+1 R N B • R • K •
+  a b c d e f g h
+[ Info: 31439 nodes (24975 leafes) explored in 2.8159 seconds (11164.75 /s)
+Computer says: P: f6-f5
+
+Chess Board
+8 • • • K • B • N
+7 • • • • N • P P
+6 • • • • • • • •
+5 • • • • • P • •
+4 B • • P • • • •
+3 • • • • • • • •
+2 P P P • • P P P
+1 R N B • R • K •
+  a b c d e f g h
+White: Bg5
+
+Chess Board
+8 • • • K • B • N
+7 • • • • N • P P
+6 • • • • • • • •
+5 • • • • • P B •
+4 B • • P • • • •
+3 • • • • • • • •
+2 P P P • • P P P
+1 R N • • R • K •
+  a b c d e f g h
+[ Info: 14630 nodes (11126 leafes) explored in 1.3938 seconds (10496.71 /s)
+Computer says: P: f5-f4
+
+Chess Board
+8 • • • K • B • N
+7 • • • • N • P P
+6 • • • • • • • •
+5 • • • • • • B •
+4 B • • P • P • •
+3 • • • • • • • •
+2 P P P • • P P P
+1 R N • • R • K •
+  a b c d e f g h
+White: Be7
+
+Chess Board
+8 • • • K • B • N
+7 • • • • B • P P
+6 • • • • • • • •
+5 • • • • • • • •
+4 B • • P • P • •
+3 • • • • • • • •
+2 P P P • • P P P
+1 R N • • R • K •
+  a b c d e f g h
+Check!
+[ Info: 9511 nodes (7739 leafes) explored in 0.8471 seconds (11227.75 /s)
+Computer says: B: f8-e7
+
+Chess Board
+8 • • • K • • • N
+7 • • • • B • P P
+6 • • • • • • • •
+5 • • • • • • • •
+4 B • • P • P • •
+3 • • • • • • • •
+2 P P P • • P P P
+1 R N • • R • K •
+  a b c d e f g h
+White: Nf7
+
+Chess Board
+8 • • • K • • • •
+7 • • • • B N P P
+6 • • • • • • • •
+5 • • • • • • • •
+4 B • • P • P • •
+3 • • • • • • • •
+2 P P P • • P P P
+1 R N • • R • K •
+  a b c d e f g h
+Check!
+[ Info: 2908 nodes (1831 leafes) explored in 0.3547 seconds (8197.47 /s)
+Computer says: K: d8-c8
+
+Chess Board
+8 • • K • • • • •
+7 • • • • B N P P
+6 • • • • • • • •
+5 • • • • • • • •
+4 B • • P • P • •
+3 • • • • • • • •
+2 P P P • • P P P
+1 R N • • R • K •
+  a b c d e f g h
+White: Re7
+
+Chess Board
+8 • • K • • • • •
+7 • • • • R N P P
+6 • • • • • • • •
+5 • • • • • • • •
+4 B • • P • P • •
+3 • • • • • • • •
+2 P P P • • P P P
+1 R N • • • • K •
+  a b c d e f g h
+[ Info: 3016 nodes (1534 leafes) explored in 0.2306 seconds (13076.85 /s)
+Computer says: P: g7-g6
+
+Chess Board
+8 • • K • • • • •
+7 • • • • R N • P
+6 • • • • • • P •
+5 • • • • • • • •
+4 B • • P • P • •
+3 • • • • • • • •
+2 P P P • • P P P
+1 R N • • • • K •
+  a b c d e f g h
+White: Nc3
+
+Chess Board
+8 • • K • • • • •
+7 • • • • R N • P
+6 • • • • • • P •
+5 • • • • • • • •
+4 B • • P • P • •
+3 • • N • • • • •
+2 P P P • • P P P
+1 R • • • • • K •
+  a b c d e f g h
+[ Info: 3358 nodes (1652 leafes) explored in 0.3104 seconds (10819.45 /s)
+Computer says: P: g6-g5
+
+Chess Board
+8 • • K • • • • •
+7 • • • • R N • P
+6 • • • • • • • •
+5 • • • • • • P •
+4 B • • P • P • •
+3 • • N • • • • •
+2 P P P • • P P P
+1 R • • • • • K •
+  a b c d e f g h
+White: Rd1
+
+Chess Board
+8 • • K • • • • •
+7 • • • • R N • P
+6 • • • • • • • •
+5 • • • • • • P •
+4 B • • P • P • •
+3 • • N • • • • •
+2 P P P • • P P P
+1 • • • R • • K •
+  a b c d e f g h
+[ Info: 2123 nodes (1069 leafes) explored in 0.1828 seconds (11616.12 /s)
+Computer says: P: f4-f3
+
+Chess Board
+8 • • K • • • • •
+7 • • • • R N • P
+6 • • • • • • • •
+5 • • • • • • P •
+4 B • • P • • • •
+3 • • N • • P • •
+2 P P P • • P P P
+1 • • • R • • K •
+  a b c d e f g h
+White: d5
+
+Chess Board
+8 • • K • • • • •
+7 • • • • R N • P
+6 • • • • • • • •
+5 • • • P • • P •
+4 B • • • • • • •
+3 • • N • • P • •
+2 P P P • • P P P
+1 • • • R • • K •
+  a b c d e f g h
+[ Info: 2339 nodes (1189 leafes) explored in 0.2213 seconds (10570.17 /s)
+Computer says: P: f3-g2
+
+Chess Board
+8 • • K • • • • •
+7 • • • • R N • P
+6 • • • • • • • •
+5 • • • P • • P •
+4 B • • • • • • •
+3 • • N • • • • •
+2 P P P • • P P P
+1 • • • R • • K •
+  a b c d e f g h
+White: d6
+
+Chess Board
+8 • • K • • • • •
+7 • • • • R N • P
+6 • • • P • • • •
+5 • • • • • • P •
+4 B • • • • • • •
+3 • • N • • • • •
+2 P P P • • P P P
+1 • • • R • • K •
+  a b c d e f g h
+[ Info: 1509 nodes (767 leafes) explored in 0.1501 seconds (10053.53 /s)
+Computer says: P: g5-g4
+
+Chess Board
+8 • • K • • • • •
+7 • • • • R N • P
+6 • • • P • • • •
+5 • • • • • • • •
+4 B • • • • • P •
+3 • • N • • • • •
+2 P P P • • P P P
+1 • • • R • • K •
+  a b c d e f g h
+White: d7
+
+Chess Board
+8 • • K • • • • •
+7 • • • P R N • P
+6 • • • • • • • •
+5 • • • • • • • •
+4 B • • • • • P •
+3 • • N • • • • •
+2 P P P • • P P P
+1 • • • R • • K •
+  a b c d e f g h
+Check!
+[ Info: 2997 nodes (1673 leafes) explored in 0.2904 seconds (10318.82 /s)
+Computer says: K: c8-b7
+
+Chess Board
+8 • • • • • • • •
+7 • K • P R N • P
+6 • • • • • • • •
+5 • • • • • • • •
+4 B • • • • • P •
+3 • • N • • • • •
+2 P P P • • P P P
+1 • • • R • • K •
+  a b c d e f g h
+White: d8Q
+
+Chess Board
+8 • • • Q • • • •
+7 • K • • R N • P
+6 • • • • • • • •
+5 • • • • • • • •
+4 B • • • • • P •
+3 • • N • • • • •
+2 P P P • • P P P
+1 • • • R • • K •
+  a b c d e f g h
+Check!
+[ Info: 1356 nodes (636 leafes) explored in 0.1431 seconds (9473.16 /s)
+Computer says: K: b7-a6
+
+Chess Board
+8 • • • Q • • • •
+7 • • • • R N • P
+6 K • • • • • • •
+5 • • • • • • • •
+4 B • • • • • P •
+3 • • N • • • • •
+2 P P P • • P P P
+1 • • • R • • K •
+  a b c d e f g h
+White: Qd5
+
+Chess Board
+8 • • • • • • • •
+7 • • • • R N • P
+6 K • • • • • • •
+5 • • • Q • • • •
+4 B • • • • • P •
+3 • • N • • • • •
+2 P P P • • P P P
+1 • • • R • • K •
+  a b c d e f g h
+[ Info: 1084 nodes (533 leafes) explored in 0.1468 seconds (7386.35 /s)
+Computer says: P: g4-g3
+
+Chess Board
+8 • • • • • • • •
+7 • • • • R N • P
+6 K • • • • • • •
+5 • • • Q • • • •
+4 B • • • • • • •
+3 • • N • • • P •
+2 P P P • • P P P
+1 • • • R • • K •
+  a b c d e f g h
+White: Re6
+
+Chess Board
+8 • • • • • • • •
+7 • • • • • N • P
+6 K • • • R • • •
+5 • • • Q • • • •
+4 B • • • • • • •
+3 • • N • • • P •
+2 P P P • • P P P
+1 • • • R • • K •
+  a b c d e f g h
+Check!
+[ Info: 811 nodes (369 leafes) explored in 0.0950 seconds (8534.81 /s)
+Computer says: K: a6-a7
+
+Chess Board
+8 • • • • • • • •
+7 K • • • • N • P
+6 • • • • R • • •
+5 • • • Q • • • •
+4 B • • • • • • •
+3 • • N • • • P •
+2 P P P • • P P P
+1 • • • R • • K •
+  a b c d e f g h
+White: Qd7
+
+Chess Board
+8 • • • • • • • •
+7 K • • Q • N • P
+6 • • • • R • • •
+5 • • • • • • • •
+4 B • • • • • • •
+3 • • N • • • P •
+2 P P P • • P P P
+1 • • • R • • K •
+  a b c d e f g h
+Check!
+[ Info: 1155 nodes (529 leafes) explored in 0.1463 seconds (7894.04 /s)
+Computer says: K: a7-b8
+
+Chess Board
+8 • K • • • • • •
+7 • • • Q • N • P
+6 • • • • R • • •
+5 • • • • • • • •
+4 B • • • • • • •
+3 • • N • • • P •
+2 P P P • • P P P
+1 • • • R • • K •
+  a b c d e f g h
+White: Re8
+
+Chess Board
+8 • K • • R • • •
+7 • • • Q • N • P
+6 • • • • • • • •
+5 • • • • • • • •
+4 B • • • • • • •
+3 • • N • • • P •
+2 P P P • • P P P
+1 • • • R • • K •
+  a b c d e f g h
+Checkmate!
