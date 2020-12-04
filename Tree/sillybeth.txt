@@ -1,3 +1,6 @@
+[inf, inf, inf, 10, 10] -> odd == bad
+
+Move 1:
 Chess Board
 8 R N B Q K B N R
 7 P P P P P P P P
@@ -10,6 +13,7 @@ Chess Board
   a b c d e f g h
 e4
 
+Move 2:
 Chess Board
 8 R N B Q K B N R
 7 P P P P P P P P
@@ -20,83 +24,10 @@ Chess Board
 2 P P P P • P P P
 1 R N B Q K B N R
   a b c d e f g h
-[ Info: 15740 nodes (12680 leafes) explored in 1.4827 seconds (10615.46 /s)
-Computer says: P: a7-a6
+[ Info: 15740 nodes (12680 leafes) explored in 1.4777 seconds (10651.78 /s)
+Computer says: P: a7-a6 valued with -1.0.
 
-Chess Board
-8 R N B Q K B N R
-7 • P P P P P P P
-6 P • • • • • • •
-5 • • • • • • • •
-4 • • • • P • • •
-3 • • • • • • • •
-2 P P P P • P P P
-1 R N B Q K B N R
-  a b c d e f g h
-White: undo
-
-Chess Board
-8 R N B Q K B N R
-7 P P P P P P P P
-6 • • • • • • • •
-5 • • • • • • • •
-4 • • • • • • • •
-3 • • • • • • • •
-2 P P P P P P P P
-1 R N B Q K B N R
-  a b c d e f g h
-e4
-
-Chess Board
-8 R N B Q K B N R
-7 P P P P P P P P
-6 • • • • • • • •
-5 • • • • • • • •
-4 • • • • P • • •
-3 • • • • • • • •
-2 P P P P • P P P
-1 R N B Q K B N R
-  a b c d e f g h
-[ Info: 15740 nodes (12680 leafes) explored in 1.4540 seconds (10825.54 /s)
-Computer says: P: a7-a6
-
-Chess Board
-8 R N B Q K B N R
-7 • P P P P P P P
-6 P • • • • • • •
-5 • • • • • • • •
-4 • • • • P • • •
-3 • • • • • • • •
-2 P P P P • P P P
-1 R N B Q K B N R
-  a b c d e f g h
-White: undo
-
-Chess Board
-8 R N B Q K B N R
-7 P P P P P P P P
-6 • • • • • • • •
-5 • • • • • • • •
-4 • • • • • • • •
-3 • • • • • • • •
-2 P P P P P P P P
-1 R N B Q K B N R
-  a b c d e f g h
-White: e4
-
-Chess Board
-8 R N B Q K B N R
-7 P P P P P P P P
-6 • • • • • • • •
-5 • • • • • • • •
-4 • • • • P • • •
-3 • • • • • • • •
-2 P P P P • P P P
-1 R N B Q K B N R
-  a b c d e f g h
-[ Info: 15740 nodes (12680 leafes) explored in 1.4616 seconds (10769.20 /s)
-Computer says: P: a7-a6
-
+Move 3:
 Chess Board
 8 R N B Q K B N R
 7 • P P P P P P P
@@ -109,6 +40,7 @@ Chess Board
   a b c d e f g h
 White: d4
 
+Move 4:
 Chess Board
 8 R N B Q K B N R
 7 • P P P P P P P
@@ -119,9 +51,10 @@ Chess Board
 2 P P P • • P P P
 1 R N B Q K B N R
   a b c d e f g h
-[ Info: 18997 nodes (15207 leafes) explored in 1.9330 seconds (9827.48 /s)
-Computer says: P: a6-a5
+[ Info: 18997 nodes (15207 leafes) explored in 2.1597 seconds (8796.31 /s)
+Computer says: P: a6-a5 valued with -1.0.
 
+Move 5:
 Chess Board
 8 R N B Q K B N R
 7 • P P P P P P P
@@ -134,6 +67,7 @@ Chess Board
   a b c d e f g h
 White: Bc4
 
+Move 6:
 Chess Board
 8 R N B Q K B N R
 7 • P P P P P P P
@@ -144,9 +78,10 @@ Chess Board
 2 P P P • • P P P
 1 R N B Q K • N R
   a b c d e f g h
-[ Info: 26120 nodes (19907 leafes) explored in 2.8068 seconds (9305.87 /s)
-Computer says: P: d7-d5
+[ Info: 26120 nodes (19907 leafes) explored in 3.2559 seconds (8022.44 /s)
+Computer says: P: d7-d5 valued with -3.0.
 
+Move 7:
 Chess Board
 8 R N B Q K B N R
 7 • P P • P P P P
@@ -159,6 +94,7 @@ Chess Board
   a b c d e f g h
 White: ed5
 
+Move 8:
 Chess Board
 8 R N B Q K B N R
 7 • P P • P P P P
@@ -169,9 +105,10 @@ Chess Board
 2 P P P • • P P P
 1 R N B Q K • N R
   a b c d e f g h
-[ Info: 108897 nodes (87825 leafes) explored in 13.6761 seconds (7962.55 /s)
-Computer says: N: b8-c6
+[ Info: 108897 nodes (87825 leafes) explored in 14.1510 seconds (7695.36 /s)
+Computer says: N: b8-c6 valued with -3.0.
 
+Move 9:
 Chess Board
 8 R • B Q K B N R
 7 • P P • P P P P
@@ -184,6 +121,7 @@ Chess Board
   a b c d e f g h
 White: Qf3
 
+Move 10:
 Chess Board
 8 R • B Q K B N R
 7 • P P • P P P P
@@ -194,9 +132,10 @@ Chess Board
 2 P P P • • P P P
 1 R N B • K • N R
   a b c d e f g h
-[ Info: 208843 nodes (171184 leafes) explored in 27.5511 seconds (7580.21 /s)
-Computer says: Q: d8-d6
+[ Info: 208843 nodes (171184 leafes) explored in 29.8204 seconds (7003.37 /s)
+Computer says: Q: d8-d6 valued with -6.0.
 
+Move 11:
 Chess Board
 8 R • B • K B N R
 7 • P P • P P P P
@@ -207,10 +146,9 @@ Chess Board
 2 P P P • • P P P
 1 R N B • K • N R
   a b c d e f g h
-White: de6
-No moves!
 White: dc6
 
+Move 12:
 Chess Board
 8 R • B • K B N R
 7 • P P • P P P P
@@ -221,9 +159,10 @@ Chess Board
 2 P P P • • P P P
 1 R N B • K • N R
   a b c d e f g h
-[ Info: 296237 nodes (247720 leafes) explored in 42.1287 seconds (7031.71 /s)
-Computer says: K: e8-d8
+[ Info: 296237 nodes (247720 leafes) explored in 44.4133 seconds (6670.01 /s)
+Computer says: K: e8-d8 valued with -4.0.
 
+Move 13:
 Chess Board
 8 R • B K • B N R
 7 • P P • P P P P
@@ -236,6 +175,7 @@ Chess Board
   a b c d e f g h
 White: cb7
 
+Move 14:
 Chess Board
 8 R • B K • B N R
 7 • P P • P P P P
@@ -246,9 +186,10 @@ Chess Board
 2 P P P • • P P P
 1 R N B • K • N R
   a b c d e f g h
-[ Info: 53604 nodes (44445 leafes) explored in 8.4323 seconds (6356.97 /s)
-Computer says: Q: d6-b4
+[ Info: 53604 nodes (44445 leafes) explored in 9.4679 seconds (5661.63 /s)
+Computer says: Q: d6-b4 valued with -5.0.
 
+Move 15:
 Chess Board
 8 R • B K • B N R
 7 • P P • P P P P
@@ -262,6 +203,7 @@ Chess Board
 Check!
 White: Qc3
 
+Move 16:
 Chess Board
 8 R • B K • B N R
 7 • P P • P P P P
@@ -272,9 +214,10 @@ Chess Board
 2 P P P • • P P P
 1 R N B • K • N R
   a b c d e f g h
-[ Info: 233591 nodes (189499 leafes) explored in 32.9204 seconds (7095.63 /s)
-Computer says: Q: b4-b7
+[ Info: 233591 nodes (189499 leafes) explored in 34.0804 seconds (6854.12 /s)
+Computer says: Q: b4-b7 valued with -2.0.
 
+Move 17:
 Chess Board
 8 R • B K • B N R
 7 • Q P • P P P P
@@ -287,6 +230,7 @@ Chess Board
   a b c d e f g h
 White: Nf3
 
+Move 18:
 Chess Board
 8 R • B K • B N R
 7 • Q P • P P P P
@@ -297,9 +241,10 @@ Chess Board
 2 P P P • • P P P
 1 R N B • K • • R
   a b c d e f g h
-[ Info: 139880 nodes (112977 leafes) explored in 20.3530 seconds (6872.70 /s)
-Computer says: Q: b7-b6
+[ Info: 139880 nodes (112977 leafes) explored in 21.0300 seconds (6651.46 /s)
+Computer says: Q: b7-b6 valued with -4.0.
 
+Move 19:
 Chess Board
 8 R • B K • B N R
 7 • • P • P P P P
@@ -312,6 +257,7 @@ Chess Board
   a b c d e f g h
 White: Kg1
 
+Move 20:
 Chess Board
 8 R • B K • B N R
 7 • • P • P P P P
@@ -322,9 +268,10 @@ Chess Board
 2 P P P • • P P P
 1 R N B • • R K •
   a b c d e f g h
-[ Info: 200152 nodes (159684 leafes) explored in 30.0296 seconds (6665.15 /s)
-Computer says: B: c8-a6
+[ Info: 200152 nodes (159684 leafes) explored in 31.2610 seconds (6402.61 /s)
+Computer says: B: c8-a6 valued with -2.0.
 
+Move 21:
 Chess Board
 8 R • • K • B N R
 7 • • P • P P P P
@@ -337,6 +284,7 @@ Chess Board
   a b c d e f g h
 White: Ba6
 
+Move 22:
 Chess Board
 8 R • • K • B N R
 7 • • P • P P P P
@@ -347,9 +295,10 @@ Chess Board
 2 P P P • • P P P
 1 R N B • • R K •
   a b c d e f g h
-[ Info: 123956 nodes (98110 leafes) explored in 19.1113 seconds (6486.01 /s)
-Computer says: P: a5-a4
+[ Info: 123956 nodes (98110 leafes) explored in 20.4369 seconds (6065.31 /s)
+Computer says: P: a5-a4 valued with -1.0.
 
+Move 23:
 Chess Board
 8 R • • K • B N R
 7 • • P • P P P P
@@ -362,6 +311,7 @@ Chess Board
   a b c d e f g h
 White: Bc4
 
+Move 24:
 Chess Board
 8 R • • K • B N R
 7 • • P • P P P P
@@ -372,9 +322,10 @@ Chess Board
 2 P P P • • P P P
 1 R N B • • R K •
   a b c d e f g h
-[ Info: 144936 nodes (115653 leafes) explored in 20.9973 seconds (6902.60 /s)
-Computer says: Q: b6-b7
+[ Info: 144936 nodes (115653 leafes) explored in 23.2136 seconds (6243.57 /s)
+Computer says: Q: b6-b7 valued with 3.0.
 
+Move 25:
 Chess Board
 8 R • • K • B N R
 7 • Q P • P P P P
@@ -387,6 +338,7 @@ Chess Board
   a b c d e f g h
 White: Ne5
 
+Move 26:
 Chess Board
 8 R • • K • B N R
 7 • Q P • P P P P
@@ -397,9 +349,10 @@ Chess Board
 2 P P P • • P P P
 1 R N B • • R K •
   a b c d e f g h
-[ Info: 240751 nodes (193608 leafes) explored in 34.9314 seconds (6892.11 /s)
-Computer says: P: f7-f6
+[ Info: 240751 nodes (193608 leafes) explored in 35.9349 seconds (6699.64 /s)
+Computer says: P: f7-f6 valued with 6.0.
 
+Move 27:
 Chess Board
 8 R • • K • B N R
 7 • Q P • P • P P
@@ -412,6 +365,7 @@ Chess Board
   a b c d e f g h
 White: Nf7
 
+Move 28:
 Chess Board
 8 R • • K • B N R
 7 • Q P • P N P P
@@ -423,9 +377,10 @@ Chess Board
 1 R N B • • R K •
   a b c d e f g h
 Check!
-[ Info: 20736 nodes (16837 leafes) explored in 2.9207 seconds (7099.69 /s)
-Computer says: K: d8-e8
+[ Info: 20736 nodes (16837 leafes) explored in 3.2899 seconds (6302.98 /s)
+Computer says: K: d8-e8 valued with 4.0.
 
+Move 29:
 Chess Board
 8 R • • • K B N R
 7 • Q P • P N P P
@@ -438,6 +393,7 @@ Chess Board
   a b c d e f g h
 White: Nh8
 
+Move 30:
 Chess Board
 8 R • • • K B N N
 7 • Q P • P • P P
@@ -448,9 +404,10 @@ Chess Board
 2 P P P • • P P P
 1 R N B • • R K •
   a b c d e f g h
-[ Info: 188067 nodes (151950 leafes) explored in 26.4836 seconds (7101.27 /s)
-Computer says: P: e7-e6
+[ Info: 188067 nodes (151950 leafes) explored in 27.2375 seconds (6904.71 /s)
+Computer says: P: e7-e6 valued with 9.0.
 
+Move 31:
 Chess Board
 8 R • • • K B N N
 7 • Q P • • • P P
@@ -463,6 +420,7 @@ Chess Board
   a b c d e f g h
 White: Be2
 
+Move 32:
 Chess Board
 8 R • • • K B N N
 7 • Q P • • • P P
@@ -473,9 +431,10 @@ Chess Board
 2 P P P • B P P P
 1 R N B • • R K •
   a b c d e f g h
-[ Info: 172788 nodes (140854 leafes) explored in 26.1997 seconds (6595.03 /s)
-Computer says: P: e6-e5
+[ Info: 172788 nodes (140854 leafes) explored in 27.3008 seconds (6329.04 /s)
+Computer says: P: e6-e5 valued with 9.0.
 
+Move 33:
 Chess Board
 8 R • • • K B N N
 7 • Q P • • • P P
@@ -488,6 +447,7 @@ Chess Board
   a b c d e f g h
 White: Bf3
 
+Move 34:
 Chess Board
 8 R • • • K B N N
 7 • Q P • • • P P
@@ -498,9 +458,10 @@ Chess Board
 2 P P P • • P P P
 1 R N B • • R K •
   a b c d e f g h
-[ Info: 322283 nodes (266277 leafes) explored in 45.7720 seconds (7041.05 /s)
-Computer says: P: e5-e4
+[ Info: 322283 nodes (266277 leafes) explored in 48.8902 seconds (6591.98 /s)
+Computer says: P: e5-e4 valued with 9.0.
 
+Move 35:
 Chess Board
 8 R • • • K B N N
 7 • Q P • • • P P
@@ -513,6 +474,7 @@ Chess Board
   a b c d e f g h
 White: Qe3
 
+Move 36:
 Chess Board
 8 R • • • K B N N
 7 • Q P • • • P P
@@ -523,9 +485,10 @@ Chess Board
 2 P P P • • P P P
 1 R N B • • R K •
   a b c d e f g h
-[ Info: 83346 nodes (68483 leafes) explored in 11.3083 seconds (7370.36 /s)
-Computer says: Q: b7-d5
+[ Info: 83346 nodes (68483 leafes) explored in 11.9181 seconds (6993.20 /s)
+Computer says: Q: b7-d5 valued with 9.0.
 
+Move 37:
 Chess Board
 8 R • • • K B N N
 7 • • P • • • P P
@@ -536,10 +499,9 @@ Chess Board
 2 P P P • • P P P
 1 R N B • • R K •
   a b c d e f g h
-White: Bf4
-No moves!
 White: Be4
 
+Move 38:
 Chess Board
 8 R • • • K B N N
 7 • • P • • • P P
@@ -550,9 +512,10 @@ Chess Board
 2 P P P • • P P P
 1 R N B • • R K •
   a b c d e f g h
-[ Info: 254332 nodes (212362 leafes) explored in 35.5993 seconds (7144.29 /s)
-Computer says: Q: d5-e6
+[ Info: 254332 nodes (212362 leafes) explored in 36.5673 seconds (6955.18 /s)
+Computer says: Q: d5-e6 valued with 9.0.
 
+Move 39:
 Chess Board
 8 R • • • K B N N
 7 • • P • • • P P
@@ -565,6 +528,7 @@ Chess Board
   a b c d e f g h
 White: Ba8
 
+Move 40:
 Chess Board
 8 B • • • K B N N
 7 • • P • • • P P
@@ -575,9 +539,10 @@ Chess Board
 2 P P P • • P P P
 1 R N B • • R K •
   a b c d e f g h
-[ Info: 203134 nodes (169556 leafes) explored in 25.7074 seconds (7901.78 /s)
-Computer says: Q: e6-e7
+[ Info: 203134 nodes (169556 leafes) explored in 26.8967 seconds (7552.36 /s)
+Computer says: Q: e6-e7 valued with 18.0.
 
+Move 41:
 Chess Board
 8 B • • • K B N N
 7 • • P • Q • P P
@@ -590,6 +555,7 @@ Chess Board
   a b c d e f g h
 White: Qe7
 
+Move 42:
 Chess Board
 8 B • • • K B N N
 7 • • P • Q • P P
@@ -601,9 +567,10 @@ Chess Board
 1 R N B • • R K •
   a b c d e f g h
 Check!
-[ Info: 5347 nodes (3699 leafes) explored in 0.4485 seconds (11920.98 /s)
-Computer says: N: g8-e7
+[ Info: 5347 nodes (3699 leafes) explored in 0.4506 seconds (11865.71 /s)
+Computer says: N: g8-e7 valued with 17.0.
 
+Move 43:
 Chess Board
 8 B • • • K B • N
 7 • • P • N • P P
@@ -616,6 +583,7 @@ Chess Board
   a b c d e f g h
 White: Re1
 
+Move 44:
 Chess Board
 8 B • • • K B • N
 7 • • P • N • P P
@@ -626,9 +594,10 @@ Chess Board
 2 P P P • • P P P
 1 R N B • R • K •
   a b c d e f g h
-[ Info: 16071 nodes (12414 leafes) explored in 1.4586 seconds (11017.81 /s)
-Computer says: P: c7-c6
+[ Info: 16071 nodes (12414 leafes) explored in 1.6181 seconds (9932.32 /s)
+Computer says: P: c7-c6 valued with 17.0.
 
+Move 45:
 Chess Board
 8 B • • • K B • N
 7 • • • • N • P P
@@ -641,6 +610,7 @@ Chess Board
   a b c d e f g h
 White: Bc6
 
+Move 46:
 Chess Board
 8 • • • • K B • N
 7 • • • • N • P P
@@ -652,9 +622,10 @@ Chess Board
 1 R N B • R • K •
   a b c d e f g h
 Check!
-[ Info: 6101 nodes (4992 leafes) explored in 0.5461 seconds (11172.64 /s)
-Computer says: K: e8-d8
+[ Info: 6101 nodes (4992 leafes) explored in 0.5285 seconds (11544.77 /s)
+Computer says: K: e8-d8 valued with 17.0.
 
+Move 47:
 Chess Board
 8 • • • K • B • N
 7 • • • • N • P P
@@ -667,6 +638,7 @@ Chess Board
   a b c d e f g h
 White: Ba4
 
+Move 48:
 Chess Board
 8 • • • K • B • N
 7 • • • • N • P P
@@ -677,9 +649,10 @@ Chess Board
 2 P P P • • P P P
 1 R N B • R • K •
   a b c d e f g h
-[ Info: 31439 nodes (24975 leafes) explored in 2.8159 seconds (11164.75 /s)
-Computer says: P: f6-f5
+[ Info: 31439 nodes (24975 leafes) explored in 3.0301 seconds (10375.63 /s)
+Computer says: P: f6-f5 valued with 20.0.
 
+Move 49:
 Chess Board
 8 • • • K • B • N
 7 • • • • N • P P
@@ -692,6 +665,7 @@ Chess Board
   a b c d e f g h
 White: Bg5
 
+Move 50:
 Chess Board
 8 • • • K • B • N
 7 • • • • N • P P
@@ -702,9 +676,10 @@ Chess Board
 2 P P P • • P P P
 1 R N • • R • K •
   a b c d e f g h
-[ Info: 14630 nodes (11126 leafes) explored in 1.3938 seconds (10496.71 /s)
-Computer says: P: f5-f4
+[ Info: 14630 nodes (11126 leafes) explored in 1.4214 seconds (10292.69 /s)
+Computer says: P: f5-f4 valued with 20.0.
 
+Move 51:
 Chess Board
 8 • • • K • B • N
 7 • • • • N • P P
@@ -717,6 +692,7 @@ Chess Board
   a b c d e f g h
 White: Be7
 
+Move 52:
 Chess Board
 8 • • • K • B • N
 7 • • • • B • P P
@@ -728,9 +704,10 @@ Chess Board
 1 R N • • R • K •
   a b c d e f g h
 Check!
-[ Info: 9511 nodes (7739 leafes) explored in 0.8471 seconds (11227.75 /s)
-Computer says: B: f8-e7
+[ Info: 9511 nodes (7739 leafes) explored in 0.8511 seconds (11175.00 /s)
+Computer says: B: f8-e7 valued with 20.0.
 
+Move 53:
 Chess Board
 8 • • • K • • • N
 7 • • • • B • P P
@@ -743,6 +720,7 @@ Chess Board
   a b c d e f g h
 White: Nf7
 
+Move 54:
 Chess Board
 8 • • • K • • • •
 7 • • • • B N P P
@@ -754,9 +732,10 @@ Chess Board
 1 R N • • R • K •
   a b c d e f g h
 Check!
-[ Info: 2908 nodes (1831 leafes) explored in 0.3547 seconds (8197.47 /s)
-Computer says: K: d8-c8
+[ Info: 2908 nodes (1831 leafes) explored in 0.3214 seconds (9048.26 /s)
+Computer says: K: d8-c8 valued with 22.0.
 
+Move 55:
 Chess Board
 8 • • K • • • • •
 7 • • • • B N P P
@@ -769,6 +748,7 @@ Chess Board
   a b c d e f g h
 White: Re7
 
+Move 56:
 Chess Board
 8 • • K • • • • •
 7 • • • • R N P P
@@ -779,9 +759,10 @@ Chess Board
 2 P P P • • P P P
 1 R N • • • • K •
   a b c d e f g h
-[ Info: 3016 nodes (1534 leafes) explored in 0.2306 seconds (13076.85 /s)
-Computer says: P: g7-g6
+[ Info: 3016 nodes (1534 leafes) explored in 0.2581 seconds (11685.05 /s)
+Computer says: P: g7-g6 valued with 23.0.
 
+Move 57:
 Chess Board
 8 • • K • • • • •
 7 • • • • R N • P
@@ -794,6 +775,7 @@ Chess Board
   a b c d e f g h
 White: Nc3
 
+Move 58:
 Chess Board
 8 • • K • • • • •
 7 • • • • R N • P
@@ -804,9 +786,10 @@ Chess Board
 2 P P P • • P P P
 1 R • • • • • K •
   a b c d e f g h
-[ Info: 3358 nodes (1652 leafes) explored in 0.3104 seconds (10819.45 /s)
-Computer says: P: g6-g5
+[ Info: 3358 nodes (1652 leafes) explored in 0.2897 seconds (11591.11 /s)
+Computer says: P: g6-g5 valued with 23.0.
 
+Move 59:
 Chess Board
 8 • • K • • • • •
 7 • • • • R N • P
@@ -819,6 +802,7 @@ Chess Board
   a b c d e f g h
 White: Rd1
 
+Move 60:
 Chess Board
 8 • • K • • • • •
 7 • • • • R N • P
@@ -829,9 +813,10 @@ Chess Board
 2 P P P • • P P P
 1 • • • R • • K •
   a b c d e f g h
-[ Info: 2123 nodes (1069 leafes) explored in 0.1828 seconds (11616.12 /s)
-Computer says: P: f4-f3
+[ Info: 2123 nodes (1069 leafes) explored in 0.2036 seconds (10426.33 /s)
+Computer says: P: f4-f3 valued with 23.0.
 
+Move 61:
 Chess Board
 8 • • K • • • • •
 7 • • • • R N • P
@@ -844,6 +829,7 @@ Chess Board
   a b c d e f g h
 White: d5
 
+Move 62:
 Chess Board
 8 • • K • • • • •
 7 • • • • R N • P
@@ -854,9 +840,10 @@ Chess Board
 2 P P P • • P P P
 1 • • • R • • K •
   a b c d e f g h
-[ Info: 2339 nodes (1189 leafes) explored in 0.2213 seconds (10570.17 /s)
-Computer says: P: f3-g2
+[ Info: 2339 nodes (1189 leafes) explored in 0.2226 seconds (10505.31 /s)
+Computer says: P: f3-g2 valued with 23.0.
 
+Move 63:
 Chess Board
 8 • • K • • • • •
 7 • • • • R N • P
@@ -869,6 +856,7 @@ Chess Board
   a b c d e f g h
 White: d6
 
+Move 64:
 Chess Board
 8 • • K • • • • •
 7 • • • • R N • P
@@ -879,9 +867,10 @@ Chess Board
 2 P P P • • P P P
 1 • • • R • • K •
   a b c d e f g h
-[ Info: 1509 nodes (767 leafes) explored in 0.1501 seconds (10053.53 /s)
-Computer says: P: g5-g4
+[ Info: 1509 nodes (767 leafes) explored in 0.1321 seconds (11418.88 /s)
+Computer says: P: g5-g4 valued with 23.0.
 
+Move 65:
 Chess Board
 8 • • K • • • • •
 7 • • • • R N • P
@@ -894,6 +883,7 @@ Chess Board
   a b c d e f g h
 White: d7
 
+Move 66:
 Chess Board
 8 • • K • • • • •
 7 • • • P R N • P
@@ -905,9 +895,10 @@ Chess Board
 1 • • • R • • K •
   a b c d e f g h
 Check!
-[ Info: 2997 nodes (1673 leafes) explored in 0.2904 seconds (10318.82 /s)
-Computer says: K: c8-b7
+[ Info: 2997 nodes (1673 leafes) explored in 0.3198 seconds (9370.84 /s)
+Computer says: K: c8-b7 valued with 1000.0.
 
+Move 67:
 Chess Board
 8 • • • • • • • •
 7 • K • P R N • P
@@ -920,6 +911,7 @@ Chess Board
   a b c d e f g h
 White: d8Q
 
+Move 68:
 Chess Board
 8 • • • Q • • • •
 7 • K • • R N • P
@@ -931,9 +923,10 @@ Chess Board
 1 • • • R • • K •
   a b c d e f g h
 Check!
-[ Info: 1356 nodes (636 leafes) explored in 0.1431 seconds (9473.16 /s)
-Computer says: K: b7-a6
+[ Info: 1356 nodes (636 leafes) explored in 0.1475 seconds (9194.46 /s)
+Computer says: K: b7-a6 valued with 1000.0.
 
+Move 69:
 Chess Board
 8 • • • Q • • • •
 7 • • • • R N • P
@@ -946,6 +939,7 @@ Chess Board
   a b c d e f g h
 White: Qd5
 
+Move 70:
 Chess Board
 8 • • • • • • • •
 7 • • • • R N • P
@@ -956,9 +950,10 @@ Chess Board
 2 P P P • • P P P
 1 • • • R • • K •
   a b c d e f g h
-[ Info: 1084 nodes (533 leafes) explored in 0.1468 seconds (7386.35 /s)
-Computer says: P: g4-g3
+[ Info: 1084 nodes (533 leafes) explored in 0.1542 seconds (7030.03 /s)
+Computer says: P: g4-g3 valued with 1000.0.
 
+Move 71:
 Chess Board
 8 • • • • • • • •
 7 • • • • R N • P
@@ -971,6 +966,7 @@ Chess Board
   a b c d e f g h
 White: Re6
 
+Move 72:
 Chess Board
 8 • • • • • • • •
 7 • • • • • N • P
@@ -982,9 +978,10 @@ Chess Board
 1 • • • R • • K •
   a b c d e f g h
 Check!
-[ Info: 811 nodes (369 leafes) explored in 0.0950 seconds (8534.81 /s)
-Computer says: K: a6-a7
+[ Info: 811 nodes (369 leafes) explored in 0.1020 seconds (7952.88 /s)
+Computer says: K: a6-a7 valued with 32.0.
 
+Move 73:
 Chess Board
 8 • • • • • • • •
 7 K • • • • N • P
@@ -997,6 +994,7 @@ Chess Board
   a b c d e f g h
 White: Qd7
 
+Move 74:
 Chess Board
 8 • • • • • • • •
 7 K • • Q • N • P
@@ -1008,9 +1006,10 @@ Chess Board
 1 • • • R • • K •
   a b c d e f g h
 Check!
-[ Info: 1155 nodes (529 leafes) explored in 0.1463 seconds (7894.04 /s)
-Computer says: K: a7-b8
+[ Info: 1155 nodes (529 leafes) explored in 0.1256 seconds (9195.71 /s)
+Computer says: K: a7-b8 valued with 1000.0.
 
+Move 75:
 Chess Board
 8 • K • • • • • •
 7 • • • Q • N • P
@@ -1023,6 +1022,7 @@ Chess Board
   a b c d e f g h
 White: Re8
 
+Move 76:
 Chess Board
 8 • K • • R • • •
 7 • • • Q • N • P

@@ -419,7 +419,7 @@ function user_input(board, white)
         catch e
             if e isa InterruptException
                 println("\nGame aborted!")
-                return
+                return "abort", false, false
             elseif e isa AssertionError
                 println(e.msg)
             else
@@ -433,9 +433,9 @@ end
 
 function play_game(board = Board(), white = true; white_player=user_input, black_player=user_input)
     game_history = [(deepcopy(board), white, (0x0, 0x0, 0x0))] # current board, white to move, last move
-    move = 1
+    n_ply = 1
     while true
-        println("Move: $move\n")
+        println("\nPly $n_ply:")
         #print("\u1b[10F")
         print_board(board)
         println()
@@ -459,10 +459,15 @@ function play_game(board = Board(), white = true; white_player=user_input, black
             board, white, move = game_history[end]
             continue
         end
+        if p == "abort"
+            break
+        end
 
         move!(board, white, p, rf1, rf2)
         white = !white
         push!(game_history, (deepcopy(board), white, (p, rf1, rf2)))
+
+        n_ply += 1
     end
     return game_history
 end
