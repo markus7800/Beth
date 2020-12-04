@@ -44,7 +44,8 @@ using Test
 
     @test (PAWNTOQUEEN, symbol("c7"), symbol("c8")) in get_moves(board, true)
     @test (PAWNTOKNIGHT, symbol("g2"), symbol("g1")) in get_moves(board, false)
-    @test !((PAWN, symbol("g2"), symbol("g1")) in get_moves(board, false))
+    @test !((PAWN, symbol("g2"), symbol("g1")) in get_moves(board, true))
+    @test !((PAWN, symbol("c7"), symbol("c8")) in get_moves(board, false))
 
     move!(board, true, 'q', "c7", "c8")
     move!(board, false, 'n', "g2", "g1")

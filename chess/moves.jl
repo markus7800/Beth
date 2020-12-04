@@ -137,13 +137,11 @@ function pawn_moves(board, white, rank, file)
         end
     end
 
-    # promotions # TODO
-    if white && rank == 7 && !any(board[8, file, [WHITE, BLACK]])
-        push!(moves, (PAWNTOQUEEN, symbol(rank, file), symbol(8, file)))
-        push!(moves, (PAWNTOKNIGHT, symbol(rank, file), symbol(8, file)))
-    elseif !white && rank == 2 && !any(board[1, file, [WHITE, BLACK]])
-        push!(moves, (PAWNTOQUEEN, symbol(rank, file), symbol(1, file)))
-        push!(moves, (PAWNTOKNIGHT, symbol(rank, file), symbol(1, file)))
+    # promotions
+    if (white && rank == 7) || (!white && rank == 2)
+        knight_promo = map(m-> (PAWNTOKNIGHT, m[2], m[3]), moves)
+        queen_promo = map(m-> (PAWNTOQUEEN, m[2], m[3]), moves)
+        moves = vcat(knight_promo, queen_promo)
     end
 
     return moves
