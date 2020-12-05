@@ -360,55 +360,6 @@ end
 
 
 
-function start_game()
-    board = Board()
-    white = true
-
-    while true
-        println()
-        #print("\u1b[10F")
-        print_board(board)
-        println()
-
-        n_moves = length(get_moves(board, white))
-        check = is_check(board, white ? WHITE : BLACK)
-        done = n_moves == 0
-        !done && check && println("Check!")
-        done && check && println("Checkmate!")
-        done && !check && println("Stalemate!")
-        done && break
-
-        got_move = false
-        p, rf1, rf2 = (nothing, nothing, nothing)
-        while !got_move
-            try
-                print(white ? "White: " : "Black: ")
-                s = readline()
-                if occursin("highlight ", s)
-                    print_board(board, highlight=s[11:end], white=white)
-                    println()
-                    continue
-                end
-
-                p, rf1, rf2 = short_to_long(board, white, s)
-                got_move = true
-            catch e
-                if e isa InterruptException
-                    println("\nGame aborted!")
-                    return
-                elseif e isa AssertionError
-                    println(e.msg)
-                else
-                    println(e)
-                end
-            end
-        end
-
-        move!(board, white, p, rf1, rf2)
-        white = !white
-    end
-end
-
 
 function user_input(board, white)
     got_move = false
@@ -447,7 +398,7 @@ function play_game(board = Board(), white = true; white_player=user_input, black
     game_history = [(deepcopy(board), white, (0x0, 0x0, 0x0))] # current board, white to move, last move
     n_ply = 1
     while true
-        println("\nPly $n_ply:")
+        println("\nMove $((n_ply+1) ÷ 2), Ply $n_ply:")
         #print("\u1b[10F")
         print_board(board)
         println()
@@ -469,6 +420,7 @@ function play_game(board = Board(), white = true; white_player=user_input, black
             pop!(game_history) # opponent move
             pop!(game_history) # my move
             board, white, move = game_history[end]
+            n_ply -= 2
             continue
         end
         if p == "abort"

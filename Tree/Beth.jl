@@ -116,32 +116,20 @@ function minimax(beth::Beth, node::Node, depth::Int, α::Float64, β::Float64, w
     # proved to be faster in BFS
     _white, = restore_board_position(beth, node)
     @assert _white == white
-    # node.visits += 1
-    position_hash = hash(beth._board, white)
-    # print_board(beth._board, white=white)
-    # println()
-    # println("Hash: $position_hash")
-    # println("visits: $(node.visits)")
-    # ps = get_parents(node)
-    # println("tree: ", map(p -> string(p.move), ps), ", ", node.move)
-
-    if beth.use_tt
-        value = get!(beth.tt, position_hash)
-        if !isnan(value)
-            node.score = value
-            return value
-        end
-    end
+    # position_hash = hash(beth._board, white)
+    #
+    # if beth.use_tt
+    #     value = get!(beth.tt, position_hash)
+    #     if !isnan(value)
+    #         node.score = value
+    #         return value
+    #     end
+    # end
 
     if depth == 0
         beth.n_leafes += 1
         score, = beth.value_heuristic(beth._board, white)
         node.score = score
-
-        if beth.use_tt
-            set!(beth.tt, position_hash, score)
-        end
-
         return score
     end
 
@@ -160,11 +148,6 @@ function minimax(beth::Beth, node::Node, depth::Int, α::Float64, β::Float64, w
             end
         end
         node.score = score
-
-        if beth.use_tt
-            set!(beth.tt, position_hash, score)
-        end
-
         return score
     end
 
@@ -184,11 +167,6 @@ function minimax(beth::Beth, node::Node, depth::Int, α::Float64, β::Float64, w
             α ≥ β && break ## β cutoff
         end
         node.score = value
-
-        if beth.use_tt
-            set!(beth.tt, position_hash, value)
-        end
-
         return value
     else
         value = Inf
@@ -203,11 +181,6 @@ function minimax(beth::Beth, node::Node, depth::Int, α::Float64, β::Float64, w
             β ≤ α && break # α cutoff
         end
         node.score = value
-
-        if beth.use_tt
-            set!(beth.tt, position_hash, value)
-        end
-
         return value
     end
 end
@@ -222,8 +195,14 @@ print_puzzle(pz)
 bfs = reverse([Inf,Inf,Inf,Inf,Inf])
 depth = 5
 b = Beth(value_heuristic=simple_piece_count, rank_heuristic=rank_moves, depth=depth, bfs=bfs, use_tt=false)
-
 root = search(b, board=pz.board, white=pz.white_to_move)
+
+b = Beth(value_heuristic=simple_piece_count, rank_heuristic=rank_moves, depth=depth, bfs=bfs, use_tt=true)
+root2 = search(b, board=pz.board, white=pz.white_to_move)
+
+print_tree(root, white=pz.white_to_move, max_depth=1, has_to_have_children=false)
+print_tree(root2, white=pz.white_to_move, max_depth=1, has_to_have_children=false)
+
 
 print_tree(root, has_to_have_children=false, expand_best=1, white=pz.white_to_move)
 
@@ -232,8 +211,8 @@ print_tree(root, white=pz.white_to_move, max_depth=1, has_to_have_children=false
 string(b(pz.board, pz.white_to_move))
 
 bfs = reverse([Inf,Inf,Inf,Inf])
-depth = 5
-b = Beth(value_heuristic=simple_piece_count, rank_heuristic=rank_moves, depth=depth, bfs=bfs)
+depth = 4
+b = Beth(value_heuristic=simple_piece_count, rank_heuristic=rank_moves, depth=depth, bfs=bfs, use_tt=false)
 game_history = play_game(black_player=b)
 
 # e4 d4 Qd3 d5 Qf3 Bc4
@@ -262,36 +241,18 @@ hash(b1, true)
 move!(board, true, 'P', "e2", "e4")
 
 hash(board, true)
-d
 
 b1 == board
 d[hash(b1,true)]
+d[hash(b1,false)]
 
 
-d[(Board(),true)]
+d[hash(Board(),true)]
 d2[Board()]
 
 
 
 
 
-
-b2 = Board(false)
-
-board == b2
-(board, true) == (b2, true)
-
-hash((board, true))
-
-hash((b2, true))
-
-
-bs = falses(10)
-
-hash(bs)
-
-bs[1] = true
-
-hash(bs)
-
-3523426521563878453
+b = Beth(value_heuristic=simple_piece_count, rank_heuristic=rank_moves, depth=3, bfs=[10,10,10], use_tt=false)
+root = search(b, board=pz.board, white=pz.white_to_move)

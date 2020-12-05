@@ -4,7 +4,7 @@ mutable struct Node
     parent::Union{Nothing, Node}
     children::Vector{Node}
     score::Float64
-    visits::Int
+    visits::UInt
     function Node(;move=(0x00,0x00,0x00), parent=nothing, children=Node[], score=0., visits=0)
         this = new()
 
