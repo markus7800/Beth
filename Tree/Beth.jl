@@ -297,9 +297,9 @@ function beth_eval(board::Board, white::Bool)
 
     score = piece_score +
         5 * check_score +
-        0.1 * mobility_score +
-        0.1 * pawn_score +
-        0.5 * center_score +
+        # 0.1 * mobility_score +
+        # 0.1 * pawn_score +
+        0.1 * center_score +
         0.1 * development_score
 
     return score
@@ -347,16 +347,18 @@ print_tree(root, has_to_have_children=false, expand_best=1, white=pz.white_to_mo
 
 
 bfs = reverse([Inf,Inf,10,Inf,10,Inf])
-depth = 6
-b = Beth(value_heuristic=simple_piece_count, rank_heuristic=rank_moves, depth=depth, bfs=bfs, use_tt=false)
+depth = 4
+b = Beth(value_heuristic=beth_eval, rank_heuristic=beth_rank_moves, depth=depth, bfs=bfs, use_tt=false)
 game_history = play_game(black_player=b)
 
+# TODO: after rook capture no castling
+# TODO: test castling through pieces
 
-
+# ply 17
 
 # e4 d4 Qd3 d5 Qf3 Bc4
 
-board, white, m = game_history[41]
+board, white, m = game_history[11]
 print_board(board, white=white)
 
 @btime get_moves($board, $white)

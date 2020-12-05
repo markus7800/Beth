@@ -80,13 +80,13 @@ end
 function king_moves(board, white, player, opponent, rank, file)
     kingmoves = direction_moves(board,player,opponent,KING,rank,file,DIAGCROSS,1)
 
-    if board.can_castle[white+1, 1] && !any(board[rank, 2:4, player])
+    if board.can_castle[white+1, LONGCASTLE] && !any(board[rank, 2:4, 7:8]) && all(board[rank,1,[ROOK,player]])
         if !is_attacked(board, player, opponent, (rank, 3)) && !is_attacked(board, player, opponent, (rank, 4))
             # castle long
             push!(kingmoves, (KING, symbol(rank, file), symbol(rank, file-2)))
         end
     end
-    if board.can_castle[white+1, 2] && !any(board[rank, 6:7, player])
+    if board.can_castle[white+1, SHORTCASTLE] && !any(board[rank, 6:7, 7:8]) && all(board[rank,8,[ROOK,player]])
         if !is_attacked(board, player, opponent, (rank, 6)) && !is_attacked(board, player, opponent, (rank, 7))
             # castle short
             push!(kingmoves, (KING, symbol(rank, file), symbol(rank, file+2)))
@@ -112,7 +112,7 @@ function pawn_moves(board, white, rank, file)
     end
 
     # captures
-    if white && file-1≥1 && board[rank+1, file-1, BLACK]
+    if white && file-1≥1 && board[rank-1, file-1, BLACK]
         push!(moves, (PAWN, symbol(rank, file), symbol(rank+1, file-1)))
     elseif white && file+1≤8 && board[rank+1, file+1, BLACK]
         push!(moves, (PAWN, symbol(rank, file), symbol(rank+1, file+1)))
@@ -183,40 +183,62 @@ function is_check(board::Board, player::Int, opponent::Int, king_pos::Tuple{Int,
     p, rf1, rf2 = move
 
     # TODO: remove
-    # _board = deepcopy(board)
+    _board = deepcopy(board)
+
+    ass = true
+    if !is_valid(board)
+        @info("Invalid Board!")
+        print_board(board, white=false)
+        println()
+        display(board.position)
+        ass = false
+    end
+
 
     captured, can_enpassant, can_castle = move!(board, player==WHITE, p, rf1, rf2)
     if p == KING
         # update king position for king move
         king_pos = cartesian(field(rf2))
     end
+
+    if !is_valid(board)
+        @info("Move invalid: Position $player $king_pos $move")
+        print_board(board, white=white)
+        println()
+        display(board.position)
+        ass = false
+    end
+
     b = is_attacked(board, player, opponent, king_pos)
     undo!(board, player==WHITE, p, rf1, rf2, captured, can_enpassant, can_castle)
 
-    # if any(board.position .!= _board.position)
-    #     @info("Undo failed: Position $player $king_pos $move")
-    #     print_board(board)
-    #     println()
-    #     print_board(_board)
-    #     display(board.position)
-    #     display(_board.position)
-    #     println()
-    # end
-    # if any(board.can_en_passant .!= _board.can_en_passant)
-    #     @info("Undo failed: Enpassant $player $king_pos $move")
-    #     print_board(board)
-    #     println()
-    #     display(board.can_en_passant)
-    #     display(_board.can_en_passant)
-    # end
-    # if any(board.can_castle .!= _board.can_castle)
-    #     @info("Undo failed: Castle $player $king_pos $move")
-    #     print_board(board)
-    #     println()
-    #     display(board.can_castle)
-    #     display(_board.can_castle)
-    # end
-
+    if any(board.position .!= _board.position)
+        @info("Undo failed: Position $player $king_pos $move")
+        print_board(board, white=false)
+        println()
+        print_board(_board, white=false)
+        display(board.position)
+        display(_board.position)
+        println()
+        ass = false
+    end
+    if any(board.can_en_passant .!= _board.can_en_passant)
+        @info("Undo failed: Enpassant $player $king_pos $move")
+        print_board(board, white=false)
+        println()
+        display(board.can_en_passant)
+        display(_board.can_en_passant)
+        ass = false
+    end
+    if any(board.can_castle .!= _board.can_castle)
+        @info("Undo failed: Castle $player $king_pos $move")
+        print_board(board, white=false)
+        println()
+        display(board.can_castle)
+        display(_board.can_castle)
+        ass = false
+    end
+    @assert ass "UNDO FAILED!"
 
     return b
 end

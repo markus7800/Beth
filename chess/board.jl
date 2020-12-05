@@ -273,7 +273,7 @@ end
 
 import Base.show
 function Base.show(io::IO, board::Board)
-    cols = [:white, :blue]
+    cols = [:white, :blue, :red]
 
     println(io, "Chess Board")
     for rank in 8:-1:1
@@ -283,7 +283,19 @@ function Base.show(io::IO, board::Board)
             if sum(board[rank,file,:]) != 0
                 piece = argmax(board[rank,file,1:6])
                 if any(board[rank,file,7:8])
-                    si = findfirst(board[rank,file,7:8])
+                    si = 0
+                    if board[rank,file,7]
+                        si = 1
+                    end
+                    if board[rank,file,8]
+                        if si == 0
+                            si = 2
+                        else
+                            # error
+                            si = 3
+                        end
+                    end
+
                     s = SYMBOLS[1, piece]
 
                     printstyled(io, "$s ", color=cols[si], bold=true)
@@ -299,7 +311,7 @@ function Base.show(io::IO, board::Board)
 end
 
 function print_board(board::Board; highlight=nothing, white=true)
-    cols = [:white, :blue]
+    cols = [:white, :blue, :red]
 
     highlight_fields = []
     if highlight != nothing && white != nothing
@@ -330,7 +342,19 @@ function print_board(board::Board; highlight=nothing, white=true)
                     continue
                 end
                 if any(board[rank,file,7:8])
-                    si = findfirst(board[rank,file,7:8])
+                    si = 0
+                    if board[rank,file,7]
+                        si = 1
+                    end
+                    if board[rank,file,8]
+                        if si == 0
+                            si = 2
+                        else
+                            # error
+                            si = 3
+                        end
+                    end
+
                     s = SYMBOLS[1, piece]
 
                     col = cols[si]
@@ -409,7 +433,6 @@ function play_game(board = Board(), white = true; white_player=user_input, black
         !done && check && println("Check!")
         done && check && println("Checkmate!")
         done && !check && println("Stalemate!")
-        done && break
 
         if white
             p, rf1, rf2 = white_player(board, true)
@@ -423,7 +446,7 @@ function play_game(board = Board(), white = true; white_player=user_input, black
             n_ply -= 2
             continue
         end
-        if p == "abort"
+        if p == "abort" || "resign"
             break
         end
 
@@ -431,6 +454,8 @@ function play_game(board = Board(), white = true; white_player=user_input, black
         white = !white
         push!(game_history, (deepcopy(board), white, (p, rf1, rf2)))
 
+
+        done && break
         n_ply += 1
     end
     return game_history
