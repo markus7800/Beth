@@ -97,8 +97,9 @@ function search(beth::Beth; board=beth.board, white=beth.white)
     v,t = @timed minimax(beth, root, beth.depth, -Inf, Inf, white)
 
     @info(@sprintf "%d nodes (%d leafes) explored in %.4f seconds (%.2f/s)." beth.n_explored_nodes beth.n_leafes t (beth.n_explored_nodes/t) )
-    @info(@sprintf "Transposition table reduces node evaluations by %d. Fetch ratio: %.4f." beth.tt.n_fetched_stored_val (beth.tt.n_fetched_stored_val / beth.tt.n_total))
-
+    if beth.use_tt
+        @info(@sprintf "Transposition table reduces node evaluations by %d. Fetch ratio: %.4f." beth.tt.n_fetched_stored_val (beth.tt.n_fetched_stored_val / beth.tt.n_total))
+    end
     return root
 end
 
@@ -152,12 +153,12 @@ function minimax(beth::Beth, node::Node, depth::Int, α::Float64, β::Float64, w
     end
 
     ranked_moves = beth.rank_heuristic(beth._board, white, ms) # try to choose best moves first
-    sort!(ranked_moves, lt=(x,y)->x[2]<y[2], rev=white)
+    sort!(ranked_moves, rev=white)
 
     if white
         value = -Inf
         bf = beth.bfs[depth] # max branching factor
-        for (i,(m, prescore)) in enumerate(ranked_moves)
+        for (i,(prescore, m)) in enumerate(ranked_moves)
             i > bf && break
 
             child = Node(move=m, parent=node, score=prescore, visits=0)
@@ -172,7 +173,7 @@ function minimax(beth::Beth, node::Node, depth::Int, α::Float64, β::Float64, w
     else
         value = Inf
         bf = beth.bfs[depth] # max branching factor
-        for (i,(m, prescore)) in enumerate(ranked_moves)
+        for (i,(prescore, m)) in enumerate(ranked_moves)
             i > bf && break
             child = Node(move=m, parent=node, score=prescore, visits=0)
             push!(node.children, child)
@@ -192,12 +193,14 @@ function beth_eval(board::Board, white::Bool)
     player = 7 + !white
     opponent = 7 + white
 
-    # PIECE SCORE
 
     white_piece_score = 0.
-    black_piec_score = 0.
+    black_piece_score = 0.
 
     king_pos = (0, 0)
+    white_pawn_struct = zeros(Int, 8)
+    black_pawn_struct = zeros(Int, 8)
+
     for rank in 1:8, file in 1:8
         if board[rank,file,KING] && board[rank,file,player]
             king_pos = (rank, file)
@@ -205,46 +208,130 @@ function beth_eval(board::Board, white::Bool)
         if board[rank,file,WHITE]
             white_piece_score += board[rank,file,PAWN] * 1 + (board[rank,file,KNIGHT] + board[rank,file,BISHOP]) * 3 + board[rank,file,ROOK] * 5 + board[rank,file,QUEEN] * 9
         elseif board[rank,file,BLACK]
-            black_piec_score += board[rank,file,PAWN] * 1 + (board[rank,file,KNIGHT] + board[rank,file,BISHOP]) * 3 + board[rank,file,ROOK] * 5 + board[rank,file,QUEEN] * 9
+            black_piece_score += board[rank,file,PAWN] * 1 + (board[rank,file,KNIGHT] + board[rank,file,BISHOP]) * 3 + board[rank,file,ROOK] * 5 + board[rank,file,QUEEN] * 9
+        end
+
+        if board[rank,file,PAWN]
+            if board[rank,file,WHITE]
+                white_pawn_struct[file] += 1
+            else
+                black_pawn_struct[file] += 1
+            end
         end
     end
+
     piece_score = white_piece_score - black_piece_score
 
     check = is_attacked(board, player, opponent, king_pos)
     ms = get_moves(board, white)
 
     check_score = 0.
-    if check
-        if length(ms) == 0
+    if length(ms) == 0
+        if check
             # checkmate
             check_score = 1000. * multiplier
         else
             # stalemate
             check_score = 0.
         end
-    else
-        check_score = 30 * multiplier
+    elseif check
+        check_score = multiplier
     end
 
     mobility_score = length(ms) * multiplier
 
+    white_pawn_score = 0.
+    black_pawn_score = 0.
 
-    score = piece_score + check_score + 0.1 * mobility_score
+    # doubled pawns
+    white_pawn_score += sum(white_pawn_struct .> 1)
+    black_pawn_score += sum(black_pawn_struct .> 1)
+
+    for file in 1:8
+        w_center = white_pawn_struct[file]
+        b_center = black_pawn_struct[file]
+
+        w_left = 0; w_right = 0
+
+        b_left = 0; b_right = 0
+
+        if file > 1
+            w_left = white_pawn_struct[file-1]
+            b_left = black_pawn_struct[file-1]
+        end
+        if file < 8
+            w_right = white_pawn_struct[file+1]
+            b_right = black_pawn_struct[file+1]
+        end
+
+        # penalize isolated pawns
+        if w_left + w_right == 0
+            white_pawn_score -= 1
+        end
+        if b_left + b_right == 0
+            black_pawn_score -= 1
+        end
+
+        # reward passed pawns
+        if b_left + b_center + b_right == 0 && w_center > 0
+            white_pawn_score += 1
+        end
+        if w_left + w_center + w_right == 0 && b_center > 0
+            black_pawn_score += 1
+        end
+    end
+
+    pawn_score = white_pawn_score - black_pawn_score
+
+
+    white_center_score = sum(board[4:5,4:5,WHITE])
+    black_center_score = sum(board[4:5,4:5,BLACK])
+
+    center_score = white_center_score - black_center_score
+
+
+    white_development_score = -sum(xor.(board[1, [2,3,6,7], [BISHOP, KNIGHT]],board[1, [2,3,6,7], WHITE]))
+    black_development_score = -sum(xor.(board[8, [2,3,6,7], [BISHOP, KNIGHT]], board[8, [2,3,6,7], BLACK]))
+
+    development_score = white_development_score - black_development_score
+
+    score = piece_score +
+        5 * check_score +
+        0.1 * mobility_score +
+        0.1 * pawn_score +
+        0.5 * center_score +
+        0.1 * development_score
 
     return score
 end
 
+function beth_rank_moves(board::Board, white::Bool, ms::Vector{Move})
+    ranked_moves = []
+    for (p, rf1, rf2) in ms
+        # println((p, rf1, rf2))
+        # print_board(board, white=white)
+        # println()
+        cap, enp, cas = move!(board, white, p, rf1, rf2)
+        push!(ranked_moves, (beth_eval(board, !white), (p, rf1, rf2)))
+        undo!(board, white, p, rf1, rf2, cap, enp, cas)
+    end
+    return ranked_moves
+end
 
 include("../puzzles/puzzle.jl")
 
 
-pz = puzzles[7]
+pz = puzzles[12]
 print_puzzle(pz)
 
 bfs = reverse([Inf,Inf,Inf,Inf,Inf])
 depth = 5
 b = Beth(value_heuristic=simple_piece_count, rank_heuristic=rank_moves, depth=depth, bfs=bfs, use_tt=false)
 root = search(b, board=pz.board, white=pz.white_to_move)
+print_tree(root, has_to_have_children=false, expand_best=1, white=pz.white_to_move)
+
+
+
 
 b = Beth(value_heuristic=simple_piece_count, rank_heuristic=rank_moves, depth=depth, bfs=bfs, use_tt=true)
 root2 = search(b, board=pz.board, white=pz.white_to_move)
@@ -253,21 +340,26 @@ print_tree(root, white=pz.white_to_move, max_depth=1, has_to_have_children=false
 print_tree(root2, white=pz.white_to_move, max_depth=1, has_to_have_children=false)
 
 
+b = Beth(value_heuristic=beth_eval, rank_heuristic=beth_rank_moves, depth=depth, bfs=bfs, use_tt=false)
+root = search(b, board=pz.board, white=pz.white_to_move)
 print_tree(root, has_to_have_children=false, expand_best=1, white=pz.white_to_move)
 
-print_tree(root, white=pz.white_to_move, max_depth=1, has_to_have_children=false)
 
-string(b(pz.board, pz.white_to_move))
 
 bfs = reverse([Inf,Inf,10,Inf,10,Inf])
 depth = 6
 b = Beth(value_heuristic=simple_piece_count, rank_heuristic=rank_moves, depth=depth, bfs=bfs, use_tt=false)
 game_history = play_game(black_player=b)
 
+
+
+
 # e4 d4 Qd3 d5 Qf3 Bc4
 
-board, white, m = game_history[87]
-print_board(board, white=white, highlight="Kf7")
+board, white, m = game_history[41]
+print_board(board, white=white)
+
+@btime get_moves($board, $white)
 
 root = search(b, board=board, white=white)
 
@@ -276,33 +368,20 @@ print_tree(root, has_to_have_children=false, expand_best=1, white=pz.white_to_mo
 print_tree(root, has_to_have_children=false, white=pz.white_to_move)
 
 
-d = Dict()
-
-board = Board()
-b1 = deepcopy(board)
-
-hash(board, true)
-d[hash(board,true)] = 1
-
-b1 == board
-hash(b1, true) == hash(board, true)
-hash(b1, true)
-
-move!(board, true, 'P', "e2", "e4")
-
-hash(board, true)
-
-b1 == board
-d[hash(b1,true)]
-d[hash(b1,false)]
-
-
-d[hash(Board(),true)]
-d2[Board()]
-
 
 
 
 
 b = Beth(value_heuristic=simple_piece_count, rank_heuristic=rank_moves, depth=3, bfs=[10,10,10], use_tt=false)
 root = search(b, board=pz.board, white=pz.white_to_move)
+
+
+board = Board()
+
+ms = get_moves(board, true)
+
+simple_rank = rank_moves(board, true, ms)
+
+beth_rank = beth_rank_moves(board, true, ms)
+
+map(x -> (x[1], string(x[2])), sort!(beth_rank, rev=white))

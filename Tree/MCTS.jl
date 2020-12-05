@@ -74,6 +74,7 @@ function MCTreeSearch(board=Board(), white=true; N=10)
 
         v, mms = simple_piece_count(_board, _white)
         rms = rank_moves(_board, _white, ms)
+        sort!(rms, rev=_white)
 
         node.score = v
         node.visits += 1

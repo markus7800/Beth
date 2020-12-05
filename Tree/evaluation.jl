@@ -48,7 +48,7 @@ function rank_moves(board::Board, white::Bool, ms::Vector{Move})
     player = 7 + !white
     opponent = 7 + white
 
-    ranked_moves = Vector{Pair{Move, Float64}}(undef, length(ms))
+    ranked_moves = Vector{Tuple{Float64, Move}}(undef, length(ms))
     for (j, m) in enumerate(ms)
         score = 0.
         p = m[1]
@@ -116,49 +116,8 @@ function rank_moves(board::Board, white::Bool, ms::Vector{Move})
             score *= -1
         end
 
-        ranked_moves[j] = (m => score)
+        ranked_moves[j] = (score, m)
     end
 
     return ranked_moves
-end
-
-
-function piece_count_plus_position(board::Board, white::Bool)
-    player = 7 + !white
-    opponent = 7 + white
-
-    white_score = 0.
-    black_score = 0.
-
-
-    king_pos = (0, 0)
-    for rank in 1:8, file in 1:8
-        if board[rank,file,KING] && board[rank,file,player]
-            king_pos = (rank, file)
-        end
-        if board[rank,file,WHITE]
-            white_score += board[rank,file,PAWN] * 1 + (board[rank,file,KNIGHT] + board[rank,file,BISHOP]) * 3 + board[rank,file,ROOK] * 5 + board[rank,file,QUEEN] * 9
-        elseif board[rank,file,BLACK]
-            black_score += board[rank,file,PAWN] * 1 + (board[rank,file,KNIGHT] + board[rank,file,BISHOP]) * 3 + board[rank,file,ROOK] * 5 + board[rank,file,QUEEN] * 9
-        end
-    end
-
-    
-
-    score = white_score - black_score
-
-    check = is_attacked(board, player, opponent, king_pos)
-    ms = get_moves(board, white)
-
-    if length(ms) == 0
-        if check
-            # checkmate
-            score = white ? -1000 : 1000
-        else
-            # stalemate
-            score = 0.
-        end
-    end
-
-    return score, ms
 end
