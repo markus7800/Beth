@@ -259,14 +259,15 @@ print_tree(root, white=pz.white_to_move, max_depth=1, has_to_have_children=false
 
 string(b(pz.board, pz.white_to_move))
 
-bfs = reverse([Inf,Inf,Inf,Inf])
-depth = 4
+bfs = reverse([Inf,Inf,10,Inf,10,Inf])
+depth = 6
 b = Beth(value_heuristic=simple_piece_count, rank_heuristic=rank_moves, depth=depth, bfs=bfs, use_tt=false)
 game_history = play_game(black_player=b)
 
 # e4 d4 Qd3 d5 Qf3 Bc4
 
-board, white, m = game_history[22]
+board, white, m = game_history[87]
+print_board(board, white=white, highlight="Kf7")
 
 root = search(b, board=board, white=white)
 

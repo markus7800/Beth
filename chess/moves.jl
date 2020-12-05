@@ -105,9 +105,9 @@ function pawn_moves(board, white, rank, file)
     end
 
     # start moves
-    if white && rank == 2 && !any(board[rank+2, file, 7:8])
+    if white && rank == 2 && !any(board[rank+1:rank+2, file, 7:8])
         push!(moves, (PAWN, symbol(rank, file), symbol(rank+2, file)))
-    elseif !white && rank == 7 && !any(board[rank-2, file, 7:8])
+    elseif !white && rank == 7 && !any(board[rank-2:rank-1, file, 7:8])
         push!(moves, (PAWN, symbol(rank, file), symbol(rank-2, file)))
     end
 
@@ -247,6 +247,10 @@ function is_attacked(board::Board, player, opponent, rf; verbose=false)
             end
 
             if board[r2, f2, opponent]
+                if i == 1 && board[r2, f2, KING]
+                    verbose && println("King diag check from $(field(r2, f2)) ($r2, $f2).")
+                    return true
+                end
                 if (board[r2, f2, BISHOP] || board[r2, f2, QUEEN])
                     verbose && println("Diag check from $(field(r2, f2)) ($r2, $f2).")
                     return true
@@ -272,6 +276,10 @@ function is_attacked(board::Board, player, opponent, rf; verbose=false)
             end
 
             if board[r2, f2, opponent]
+                if i == 1 && board[r2, f2, KING]
+                    verbose && println("King cross check from $(field(r2, f2)) ($r2, $f2).")
+                    return true
+                end
                 if (board[r2, f2, ROOK] || board[r2, f2, QUEEN])
                     verbose && println("Cross check from $(field(r2, f2)) ($r2, $f2).")
                     return true
