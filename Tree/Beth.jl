@@ -152,6 +152,7 @@ function minimax(beth::Beth, node::Node, depth::Int, α::Float64, β::Float64, w
     end
 
     ranked_moves = beth.rank_heuristic(beth._board, white, ms) # try to choose best moves first
+    sort!(ranked_moves, lt=(x,y)->x[2]<y[2], rev=white)
 
     if white
         value = -Inf
@@ -183,6 +184,54 @@ function minimax(beth::Beth, node::Node, depth::Int, α::Float64, β::Float64, w
         node.score = value
         return value
     end
+end
+
+function beth_eval(board::Board, white::Bool)
+    multiplier = white ? -1 : 1
+
+    player = 7 + !white
+    opponent = 7 + white
+
+    # PIECE SCORE
+
+    white_piece_score = 0.
+    black_piec_score = 0.
+
+    king_pos = (0, 0)
+    for rank in 1:8, file in 1:8
+        if board[rank,file,KING] && board[rank,file,player]
+            king_pos = (rank, file)
+        end
+        if board[rank,file,WHITE]
+            white_piece_score += board[rank,file,PAWN] * 1 + (board[rank,file,KNIGHT] + board[rank,file,BISHOP]) * 3 + board[rank,file,ROOK] * 5 + board[rank,file,QUEEN] * 9
+        elseif board[rank,file,BLACK]
+            black_piec_score += board[rank,file,PAWN] * 1 + (board[rank,file,KNIGHT] + board[rank,file,BISHOP]) * 3 + board[rank,file,ROOK] * 5 + board[rank,file,QUEEN] * 9
+        end
+    end
+    piece_score = white_piece_score - black_piece_score
+
+    check = is_attacked(board, player, opponent, king_pos)
+    ms = get_moves(board, white)
+
+    check_score = 0.
+    if check
+        if length(ms) == 0
+            # checkmate
+            check_score = 1000. * multiplier
+        else
+            # stalemate
+            check_score = 0.
+        end
+    else
+        check_score = 30 * multiplier
+    end
+
+    mobility_score = length(ms) * multiplier
+
+
+    score = piece_score + check_score + 0.1 * mobility_score
+
+    return score
 end
 
 
