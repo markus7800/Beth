@@ -201,13 +201,13 @@ function is_check(board::Board, player::Int, opponent::Int, king_pos::Tuple{Int,
         king_pos = cartesian(field(rf2))
     end
 
-    if !is_valid(board)
-        @info("Move invalid: Position $player $king_pos $move")
-        print_board(board, white=white)
-        println()
-        display(board.position)
-        ass = false
-    end
+    # if !is_valid(board)
+    #     @info("Move invalid: Position $player $king_pos $move")
+    #     print_board(board, white=white)
+    #     println()
+    #     display(board.position)
+    #     ass = false
+    # end
 
     b = is_attacked(board, player, opponent, king_pos)
     undo!(board, player==WHITE, p, rf1, rf2, captured, can_enpassant, can_castle)
