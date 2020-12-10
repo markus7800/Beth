@@ -112,7 +112,7 @@ function pawn_moves(board, white, rank, file)
     end
 
     # captures
-    if white && file-1≥1 && board[rank-1, file-1, BLACK]
+    if white && file-1≥1 && board[rank+1, file-1, BLACK]
         push!(moves, (PAWN, symbol(rank, file), symbol(rank+1, file-1)))
     elseif white && file+1≤8 && board[rank+1, file+1, BLACK]
         push!(moves, (PAWN, symbol(rank, file), symbol(rank+1, file+1)))
@@ -183,16 +183,16 @@ function is_check(board::Board, player::Int, opponent::Int, king_pos::Tuple{Int,
     p, rf1, rf2 = move
 
     # TODO: remove
-    _board = deepcopy(board)
-
-    ass = true
-    if !is_valid(board)
-        @info("Invalid Board!")
-        print_board(board, white=false)
-        println()
-        display(board.position)
-        ass = false
-    end
+    # _board = deepcopy(board)
+    #
+    # ass = true
+    # if !is_valid(board)
+    #     @info("Invalid Board!")
+    #     print_board(board, white=false)
+    #     println()
+    #     display(board.position)
+    #     ass = false
+    # end
 
 
     captured, can_enpassant, can_castle = move!(board, player==WHITE, p, rf1, rf2)
@@ -212,33 +212,33 @@ function is_check(board::Board, player::Int, opponent::Int, king_pos::Tuple{Int,
     b = is_attacked(board, player, opponent, king_pos)
     undo!(board, player==WHITE, p, rf1, rf2, captured, can_enpassant, can_castle)
 
-    if any(board.position .!= _board.position)
-        @info("Undo failed: Position $player $king_pos $move")
-        print_board(board, white=false)
-        println()
-        print_board(_board, white=false)
-        display(board.position)
-        display(_board.position)
-        println()
-        ass = false
-    end
-    if any(board.can_en_passant .!= _board.can_en_passant)
-        @info("Undo failed: Enpassant $player $king_pos $move")
-        print_board(board, white=false)
-        println()
-        display(board.can_en_passant)
-        display(_board.can_en_passant)
-        ass = false
-    end
-    if any(board.can_castle .!= _board.can_castle)
-        @info("Undo failed: Castle $player $king_pos $move")
-        print_board(board, white=false)
-        println()
-        display(board.can_castle)
-        display(_board.can_castle)
-        ass = false
-    end
-    @assert ass "UNDO FAILED!"
+    # if any(board.position .!= _board.position)
+    #     @info("Undo failed: Position $player $king_pos $move")
+    #     print_board(board, white=false)
+    #     println()
+    #     print_board(_board, white=false)
+    #     display(board.position)
+    #     display(_board.position)
+    #     println()
+    #     ass = false
+    # end
+    # if any(board.can_en_passant .!= _board.can_en_passant)
+    #     @info("Undo failed: Enpassant $player $king_pos $move")
+    #     print_board(board, white=false)
+    #     println()
+    #     display(board.can_en_passant)
+    #     display(_board.can_en_passant)
+    #     ass = false
+    # end
+    # if any(board.can_castle .!= _board.can_castle)
+    #     @info("Undo failed: Castle $player $king_pos $move")
+    #     print_board(board, white=false)
+    #     println()
+    #     display(board.can_castle)
+    #     display(_board.can_castle)
+    #     ass = false
+    # end
+    # @assert ass "UNDO FAILED!"
 
     return b
 end

@@ -446,7 +446,7 @@ function play_game(board = Board(), white = true; white_player=user_input, black
             n_ply -= 2
             continue
         end
-        if p == "abort" || "resign"
+        if p == "abort" || p == "resign"
             break
         end
 

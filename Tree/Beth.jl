@@ -105,9 +105,12 @@ end
 
 function (beth::Beth)(board::Board, white::Bool)
     root = search(beth, board=board, white=white)
-    node = sort(root.children, lt=(x,y)->x.score<y.score, rev=white)[1]
-    println("Computer says: ", node.move, " valued with ", node.score, ".")
-    return node.move
+    nodes = sort(root.children, lt=(x,y)->x.score<y.score, rev=white)
+    if length(nodes) > 0
+        node = nodes[1]
+        println("Computer says: ", node.move, " valued with ", node.score, ".")
+        return node.move
+    end
 end
 
 function minimax(beth::Beth, node::Node, depth::Int, α::Float64, β::Float64, white::Bool)
@@ -291,7 +294,9 @@ function beth_eval(board::Board, white::Bool)
 
 
     white_development_score = -sum(xor.(board[1, [2,3,6,7], [BISHOP, KNIGHT]],board[1, [2,3,6,7], WHITE]))
+    white_development_score -= sum(xor.(board[2, [4,5], PAWN],board[2, [4,5], WHITE]))
     black_development_score = -sum(xor.(board[8, [2,3,6,7], [BISHOP, KNIGHT]], board[8, [2,3,6,7], BLACK]))
+    black_development_score -= sum(xor.(board[7, [4,5], PAWN],board[7, [4,5], BLACK]))
 
     development_score = white_development_score - black_development_score
 
@@ -299,7 +304,7 @@ function beth_eval(board::Board, white::Bool)
         5 * check_score +
         # 0.1 * mobility_score +
         # 0.1 * pawn_score +
-        0.1 * center_score +
+        # 0.1 * center_score +
         0.1 * development_score
 
     return score
@@ -347,9 +352,10 @@ print_tree(root, has_to_have_children=false, expand_best=1, white=pz.white_to_mo
 
 
 bfs = reverse([Inf,Inf,10,Inf,10,Inf])
-depth = 4
+depth = 6
+b = Beth(value_heuristic=simple_piece_count, rank_heuristic=rank_moves, depth=depth, bfs=bfs, use_tt=false)
 b = Beth(value_heuristic=beth_eval, rank_heuristic=beth_rank_moves, depth=depth, bfs=bfs, use_tt=false)
-game_history = play_game(black_player=b)
+game_history = play_game(white_player=b)
 
 # TODO: after rook capture no castling
 # TODO: test castling through pieces
