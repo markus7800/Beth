@@ -400,6 +400,12 @@ function user_input(board, white)
             if occursin("undo", s)
                 return "undo", false, false
             end
+            if occursin("abort", s)
+                return "abort", false, false
+            end
+            if occursin("resign", s)
+                return "resign", false, false
+            end
 
             p, rf1, rf2 = short_to_long(board, white, s)
             got_move = true
@@ -419,10 +425,12 @@ end
 
 
 function play_game(board = Board(), white = true; white_player=user_input, black_player=user_input)
-    game_history = [(deepcopy(board), white, (0x0, 0x0, 0x0))] # current board, white to move, last move
+    game_history = [(0, 0, deepcopy(board), white, (0x0, 0x0, 0x0), 0.)] # current board, white to move, last move
     n_ply = 1
+    # try
     while true
-        println("\nMove $((n_ply+1) ÷ 2), Ply $n_ply:")
+        n_move = (n_ply+1) ÷ 2
+        println("\nMove $n_move, Ply $n_ply:")
         #print("\u1b[10F")
         print_board(board)
         println()
@@ -434,16 +442,20 @@ function play_game(board = Board(), white = true; white_player=user_input, black
         done && check && println("Checkmate!")
         done && !check && println("Stalemate!")
 
-        if white
-            p, rf1, rf2 = white_player(board, true)
-        else
-            p, rf1, rf2 = black_player(board, false)
+        v,move_time, = @timed if !done
+            if white
+                p, rf1, rf2 = white_player(board, true)
+            else
+                p, rf1, rf2 = black_player(board, false)
+            end
         end
+
+        done && break
+
         if p == "undo"
             pop!(game_history) # opponent move
             pop!(game_history) # my move
-            board, white, move = game_history[end]
-            n_ply -= 2
+            n_ply, n_move, board, white, move, move_time = game_history[end]
             continue
         end
         if p == "abort" || p == "resign"
@@ -452,11 +464,12 @@ function play_game(board = Board(), white = true; white_player=user_input, black
 
         move!(board, white, p, rf1, rf2)
         white = !white
-        push!(game_history, (deepcopy(board), white, (p, rf1, rf2)))
+        push!(game_history, (n_ply, n_move, deepcopy(board), white, (p, rf1, rf2), move_time))
 
-
-        done && break
         n_ply += 1
     end
+    # catch e
+    #     println(e)
+    # end
     return game_history
 end

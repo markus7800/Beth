@@ -24,8 +24,11 @@ mutable struct Beth
     use_tt::Bool
     tt::TranspositionTable
 
-    function Beth(;value_heuristic, rank_heuristic, board=Board(), white=true, depth=5, bfs=fill(Inf, depth), use_tt=true)
+    function Beth(;value_heuristic, rank_heuristic, board=Board(), white=true, depth=5, bfs=fill(Inf, depth), use_tt=false)
         beth = new()
+        @info "Heuristics: $value_heuristic, $rank_heuristic"
+        @info "Branching: $bfs"
+        @info "Depth: $depth"
         beth.value_heuristic = value_heuristic
         beth.rank_heuristic = rank_heuristic
 
@@ -37,7 +40,7 @@ mutable struct Beth
         beth.n_explored_nodes = 0
 
         beth.depth = depth
-        beth.bfs = bfs
+        beth.bfs = reverse(bfs)
 
         beth.use_tt = use_tt
         beth.tt = TranspositionTable()
@@ -71,7 +74,7 @@ function (beth::Beth)(board::Board, white::Bool)
     nodes = sort(root.children, lt=(x,y)->x.score<y.score, rev=white)
     if length(nodes) > 0
         node = nodes[1]
-        println("Computer says: ", node.move, " valued with ", node.score, ".")
+        println(@sprintf "Computer says: %s valued with %.2f." node.move node.score)
         return node.move
     end
 end
@@ -182,14 +185,27 @@ print_tree(root, has_to_have_children=false, expand_best=1, white=pz.white_to_mo
 
 
 
-bfs = reverse([Inf,Inf,10,Inf,10,Inf])
-depth = 4
+bfs = [Inf,Inf,10,Inf,10,10]
+depth = 6
 b = Beth(value_heuristic=simple_piece_count, rank_heuristic=rank_moves, depth=depth, bfs=bfs, use_tt=false)
 b = Beth(value_heuristic=beth_eval, rank_heuristic=beth_rank_moves, depth=depth, bfs=bfs, use_tt=false)
-game_history = play_game(white_player=b)
+game_history = play_game(black_player=b)
 
+for (n_ply, n_move, board, white, move, move_time) in game_history
+    println("$n_move: $move $move_time s")
+end
+#=
+  Best so far:
+  simple_piece_count, rank_moves, [Inf, Inf, 10, Inf, 10, 10] fast 10s
 
-# ply 17
+  simple_piece_count, rank_moves, [Inf, Inf, 10, Inf, 10, Inf] still possible but approx 1 minute, won an exchange
+
+  beth_eval, beth_rank_moves, [Inf, Inf, Inf, Inf] Really fast (<1s) but stupid
+
+  beth_eval, beth_rank_moves, [Inf,Inf,10,Inf,10,10] 80s, gets faster, is good (won a piece)
+=#
+
+# ply 15 pawn
 
 # e4 d4 Qd3 d5 Qf3 Bc4
 

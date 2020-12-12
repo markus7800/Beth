@@ -1,5 +1,5 @@
 
-function beth_eval(board::Board, white::Bool)
+function beth_eval(board::Board, white::Bool, check_mult=0)
     multiplier = white ? -1 : 1
 
     player = 7 + !white
@@ -47,7 +47,7 @@ function beth_eval(board::Board, white::Bool)
             check_score = 0.
         end
     elseif check
-        check_score = multiplier
+        check_score = multiplier * check_mult
     end
 
     mobility_score = length(ms) * multiplier
@@ -116,7 +116,7 @@ function beth_eval(board::Board, white::Bool)
     # @info("development_score: $development_score, $white_development_score, $black_development_score") # ∈ [-12, 12] each ∈ [-6,6]
 
     score = piece_score +
-        30 * check_score +
+        1 * check_score +
         # 0.1 * mobility_score +
         0.1 * pawn_score +
         0.1 * center_score +
@@ -134,28 +134,48 @@ function beth_rank_moves(board::Board, white::Bool, ms::Vector{Move})
         # print_board(board, white=white)
         # println()
         cap, enp, cas = move!(board, white, p, rf1, rf2)
-        push!(ranked_moves, (beth_eval(board, !white), (p, rf1, rf2)))
+        push!(ranked_moves, (beth_eval(board, !white, 30), (p, rf1, rf2)))
         undo!(board, white, p, rf1, rf2, cap, enp, cas)
     end
     return ranked_moves
 end
 
+# only use for leaf nodes
+function beth_eval_til_quite(board::Board, white::Bool)
+    current_score = beth_eval(board, white)
+    while true
+        ms = get_moves(board, white)
+        length(ms) == 0 && break
+
+        rms = beth_rank_moves(board, white, ms)
+
+        score, m = white ? maximum(rms) : minimum(rms)
+        # @info "current: $current_score, move: $m, score: $score"
+        abs(current_score - score) < 1 && break
+
+
+        move!(board, white, m[1], m[2], m[3])
+        current_score = score
+        white = !white
+    end
+end
+
 # 25-30 μs on Desktop for both simple_piece_count and beth_eval
-board = Board(true)
-@btime simple_piece_count(board, true)
-@btime beth_eval(board, true)
+# board = Board(true)
+# @btime simple_piece_count(board, true)
+# @btime beth_eval(board, true)
 
-beth_eval(Board(true), true)
-
-board = Board(false)
-board.position[2,:,[PAWN,WHITE]] .= 1
-beth_eval(board, true)
-
-board.position[[7,6],[1,3,5,7],[PAWN,BLACK]] .= 1
-beth_eval(board, true)
-
-board = Board(false)
-board.position[4:5,4:5, [QUEEN, WHITE]] .= 1
-board.position[4,4, [QUEEN, WHITE]] .= 0
-board.position[4,4, [QUEEN, BLACK]] .= 1
-beth_eval(board, true)
+# beth_eval(Board(true), true)
+#
+# board = Board(false)
+# board.position[2,:,[PAWN,WHITE]] .= 1
+# beth_eval(board, true)
+#
+# board.position[[7,6],[1,3,5,7],[PAWN,BLACK]] .= 1
+# beth_eval(board, true)
+#
+# board = Board(false)
+# board.position[4:5,4:5, [QUEEN, WHITE]] .= 1
+# board.position[4,4, [QUEEN, WHITE]] .= 0
+# board.position[4,4, [QUEEN, BLACK]] .= 1
+# beth_eval(board, true)
