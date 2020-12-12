@@ -72,7 +72,6 @@ function get_moves(board::Board, white::Bool)
 
     filter!(m -> !is_check(board, player, opponent, kingpos, m), moves)
 
-
     return moves
 end
 
@@ -114,11 +113,14 @@ function pawn_moves(board, white, rank, file)
     # captures
     if white && file-1≥1 && board[rank+1, file-1, BLACK]
         push!(moves, (PAWN, symbol(rank, file), symbol(rank+1, file-1)))
-    elseif white && file+1≤8 && board[rank+1, file+1, BLACK]
+    end
+    if white && file+1≤8 && board[rank+1, file+1, BLACK]
         push!(moves, (PAWN, symbol(rank, file), symbol(rank+1, file+1)))
-    elseif !white && file-1≥1 && board[rank-1, file-1, WHITE]
+    end
+    if !white && file-1≥1 && board[rank-1, file-1, WHITE]
         push!(moves, (PAWN, symbol(rank, file), symbol(rank-1, file-1)))
-    elseif !white && file+1≤8 && board[rank-1, file+1, WHITE]
+    end
+    if !white && file+1≤8 && board[rank-1, file+1, WHITE]
         push!(moves, (PAWN, symbol(rank, file), symbol(rank-1, file+1)))
     end
 

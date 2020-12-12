@@ -24,6 +24,15 @@ using Test
     ms = get_moves(board, true)
     @test length(ms) == 2
 
+    # double attack
+    board.position[cartesian("f6")...,[BISHOP,BLACK]] .= 1
+    # if no king on board then it is assumed to be on a1
+    board.position[cartesian("e1")...,[KING,WHITE]] .= 1
+    board.can_en_passant .= 0
+    ms = get_moves(board, true)
+    @test (PAWN, symbol("e5"), symbol("d6")) in ms
+    @test (PAWN, symbol("e5"), symbol("f6")) in ms
+
     # en passant
     board = Board()
     move!(board, true, 'P', "e2", "e4")
@@ -179,8 +188,6 @@ end
 
     @test !((KING, symbol("e8"), symbol("g8")) in get_moves(board, false))
     @test (KING, symbol("e8"), symbol("c8")) in get_moves(board, false)
-
-
 end
 
 @testset "Chess notation" begin

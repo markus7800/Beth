@@ -194,6 +194,7 @@ game_history = play_game(black_player=b)
 for (n_ply, n_move, board, white, move, move_time) in game_history
     println("$n_move: $move $move_time s")
 end
+board = game_history[end][3]
 #=
   Best so far:
   simple_piece_count, rank_moves, [Inf, Inf, 10, Inf, 10, 10] fast 10s
