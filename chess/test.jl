@@ -1,6 +1,6 @@
 using Test
 
-@testset "Moves:Pawn" begin
+@testset "Pawn Moves" begin
     board = Board(false)
     board.position[cartesian("e5")...,[PAWN,WHITE]] .= 1
     # single forward move
@@ -66,7 +66,7 @@ using Test
     @test !any(board[cartesian("d8")..., [BISHOP, BLACK]])
 end
 
-@testset "Moves:King" begin
+@testset "Castling" begin
     # Loose castling rights afte king move
     board = Board(false)
     board.position[cartesian("e1")..., [KING, WHITE]] .= 1
@@ -149,6 +149,38 @@ end
 
     @test !((KING, symbol("e8"), symbol("g8")) in get_moves(board, false))
     @test !((KING, symbol("e8"), symbol("c8")) in get_moves(board, false))
+
+    # no castling when rook was captured but did not move prior
+    board = Board(false)
+    board.position[cartesian("e8")..., [KING, BLACK]] .= 1
+    board.position[cartesian("a8")..., [ROOK, BLACK]] .= 1
+    board.position[cartesian("h8")..., [ROOK, BLACK]] .= 1
+
+    board.position[cartesian("a1")..., [ROOK, WHITE]] .= 1
+
+    @test (KING, symbol("e8"), symbol("g8")) in get_moves(board, false)
+    @test (KING, symbol("e8"), symbol("c8")) in get_moves(board, false)
+
+    move!(board, true, 'R', "a1", "a8")
+    @test is_check(board, BLACK)
+    move!(board, true, 'R', "a8", "a2")
+    @test !is_check(board, BLACK)
+
+    @test (KING, symbol("e8"), symbol("g8")) in get_moves(board, false)
+    @test !((KING, symbol("e8"), symbol("c8")) in get_moves(board, false))
+
+    # opponent piece also blocks castling
+    board = Board(false)
+    board.position[cartesian("e8")..., [KING, BLACK]] .= 1
+    board.position[cartesian("a8")..., [ROOK, BLACK]] .= 1
+    board.position[cartesian("h8")..., [ROOK, BLACK]] .= 1
+
+    board.position[cartesian("g8")..., [KNIGHT, WHITE]] .= 1
+
+    @test !((KING, symbol("e8"), symbol("g8")) in get_moves(board, false))
+    @test (KING, symbol("e8"), symbol("c8")) in get_moves(board, false)
+
+
 end
 
 @testset "Chess notation" begin

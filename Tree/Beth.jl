@@ -188,8 +188,6 @@ b = Beth(value_heuristic=simple_piece_count, rank_heuristic=rank_moves, depth=de
 b = Beth(value_heuristic=beth_eval, rank_heuristic=beth_rank_moves, depth=depth, bfs=bfs, use_tt=false)
 game_history = play_game(white_player=b)
 
-# TODO: after rook capture no castling
-# TODO: test castling through pieces
 
 # ply 17
 
