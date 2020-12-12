@@ -424,8 +424,23 @@ function user_input(board, white)
 end
 
 
+struct Ply
+    nr::Int
+    n_move::Int
+    board::Board # board after move
+    white::Bool # white to move at board
+    move # last move that lead to board
+    time::Float64
+end
+
+import Base.show
+using Printf
+function Base.show(io::IO, ply::Ply)
+    print(io, @sprintf "%d. %s %.2fs (%d)" ply.n_move ply.move ply.time ply.nr)
+end
+
 function play_game(board = Board(), white = true; white_player=user_input, black_player=user_input)
-    game_history = [(0, 0, deepcopy(board), white, (0x0, 0x0, 0x0), 0.)] # current board, white to move, last move
+    game_history = [Ply(0, 0, deepcopy(board), white, (0x0, 0x0, 0x0), 0.)] # current board, white to move, last move
     n_ply = 1
     # try
     while true
@@ -455,7 +470,10 @@ function play_game(board = Board(), white = true; white_player=user_input, black
         if p == "undo"
             pop!(game_history) # opponent move
             pop!(game_history) # my move
-            n_ply, n_move, board, white, move, move_time = game_history[end]
+            last_ply = game_history[end]
+            n_ply -= 2
+            board = last_ply.board
+            white = last_ply.white
             continue
         end
         if p == "abort" || p == "resign"
@@ -464,7 +482,7 @@ function play_game(board = Board(), white = true; white_player=user_input, black
 
         move!(board, white, p, rf1, rf2)
         white = !white
-        push!(game_history, (n_ply, n_move, deepcopy(board), white, (p, rf1, rf2), move_time))
+        push!(game_history, Ply(n_ply, n_move, deepcopy(board), white, (p, rf1, rf2), move_time))
 
         n_ply += 1
     end

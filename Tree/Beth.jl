@@ -191,8 +191,8 @@ b = Beth(value_heuristic=simple_piece_count, rank_heuristic=rank_moves, depth=de
 b = Beth(value_heuristic=beth_eval, rank_heuristic=beth_rank_moves, depth=depth, bfs=bfs, use_tt=false)
 game_history = play_game(black_player=b)
 
-for (n_ply, n_move, board, white, move, move_time) in game_history
-    println("$n_move: $move $move_time s")
+for ply in game_history
+    println(ply)
 end
 board = game_history[end][3]
 #=
