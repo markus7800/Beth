@@ -116,7 +116,7 @@ function beth_eval(board::Board, white::Bool)
     # @info("development_score: $development_score, $white_development_score, $black_development_score") # ∈ [-12, 12] each ∈ [-6,6]
 
     score = piece_score +
-        5 * check_score +
+        30 * check_score +
         # 0.1 * mobility_score +
         0.1 * pawn_score +
         0.1 * center_score +
