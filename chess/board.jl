@@ -332,7 +332,7 @@ function print_board(board::Board; highlight=nothing, white=true)
     files = white ? (1:8) : (8:-1:1)
 
     for rank in ranks
-        printstyled("$rank ", color=13)
+        printstyled("$rank ", color=:magenta) # col = 13
         for file in files
             s = "•" #"⦿" # "⋅"
             if sum(board[rank,file,:]) != 0
@@ -366,7 +366,7 @@ function print_board(board::Board; highlight=nothing, white=true)
                     continue
                 end
             end
-            col = 8
+            col = :light_black # 8
             if (rank, file) in highlight_fields
                 col = :green
             end
@@ -376,9 +376,9 @@ function print_board(board::Board; highlight=nothing, white=true)
         print("\n")
     end
     if white
-        printstyled("  a b c d e f g h", color=13)
+        printstyled("  a b c d e f g h", color=:magenta) # col = 13
     else
-        printstyled("  h g f e d c b a", color=13)
+        printstyled("  h g f e d c b a", color=:magenta) # col = 13
     end
 end
 
