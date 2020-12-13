@@ -70,16 +70,18 @@ function search(beth::Beth; board=beth.board, white=beth.white)
 end
 
 function (beth::Beth)(board::Board, white::Bool)
-    # root = search(beth, board=board, white=white)
-    beth.board = board
-    beth.white = white
-    root = beam_search(beth)
+    # beth.board = board
+    # beth.white = white
+    # root = beam_search(beth)
 
 
+    # nodes = sort(root.children, lt=(x,y)->x.score<y.score, rev=white)
+    # for n in nodes
+    #     println(n)
+    # end
+
+    root = search(beth, board=board, white=white)
     nodes = sort(root.children, lt=(x,y)->x.score<y.score, rev=white)
-    for n in nodes
-        println(n)
-    end
 
     if length(nodes) > 0
         node = nodes[1]
@@ -237,6 +239,7 @@ end
 include("Beth_eval.jl")
 
 include("../puzzles/puzzle.jl")
+include("../puzzles/puzzle_rush_20_12_13.jl")
 
 
 pz = puzzles[12]
@@ -255,6 +258,9 @@ depth = 6
 b = Beth(value_heuristic=simple_piece_count, rank_heuristic=rank_moves, depth=depth, bfs=bfs, use_tt=false)
 b = Beth(value_heuristic=beth_eval, rank_heuristic=beth_rank_moves, depth=depth, bfs=bfs, use_tt=false)
 game_history = play_game(black_player=b)
+
+
+puzzle_rush(rush_20_12_13, b, print_solution=true)
 
 for ply in game_history
     println(ply)

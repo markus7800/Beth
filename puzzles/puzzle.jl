@@ -218,7 +218,7 @@ function play_puzzle(puzzle::Puzzle, player=user_input)
             @info "Move was correct!"
             move!(board, white, p, rf1, rf2)
         else
-            @info "Move was wrong!"
+            @info "Puzzle failed! (Difficulty: $(puzzle.difficulty))"
             return false
         end
 
@@ -239,6 +239,19 @@ function play_puzzle(puzzle::Puzzle, player=user_input)
     end
 end
 
+function puzzle_rush(rush::Vector{Puzzle}, player; print_solution=false)
+    score = 0
+    for puzzle in rush
+        solved,t, = @timed play_puzzle(puzzle, player)
+        score += solved
+        if print_solution && !solved
+            print_puzzle(puzzle)
+        end
+        @info @sprintf "Spent %.2fs." t
+    end
+    @info @sprintf "Solved %d out of %d." score length(rush)
+end
+
 # puzzle_1 = Puzzle(
 #     white=["Kg1", "Pa2", "Pb2", "Nd2", "Ph2", "Pe3", "Pg3", "Rd5", "Rd8"],
 #     black=["Ra8", "Pg7", "Kh7", "Pb6", "Rf6", "Ph6", "Pa5", "Pe4", "Bd3"],
@@ -253,7 +266,3 @@ end
 #     solution="",
 #     firstmove="",
 #     difficulty=)
-
-include("puzzle_rush_20_12_13.jl")
-
-play_puzzle(puzzle_rush[24])
