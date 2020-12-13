@@ -253,7 +253,7 @@ print_tree(root, has_to_have_children=false, expand_best=1, white=pz.white_to_mo
 
 
 
-bfs = [Inf,Inf,10,Inf,10,10]
+bfs = [Inf,Inf,10,Inf,10,Inf]
 depth = 6
 b = Beth(value_heuristic=simple_piece_count, rank_heuristic=rank_moves, depth=depth, bfs=bfs, use_tt=false)
 b = Beth(value_heuristic=beth_eval, rank_heuristic=beth_rank_moves, depth=depth, bfs=bfs, use_tt=false)

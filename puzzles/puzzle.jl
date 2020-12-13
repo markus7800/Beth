@@ -240,16 +240,35 @@ function play_puzzle(puzzle::Puzzle, player=user_input)
 end
 
 function puzzle_rush(rush::Vector{Puzzle}, player; print_solution=false)
-    score = 0
-    for puzzle in rush
+    solveds = []
+    times = []
+
+    for (i,puzzle) in enumerate(rush)
+        @info "Puzzle $i:"
         solved,t, = @timed play_puzzle(puzzle, player)
-        score += solved
+        push!(solveds, solved)
+        push!(times, t)
+
         if print_solution && !solved
             print_puzzle(puzzle)
         end
         @info @sprintf "Spent %.2fs." t
+        println(("="^80)*"\n\n")
     end
-    @info @sprintf "Solved %d out of %d." score length(rush)
+
+    for (i, puzzle) in enumerate(rush)
+        print("Puzzle $i (Difficulty $(puzzle.difficulty)):\t")
+
+        t = times[i]
+        if solveds[i]
+            printstyled("Solved", color=:green)
+        else
+            printstyled("Failed", color=:red)
+        end
+        println(@sprintf " in %.2fs" t)
+    end
+
+    @info @sprintf "Solved %d out of %d." sum(solveds) length(rush)
 end
 
 # puzzle_1 = Puzzle(
