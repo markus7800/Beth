@@ -115,6 +115,8 @@ function beth_eval(board::Board, white::Bool, check_mult=0)
     # @info("center_score: $center_score, $white_center_score, $black_center_score") # ∈ [-8, 8] each ∈ [-4,4]
     # @info("development_score: $development_score, $white_development_score, $black_development_score") # ∈ [-12, 12] each ∈ [-6,6]
 
+    # TODO: king safety
+
     score = piece_score +
         1 * check_score +
         # 0.1 * mobility_score +
@@ -160,10 +162,16 @@ function beth_eval_til_quite(board::Board, white::Bool)
     end
 end
 
-# 25-30 μs on Desktop for both simple_piece_count and beth_eval
+using BenchmarkTools
+
 # board = Board(true)
-# @btime simple_piece_count(board, true)
-# @btime beth_eval(board, true)
+# @btime simple_piece_count(board, true) # 26.599 μs (392 allocations: 18.50 KiB)
+# @btime beth_eval(board, true) # 28.099 μs (434 allocations: 21.83 KiB)
+# # 25-30 μs on Desktop for both simple_piece_count and beth_eval
+# ms = get_moves(board, true)
+# @btime rank_moves(board, true, ms) # 57.600 μs (721 allocations: 25.83 KiB)
+# @btime beth_rank_moves(board, true, ms) # 584.100 μs (8805 allocations: 444.05 KiB)
+
 
 # beth_eval(Board(true), true)
 #
