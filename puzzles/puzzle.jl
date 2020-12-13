@@ -86,7 +86,7 @@ function PuzzleFEN(;FEN::String, solution::String, firstmove=nothing, difficulty
     end
     if occursin('Q', groups[3])
         white=true
-        board.can_castle[white+1, LONGTCASTLE] = true
+        board.can_castle[white+1, LONGCASTLE] = true
     end
     if occursin('k', groups[3])
         white=false
@@ -94,24 +94,34 @@ function PuzzleFEN(;FEN::String, solution::String, firstmove=nothing, difficulty
     end
     if occursin('q', groups[3])
         white=false
-        board.can_castle[white+1, LONGTCASTLE] = true
+        board.can_castle[white+1, LONGCASTLE] = true
     end
 
-    # group 3: en passant right
-    if groups[3] != "-"
-        file, rank = cartesian(groups[3])
+    # group 4: en passant right
+    if groups[4] != "-"
+        file, rank = cartesian(groups[4])
         board.can_en_passant[white_to_move+1, file] .= 1
     end
 
     if firstmove != nothing
-        p, rf1, rf2 = short_to_long(board, white_to_move, firstmove)
-        move!(board, white_to_move, p, rf1, rf2)
-        white_to_move = !white_to_move
+        try
+            p, rf1, rf2 = short_to_long(board, white_to_move, firstmove)
+            move!(board, white_to_move, p, rf1, rf2)
+            white_to_move = !white_to_move
+        catch e
+            println(e)
+            print_board(board, white=white_to_move)
+            println()
+            println(firstmove)
+            println(difficulty)
+        end
     end
 
     @assert is_valid(board) "Invalid chess board!"
 
-    return Puzzle(board, [solution], white_to_move, difficulty)
+    sol = split(solution, " ")
+
+    return Puzzle(board, sol, white_to_move, difficulty)
 end
 
 
@@ -174,6 +184,61 @@ function solve_puzzle(puzzle::Puzzle; N=10^4)
     println(root.score)
 end
 
+
+function play_puzzle(puzzle::Puzzle, player=user_input)
+    board = deepcopy(puzzle.board)
+    white = puzzle.white_to_move
+
+    n_moves = length(puzzle.solution)
+    i = 1
+    while true
+        print_board(board, white=white)
+        println()
+
+        p, rf1, rf2 = player(board, white)
+        if p == "abort"
+            return false
+        end
+
+        try
+            p´, rf1´, rf2´ = short_to_long(board, white, puzzle.solution[i])
+        catch e
+            println(e)
+            println(puzzle.solution[i])
+            for m in get_moves(board, white)
+                println(m)
+            end
+            return false
+        end
+
+        p´, rf1´, rf2´ = short_to_long(board, white, puzzle.solution[i])
+
+        if p == p´ && rf1 == rf1´ && rf2 == rf2´
+            # correct move
+            @info "Move was correct!"
+            move!(board, white, p, rf1, rf2)
+        else
+            @info "Move was wrong!"
+            return false
+        end
+
+        i += 1
+        if i > n_moves
+            print_board(board, white=white)
+            println()
+            @info "Puzzle solved! (Difficulty: $(puzzle.difficulty))"
+            return true
+        end
+
+        p, rf1, rf2 = short_to_long(board, !white, puzzle.solution[i])
+        @info "Computer says $(puzzle.solution[i])!"
+        move!(board, !white, p, rf1, rf2)
+
+
+        i += 1
+    end
+end
+
 # puzzle_1 = Puzzle(
 #     white=["Kg1", "Pa2", "Pb2", "Nd2", "Ph2", "Pe3", "Pg3", "Rd5", "Rd8"],
 #     black=["Ra8", "Pg7", "Kh7", "Pb6", "Rf6", "Ph6", "Pa5", "Pe4", "Bd3"],
@@ -188,3 +253,7 @@ end
 #     solution="",
 #     firstmove="",
 #     difficulty=)
+
+include("puzzle_rush_20_12_13.jl")
+
+play_puzzle(puzzle_rush[24])
