@@ -257,7 +257,8 @@ function puzzle_rush(rush::Vector{Puzzle}, player; print_solution=false)
     end
 
     for (i, puzzle) in enumerate(rush)
-        print("Puzzle $i (Difficulty $(puzzle.difficulty)):\t")
+        printstyled("Puzzle $i ", color=:blue)
+        print("(Difficulty $(puzzle.difficulty)):\t")
 
         t = times[i]
         if solveds[i]

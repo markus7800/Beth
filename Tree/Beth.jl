@@ -261,6 +261,13 @@ game_history = play_game(black_player=b)
 
 
 puzzle_rush(rush_20_12_13, b, print_solution=true)
+pz = rush_20_12_13[end]
+print_puzzle(pz)
+root = search(b, board=deepcopy(pz.board), white=pz.white_to_move)
+print_tree(root, max_depth=1, has_to_have_children=false, white=pz.white_to_move)
+
+print_tree(root["Rc4c5"], max_depth=1, has_to_have_children=false, white=!pz.white_to_move)
+print_tree(root["Rc4c5"]["Pd4c5"], max_depth=1, has_to_have_children=false, white=pz.white_to_move)
 
 for ply in game_history
     println(ply)
