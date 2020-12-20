@@ -165,6 +165,7 @@ function beth_eval_til_quite(board::Board, white::Bool)
         current_score = score
         white = !white
     end
+    return current_score
 end
 
 # using BenchmarkTools

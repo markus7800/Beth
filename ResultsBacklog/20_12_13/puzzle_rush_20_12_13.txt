@@ -22,9 +22,9 @@ Computer says: R: c7-c8 valued with 1000.00.
 Chess Board
 8 • • R • R • K •
 7 • P • • • P P P
-6 • • • • • • • •
 5 • • • • • • • •
 4 P • • • • • • •
+6 • • • • • • • •
 3 • • • • • • P •
 2 • • • • • P K P
 1 • R • • • • • •

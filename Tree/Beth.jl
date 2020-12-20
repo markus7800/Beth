@@ -1,14 +1,14 @@
-
 include("../chess/chess.jl")
 
 include("tree.jl")
-include("evaluation.jl")
+include("simple_evaluation.jl")
 using Printf
 
 # include("transpositiontable.jl")
 
 mutable struct Beth
-    #search_algorithm::Function
+    search_algorithm::Function
+    search_args::Dict
 
     value_heuristic::Function
     rank_heuristic::Function
@@ -20,15 +20,16 @@ mutable struct Beth
     n_leafes::Int
     n_explored_nodes::Int
 
-    depth::Int
-    bfs::Vector # max_branching_factors
 
-
-    function Beth(;value_heuristic, rank_heuristic, board=Board(), white=true, depth=5, bfs=fill(Inf, depth))
+    function Beth(;search_algorithm=minimax_search, value_heuristic, rank_heuristic, board=Board(), white=true, search_args::Dict)
         beth = new()
         @info "Heuristics: $value_heuristic, $rank_heuristic"
-        @info "Branching: $bfs"
-        @info "Depth: $depth"
+        @info "Search: $search_algorithm"
+        @info "Args: $search_args"
+
+        beth.search_algorithm = search_algorithm
+        beth.search_args = search_args
+
         beth.value_heuristic = value_heuristic
         beth.rank_heuristic = rank_heuristic
 
@@ -38,9 +39,6 @@ mutable struct Beth
 
         beth.n_leafes = 0
         beth.n_explored_nodes = 0
-
-        beth.depth = depth
-        beth.bfs = reverse(bfs)
         return beth
     end
 end
@@ -56,7 +54,15 @@ function minimax_search(beth::Beth; board=beth.board, white=beth.white)
     beth.n_explored_nodes = 0
     root = Node()
 
-    v,t = @timed minimax(beth, root, beth.depth, -Inf, Inf, white)
+    depth = get(beth.search_args, "depth", 0)
+    bfs = get(beth.search_args, "branching_factors", fill(Inf, depth))
+    @assert length(bfs) ≥ depth
+    if depth == 0
+        depth = length(bfs)
+    end
+    beth.search_args["branching_factors"] = reverse(bfs) # depth is descending
+
+    v,t = @timed minimax(beth, root, depth, -Inf, Inf, white)
 
     @info(@sprintf "%d nodes (%d leafes) explored in %.4f seconds (%.2f/s)." beth.n_explored_nodes beth.n_leafes t (beth.n_explored_nodes/t) )
     return root
@@ -73,7 +79,7 @@ function (beth::Beth)(board::Board, white::Bool)
     #     println(n)
     # end
 
-    root = minimax_search(beth, board=board, white=white)
+    root = beth.search_algorithm(beth, board=board, white=white)
     nodes = sort(root.children, lt=(x,y)->x.score<y.score, rev=white)
 
     if length(nodes) > 0
@@ -124,7 +130,7 @@ function minimax(beth::Beth, node::Node, depth::Int, α::Float64, β::Float64, w
 
     if white
         value = -Inf
-        bf = beth.bfs[depth] # max branching factor
+        bf = beth.search_args["branching_factors"][depth] # max branching factor
         for (i,(prescore, m)) in enumerate(ranked_moves)
             i > bf && break
 
@@ -139,7 +145,7 @@ function minimax(beth::Beth, node::Node, depth::Int, α::Float64, β::Float64, w
         return value
     else
         value = Inf
-        bf = beth.bfs[depth] # max branching factor
+        bf = beth.search_args["branching_factors"][depth] # max branching factor
         for (i,(prescore, m)) in enumerate(ranked_moves)
             i > bf && break
             child = Node(move=m, parent=node, score=prescore, visits=0)
@@ -232,20 +238,13 @@ include("../puzzles/puzzle_rush_20_12_13.jl")
 pz = puzzles[12]
 print_puzzle(pz)
 
-bfs = reverse([Inf,Inf,Inf,Inf,Inf])
-depth = 5
-b = Beth(value_heuristic=simple_piece_count, rank_heuristic=simple_rank_moves, depth=depth, bfs=bfs)
-root = search(b, board=pz.board, white=pz.white_to_move)
-print_tree(root, has_to_have_children=false, expand_best=1, white=pz.white_to_move)
-
-
-
 bfs = [Inf,Inf,10,Inf,10,Inf]
 depth = 6
-b = Beth(value_heuristic=simple_piece_count, rank_heuristic=simple_rank_moves, depth=depth, bfs=bfs)
-b = Beth(value_heuristic=beth_eval, rank_heuristic=beth_rank_moves, depth=depth, bfs=bfs)
+b = Beth(value_heuristic=simple_piece_count, rank_heuristic=simple_rank_moves, search_args=Dict("depth"=>depth, "branching_factors"=>bfs))
+b = Beth(value_heuristic=beth_eval, rank_heuristic=beth_rank_moves, search_args=Dict("depth"=>depth, "branching_factors"=>bfs))
 game_history = play_game(black_player=b)
 
+play_puzzle(rush_20_12_13[14], b)
 
 puzzle_rush(rush_20_12_13, b, print_solution=true)
 pz = rush_20_12_13[end]
