@@ -38,7 +38,7 @@ end
 
 # just a preranking is discarded after evaluation
 # imposes an order of expansion of children
-function rank_moves(board::Board, white::Bool, ms::Vector{Move})
+function simple_rank_moves(board::Board, white::Bool, ms::Vector{Move})
     # Checks, captures, attacks ...
     check = 30
     captures = 1

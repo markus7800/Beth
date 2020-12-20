@@ -27,7 +27,7 @@ function get_moves(board::Board, white::Bool)
     player = 7 + !white
     opponent = 7 + white
     moves = Move[]
-    kingpos = (0,0)
+    kingpos = (-10, -10) # move off board for evaluation without kings
     for rank in 1:8, file in 1:8
         !board[rank, file, player] && continue
         #println("Piece: $(SYMBOLS[1,findfirst(board[rank,file,:])]) at $(field(rank,file)) ($rank $file)")

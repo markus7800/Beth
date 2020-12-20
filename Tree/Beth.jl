@@ -5,9 +5,11 @@ include("tree.jl")
 include("evaluation.jl")
 using Printf
 
-include("transpositiontable.jl")
+# include("transpositiontable.jl")
 
 mutable struct Beth
+    #search_algorithm::Function
+
     value_heuristic::Function
     rank_heuristic::Function
 
@@ -21,10 +23,8 @@ mutable struct Beth
     depth::Int
     bfs::Vector # max_branching_factors
 
-    use_tt::Bool
-    tt::TranspositionTable
 
-    function Beth(;value_heuristic, rank_heuristic, board=Board(), white=true, depth=5, bfs=fill(Inf, depth), use_tt=false)
+    function Beth(;value_heuristic, rank_heuristic, board=Board(), white=true, depth=5, bfs=fill(Inf, depth))
         beth = new()
         @info "Heuristics: $value_heuristic, $rank_heuristic"
         @info "Branching: $bfs"
@@ -41,10 +41,6 @@ mutable struct Beth
 
         beth.depth = depth
         beth.bfs = reverse(bfs)
-
-        beth.use_tt = use_tt
-        beth.tt = TranspositionTable()
-
         return beth
     end
 end
@@ -53,7 +49,7 @@ function restore_board_position(beth::Beth, node::Node)
     restore_board_position(beth.board, beth.white, beth._board, node)
 end
 
-function search(beth::Beth; board=beth.board, white=beth.white)
+function minimax_search(beth::Beth; board=beth.board, white=beth.white)
     beth.board = board
     beth.white = white
     beth.n_leafes = 0
@@ -63,24 +59,21 @@ function search(beth::Beth; board=beth.board, white=beth.white)
     v,t = @timed minimax(beth, root, beth.depth, -Inf, Inf, white)
 
     @info(@sprintf "%d nodes (%d leafes) explored in %.4f seconds (%.2f/s)." beth.n_explored_nodes beth.n_leafes t (beth.n_explored_nodes/t) )
-    if beth.use_tt
-        @info(@sprintf "Transposition table reduces node evaluations by %d. Fetch ratio: %.4f." beth.tt.n_fetched_stored_val (beth.tt.n_fetched_stored_val / beth.tt.n_total))
-    end
     return root
 end
 
 function (beth::Beth)(board::Board, white::Bool)
     # beth.board = board
     # beth.white = white
-    # root = beam_search(beth)
 
+    # root = beam_search(beth)
 
     # nodes = sort(root.children, lt=(x,y)->x.score<y.score, rev=white)
     # for n in nodes
     #     println(n)
     # end
 
-    root = search(beth, board=board, white=white)
+    root = minimax_search(beth, board=board, white=white)
     nodes = sort(root.children, lt=(x,y)->x.score<y.score, rev=white)
 
     if length(nodes) > 0
@@ -97,15 +90,9 @@ function minimax(beth::Beth, node::Node, depth::Int, α::Float64, β::Float64, w
     # proved to be faster in BFS
     _white, = restore_board_position(beth, node)
     @assert _white == white
-    # position_hash = hash(beth._board, white)
-    #
-    # if beth.use_tt
-    #     value = get!(beth.tt, position_hash)
-    #     if !isnan(value)
-    #         node.score = value
-    #         return value
-    #     end
-    # end
+
+    # TODO: switch around to remove checking for game end in simple_piece_count
+    # TODO: expand until quite for piececount
 
     if depth == 0
         beth.n_leafes += 1
@@ -204,7 +191,7 @@ function beam_search(beth::Beth, full_depth=4, beam_depth=16, beam_width=10_000)
             append!(ranked_moves, children)
         end
         @info @sprintf "Expanded depth %d in %.2fs." l+1 t
-        sort!(ranked_moves, rev = white)
+        sort!(ranked_moves, rev=white)
 
         push!(layers, map(x -> x[2], ranked_moves[1:min(beam_width, length(ranked_moves))]))
         white = !white
@@ -247,7 +234,7 @@ print_puzzle(pz)
 
 bfs = reverse([Inf,Inf,Inf,Inf,Inf])
 depth = 5
-b = Beth(value_heuristic=simple_piece_count, rank_heuristic=rank_moves, depth=depth, bfs=bfs, use_tt=false)
+b = Beth(value_heuristic=simple_piece_count, rank_heuristic=simple_rank_moves, depth=depth, bfs=bfs)
 root = search(b, board=pz.board, white=pz.white_to_move)
 print_tree(root, has_to_have_children=false, expand_best=1, white=pz.white_to_move)
 
@@ -255,8 +242,8 @@ print_tree(root, has_to_have_children=false, expand_best=1, white=pz.white_to_mo
 
 bfs = [Inf,Inf,10,Inf,10,Inf]
 depth = 6
-b = Beth(value_heuristic=simple_piece_count, rank_heuristic=rank_moves, depth=depth, bfs=bfs, use_tt=false)
-b = Beth(value_heuristic=beth_eval, rank_heuristic=beth_rank_moves, depth=depth, bfs=bfs, use_tt=false)
+b = Beth(value_heuristic=simple_piece_count, rank_heuristic=simple_rank_moves, depth=depth, bfs=bfs)
+b = Beth(value_heuristic=beth_eval, rank_heuristic=beth_rank_moves, depth=depth, bfs=bfs)
 game_history = play_game(black_player=b)
 
 
@@ -287,37 +274,3 @@ board = game_history[end][3]
 b = Beth(value_heuristic=beth_eval, rank_heuristic=rank_moves, depth=depth, bfs=bfs, use_tt=false)
 beam_search(b, 4, 16)
 game_history = play_game(black_player=b)
-
-# ply 15 pawn
-
-# e4 d4 Qd3 d5 Qf3 Bc4
-
-board, white, m = game_history[11]
-print_board(board, white=white)
-
-@btime get_moves($board, $white)
-
-root = search(b, board=board, white=white)
-
-print_tree(root, has_to_have_children=false, expand_best=1, white=pz.white_to_move)
-
-print_tree(root, has_to_have_children=false, white=pz.white_to_move)
-
-
-
-
-
-
-b = Beth(value_heuristic=simple_piece_count, rank_heuristic=rank_moves, depth=3, bfs=[10,10,10], use_tt=false)
-root = search(b, board=pz.board, white=pz.white_to_move)
-
-
-board = Board()
-
-ms = get_moves(board, true)
-
-simple_rank = rank_moves(board, true, ms)
-
-beth_rank = beth_rank_moves(board, true, ms)
-
-map(x -> (x[1], string(x[2])), sort!(beth_rank, rev=white))

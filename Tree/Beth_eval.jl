@@ -1,22 +1,25 @@
 
-function beth_eval(board::Board, white::Bool, check_mult=0)
-    multiplier = white ? -1 : 1
-
-    player = 7 + !white
-    opponent = 7 + white
-
+# does not check for stalemate
+function beth_eval(board::Board, unused::Bool, check_value=0.)
+    # move off board for evaluation without kings
+    white_king_pos = (-10, -10)
+    black_king_pos = (-10, -10)
 
     white_piece_score = 0.
     black_piece_score = 0.
 
-    king_pos = (0, 0)
     white_pawn_struct = zeros(Int, 8)
     black_pawn_struct = zeros(Int, 8)
 
     for rank in 1:8, file in 1:8
-        if board[rank,file,KING] && board[rank,file,player]
-            king_pos = (rank, file)
+        if board[rank,file,KING]
+            if board[rank,file,WHITE]
+                white_king_pos = (rank, file)
+            else
+                black_king_pos = (rank, file)
+            end
         end
+
         if board[rank,file,WHITE]
             white_piece_score += board[rank,file,PAWN] * 1 + (board[rank,file,KNIGHT] + board[rank,file,BISHOP]) * 3 + board[rank,file,ROOK] * 5 + board[rank,file,QUEEN] * 9
         elseif board[rank,file,BLACK]
@@ -34,23 +37,25 @@ function beth_eval(board::Board, white::Bool, check_mult=0)
 
     piece_score = white_piece_score - black_piece_score
 
-    check = is_attacked(board, player, opponent, king_pos)
-    ms = get_moves(board, white)
+    white_in_check = is_attacked(board, WHITE, BLACK, white_king_pos)
+    black_in_check = is_attacked(board, BLACK, WHITE, black_king_pos)
 
     check_score = 0.
-    if length(ms) == 0
-        if check
-            # checkmate
-            check_score = 1000. * multiplier
+    if white_in_check
+        if length(get_moves(board, true)) == 0
+            return -1000. # checkmate
         else
-            # stalemate
-            check_score = 0.
+            check_score += -check_value
         end
-    elseif check
-        check_score = multiplier * check_mult
+    end
+    if black_in_check
+        if length(get_moves(board, true)) == 0
+            return 1000. # checkmate
+        else
+            check_score += check_value
+        end
     end
 
-    mobility_score = length(ms) * multiplier
 
     white_pawn_score = 0.
     black_pawn_score = 0.
@@ -119,7 +124,6 @@ function beth_eval(board::Board, white::Bool, check_mult=0)
 
     score = piece_score +
         1 * check_score +
-        # 0.1 * mobility_score +
         0.1 * pawn_score +
         0.1 * center_score +
         0.1 * development_score
@@ -142,6 +146,7 @@ function beth_rank_moves(board::Board, white::Bool, ms::Vector{Move})
     return ranked_moves
 end
 
+
 # only use for leaf nodes
 function beth_eval_til_quite(board::Board, white::Bool)
     current_score = beth_eval(board, white)
@@ -162,8 +167,8 @@ function beth_eval_til_quite(board::Board, white::Bool)
     end
 end
 
-using BenchmarkTools
-
+# using BenchmarkTools
+#
 # board = Board(true)
 # @btime simple_piece_count(board, true) # 26.599 μs (392 allocations: 18.50 KiB)
 # @btime beth_eval(board, true) # 28.099 μs (434 allocations: 21.83 KiB)
@@ -171,8 +176,8 @@ using BenchmarkTools
 # ms = get_moves(board, true)
 # @btime rank_moves(board, true, ms) # 57.600 μs (721 allocations: 25.83 KiB)
 # @btime beth_rank_moves(board, true, ms) # 584.100 μs (8805 allocations: 444.05 KiB)
-
-
+#
+#
 # beth_eval(Board(true), true)
 #
 # board = Board(false)
@@ -187,3 +192,14 @@ using BenchmarkTools
 # board.position[4,4, [QUEEN, WHITE]] .= 0
 # board.position[4,4, [QUEEN, BLACK]] .= 1
 # beth_eval(board, true)
+#
+#
+# board = Board(false)
+# board.position[4:5,4:5, [QUEEN, WHITE]] .= 1
+# board.position[4,4, [QUEEN, WHITE]] .= 0
+# board.position[4,4, [QUEEN, BLACK]] .= 1
+# board.position[1,1, [KING, WHITE]] .= 1
+#
+# beth_eval(board, true, 30)
+#
+# print_board(board)
