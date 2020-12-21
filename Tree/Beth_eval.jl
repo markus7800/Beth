@@ -49,7 +49,7 @@ function beth_eval(board::Board, unused::Bool, check_value=0.)
         end
     end
     if black_in_check
-        if length(get_moves(board, true)) == 0
+        if length(get_moves(board, false)) == 0
             return 1000. # checkmate
         else
             check_score += check_value

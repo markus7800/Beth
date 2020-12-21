@@ -168,8 +168,7 @@ function beam_search(beth::Beth; board=beth.board, white=beth.white)
     return root
 end
 
-function beam(beth::Beth, full_depth=4, max_n_leafes=50_000, beam_depth=16, beam_width=10_000)
-
+function beam(beth::Beth, full_depth=4, max_n_leafes=50_000, beam_depth=16, beam_width=10_000; verbose=false)
     white = beth.white
     root = Node()
     first_layer = map(m->Node(move=m, parent=root), get_moves(beth.board, white))
@@ -189,7 +188,6 @@ function beam(beth::Beth, full_depth=4, max_n_leafes=50_000, beam_depth=16, beam
 
             append!(layers[d+1], children)
         end
-        println("$d: white to move: $white")
         white = !white
     end
 
@@ -200,13 +198,13 @@ function beam(beth::Beth, full_depth=4, max_n_leafes=50_000, beam_depth=16, beam
     sort!(layers[end], lt=(x,y)->x.score<y.score, rev=white)
     layers[end] = layers[end][1:min(length(layers[end]), max_n_leafes)]
 
-    @info @sprintf "Expanded to depth %d in %.2fs." full_depth t1
-    @info @sprintf "Layers sizes: %s" length.(layers)
+    verbose && @info @sprintf "Expanded to depth %d in %.2fs." full_depth t1
+    verbose && @info @sprintf "Layers sizes: %s" length.(layers)
 
     v,t2, = @timed for d in 1:beam_depth
         l = d - 1 + full_depth
         ranked_moves = []
-        v,t, = @timed @progress for node in layers[l]
+        v,t, = @timed for node in layers[l]
             _white, = restore_board_position(beth, node)
             @assert _white == white
             ms = get_moves(beth._board, white)
@@ -215,24 +213,20 @@ function beam(beth::Beth, full_depth=4, max_n_leafes=50_000, beam_depth=16, beam
             children = map(x->(x[1],Node(move=x[2], parent=node)), rms)
             append!(ranked_moves, children)
         end
-        println("$l: white to move: $white")
-        @info @sprintf "Expanded depth %d in %.2fs." l+1 t
+        verbose && @info @sprintf "Expanded depth %d in %.2fs." l+1 t
         sort!(ranked_moves, rev=white)
 
         push!(layers, map(x -> x[2], ranked_moves[1:min(beam_width, length(ranked_moves))]))
         white = !white
     end
 
-
-
-    @info @sprintf "Expanded to depth %d in %.2fs." full_depth+beam_depth t1+t2
-    @info @sprintf "Layers sizes: %s" length.(layers)
+    verbose && @info @sprintf "Expanded to depth %d in %.2fs." full_depth+beam_depth t1+t2
+    verbose && @info @sprintf "Layers sizes: %s" length.(layers)
 
     v,t, = @timed begin
         white = iseven(full_depth+beam_width) ? beth.white : !beth.white
 
         for d in full_depth+beam_depth:-1:1
-            println("$d: $white $(white ? "min" : "max")")
             for node in layers[d]
                 if node.visits == 0
                     # leaf
@@ -257,12 +251,8 @@ function beam(beth::Beth, full_depth=4, max_n_leafes=50_000, beam_depth=16, beam
             white = !white
         end
     end
-    @info @sprintf "Backpropagated in %.2fs." t
-
-    for c in root.children
-        println(c)
-    end
-    @info "Beam end"
+    verbose && @info @sprintf "Backpropagated in %.2fs." t
+    verbose && @info "Beam end"
 
     beth.n_explored_nodes = sum(length.(layers))
     beth.n_leafes = length(layers[end])
@@ -310,12 +300,17 @@ board = game_history[end][3]
   beth_eval, beth_rank_moves, [Inf,Inf,10,Inf,10,10] 80s, gets faster, is good (won a piece)
 =#
 
-b = Beth(value_heuristic=beth_eval, rank_heuristic=beth_rank_moves, search_algorithm=beam_search, search_args=Dict("full_depth"=>4, "beam_width"=>10_000, "beam_depth"=>0, "max_n_leafes"=>10^6))
+b = Beth(value_heuristic=beth_eval, rank_heuristic=beth_rank_moves, search_algorithm=beam_search, search_args=Dict("full_depth"=>4, "beam_width"=>10_000, "beam_depth"=>8, "max_n_leafes"=>50_000))
 game_history = play_game(black_player=b)
+puzzle_rush(rush_20_12_13, b, print_solution=true)
+
+p = rush_20_12_13[1]
+root_beam = beam_search(b, board=p.board, white=p.white_to_move)
 
 board = Board()
 move!(board, true, 'P', "e2", "e4")
 root_beam = beam_search(b, board=board, white=false)
+
 
 bfs = [Inf,Inf,Inf,Inf]
 depth = 4
@@ -330,5 +325,13 @@ print_tree(root_beam, max_depth=1, white=false, has_to_have_children=false)
 print_tree(root_minimax, max_depth=1, white=false, has_to_have_children=false)
 
 
-print_tree(root_beam["Ng8f6"]["Qd1h5"]["Nf6h5"], max_depth=1, white=false, has_to_have_children=false)
+print_tree(root_beam["Rc7c8"]["Re7e8"]["Rc8e8"], max_depth=1, has_to_have_children=false)
 print_tree(root_minimax["Ng8f6"]["Qd1h5"]["Nf6h5"], max_depth=1, white=false, has_to_have_children=false)
+
+board = deepcopy(p.board)
+move!(board, p.white_to_move, 'R', "c7", "c8")
+move!(board, !p.white_to_move, 'R', "e7", "e8")
+move!(board, p.white_to_move, 'R', "c8", "e8")
+print_board(board)
+
+beth_eval(board, false, 30)

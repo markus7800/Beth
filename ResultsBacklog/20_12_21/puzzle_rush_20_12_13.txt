@@ -1,0 +1,1080 @@
+[ Info: Heuristics: beth_eval, beth_rank_moves
+[ Info: Search: beam_search
+[ Info: Args: Dict("beam_depth" => 8,"full_depth" => 4,"max_n_leafes" => 50000,"beam_width" => 10000)
+[ Info: Puzzle 1:
+Chess Board
+8 • • • • • • K •
+7 • P R • R P P P
+6 • • • • • • • •
+5 • • • • • • • •
+4 P • • • • • • •
+3 • • • • • • P •
+2 • • • • • P K P
+1 • R • • • • • •
+  a b c d e f g h
+[ Info: 140118 nodes (10000 leafes) explored in 18.9691 seconds (7386.66/s).
+Computer says: R: c7-c8 valued with 1000.00.
+[ Info: Move was correct!
+[ Info: Computer says Re8!
+Chess Board
+8 • • R • R • K •
+7 • P • • • P P P
+6 • • • • • • • •
+5 • • • • • • • •
+4 P • • • • • • •
+3 • • • • • • P •
+2 • • • • • P K P
+1 • R • • • • • •
+  a b c d e f g h
+[ Info: 131617 nodes (10000 leafes) explored in 17.2828 seconds (7615.49/s).
+Computer says: R: c8-e8 valued with 1000.00.
+[ Info: Move was correct!
+Chess Board
+8 • • • • R • K •
+7 • P • • • P P P
+6 • • • • • • • •
+5 • • • • • • • •
+4 P • • • • • • •
+3 • • • • • • P •
+2 • • • • • P K P
+1 • R • • • • • •
+  a b c d e f g h
+[ Info: Puzzle solved! (Difficulty: 100)
+[ Info: Spent 36.41s.
+================================================================================
+
+
+[ Info: Puzzle 2:
+Chess Board
+8 R • B Q K B N R
+7 P P P P P • • P
+6 • • N • • • • •
+5 • • • • • P Q •
+4 • • • • • • • •
+3 • • • • • • • •
+2 P P P P • P P P
+1 R N B • K B N R
+  a b c d e f g h
+[ Info: 91788 nodes (0 leafes) explored in 30.0299 seconds (3056.56/s).
+Computer says: Q: g5-h5 valued with 1000.00.
+[ Info: Move was correct!
+Chess Board
+8 R • B Q K B N R
+7 P P P P P • • P
+6 • • N • • • • •
+5 • • • • • P • Q
+4 • • • • • • • •
+3 • • • • • • • •
+2 P P P P • P P P
+1 R N B • K B N R
+  a b c d e f g h
+[ Info: Puzzle solved! (Difficulty: 215)
+[ Info: Spent 30.11s.
+================================================================================
+
+
+[ Info: Puzzle 3:
+Chess Board
+1 • K • • • • • •
+2 • • R • • • • •
+3 • P • • • R • P
+4 R • • B • P • •
+5 • • • • P • • •
+6 • • • • • • • P
+7 • • • • • • P •
+8 • • • • • • • K
+  h g f e d c b a
+[ Info: 144049 nodes (10000 leafes) explored in 21.2666 seconds (6773.47/s).
+Computer says: R: h4-h1 valued with -1000.00.
+[ Info: Move was correct!
+Chess Board
+1 R K • • • • • •
+2 • • R • • • • •
+3 • P • • • R • P
+4 • • • B • P • •
+5 • • • • P • • •
+6 • • • • • • • P
+7 • • • • • • P •
+8 • • • • • • • K
+  h g f e d c b a
+[ Info: Puzzle solved! (Difficulty: 272)
+[ Info: Spent 21.37s.
+================================================================================
+
+
+[ Info: Puzzle 4:
+Chess Board
+1 • K • • • • N R
+2 P P P • • • P P
+3 • • N B • • • •
+4 • • • R • • • •
+5 • P • • • • • •
+6 P • • B Q • • P
+7 • B • K • P Q •
+8 R • • • • • • R
+  h g f e d c b a
+[ Info: 216016 nodes (10000 leafes) explored in 103.5817 seconds (2085.47/s).
+Computer says: Q: d6-d1 valued with -1000.00.
+[ Info: Move was correct!
+[ Info: Computer says Ne1!
+Chess Board
+1 • K • N Q • N R
+2 P P P • • • P P
+3 • • • B • • • •
+4 • • • R • • • •
+5 • P • • • • • •
+6 P • • B • • • P
+7 • B • K • P Q •
+8 R • • • • • • R
+  h g f e d c b a
+[ Info: 145972 nodes (0 leafes) explored in 92.2196 seconds (1582.87/s).
+Computer says: Q: d1-e1 valued with -1000.00.
+[ Info: Move was correct!
+Chess Board
+1 • K • Q • • N R
+2 P P P • • • P P
+3 • • • B • • • •
+4 • • • R • • • •
+5 • P • • • • • •
+6 P • • B • • • P
+7 • B • K • P Q •
+8 R • • • • • • R
+  h g f e d c b a
+[ Info: Puzzle solved! (Difficulty: 331)
+[ Info: Spent 195.95s.
+================================================================================
+
+
+[ Info: Puzzle 5:
+Chess Board
+8 • • • • • • • •
+7 • • • R • P R •
+6 • • P • P • • •
+5 P P • • K • • •
+4 • • • • P • • •
+3 P • P • B • • K
+2 • P • • • • • •
+1 • • • • • • • •
+  a b c d e f g h
+[ Info: 140216 nodes (10000 leafes) explored in 25.5688 seconds (5483.87/s).
+Computer says: B: e3-d4 valued with 5.90.
+[ Info: Move was correct!
+[ Info: Computer says Kf4!
+Chess Board
+8 • • • • • • • •
+7 • • • R • P R •
+6 • • P • P • • •
+5 P P • • • • • •
+4 • • • B P K • •
+3 P • P • • • • K
+2 • P • • • • • •
+1 • • • • • • • •
+  a b c d e f g h
+[ Info: 138280 nodes (10000 leafes) explored in 26.0207 seconds (5314.24/s).
+Computer says: B: d4-g7 valued with 1.50.
+[ Info: Move was correct!
+Chess Board
+8 • • • • • • • •
+7 • • • R • P B •
+6 • • P • P • • •
+5 P P • • • • • •
+4 • • • • P K • •
+3 P • P • • • • K
+2 • P • • • • • •
+1 • • • • • • • •
+  a b c d e f g h
+[ Info: Puzzle solved! (Difficulty: 370)
+[ Info: Spent 51.74s.
+================================================================================
+
+
+[ Info: Puzzle 6:
+Chess Board
+8 • • • • • K • •
+7 • • Q • • • P •
+6 • • P • • • • •
+5 • • • • R R • •
+4 P P • • • • • Q
+3 • • • • • • • P
+2 • • P • • • P K
+1 • • • • • • • •
+  a b c d e f g h
+[ Info: 145157 nodes (10000 leafes) explored in 39.7097 seconds (3655.46/s).
+Computer says: Q: h4-h8 valued with 2.80.
+[ Info: Move was correct!
+[ Info: Computer says Kf7!
+Chess Board
+8 • • • • • • • Q
+7 • • Q • • K P •
+6 • • P • • • • •
+5 • • • • R R • •
+4 P P • • • • • •
+3 • • • • • • • P
+2 • • P • • • P K
+1 • • • • • • • •
+  a b c d e f g h
+[ Info: 140829 nodes (10000 leafes) explored in 42.4715 seconds (3315.85/s).
+Computer says: Q: h8-e8 valued with 2.60.
+[ Info: Move was correct!
+[ Info: Computer says Kf6!
+Chess Board
+8 • • • • Q • • •
+7 • • Q • • • P •
+6 • • P • • K • •
+5 • • • • R R • •
+4 P P • • • • • •
+3 • • • • • • • P
+2 • • P • • • P K
+1 • • • • • • • •
+  a b c d e f g h
+[ Info: 71478 nodes (0 leafes) explored in 32.0993 seconds (2226.78/s).
+Computer says: Q: e8-e6 valued with 1000.00.
+[ Info: Move was correct!
+Chess Board
+8 • • • • • • • •
+7 • • Q • • • P •
+6 • • P • Q K • •
+5 • • • • R R • •
+4 P P • • • • • •
+3 • • • • • • • P
+2 • • P • • • P K
+1 • • • • • • • •
+  a b c d e f g h
+[ Info: Puzzle solved! (Difficulty: 421)
+[ Info: Spent 114.49s.
+================================================================================
+
+
+[ Info: Puzzle 7:
+Chess Board
+1 • • • • • B N R
+2 • • • • • K P P
+3 • Q • • • P • •
+4 • • P • P P • •
+5 • N • P P • • •
+6 • • Q P • • N •
+7 • • P • • • P P
+8 • • • • R K • •
+  h g f e d c b a
+[ Info: 146807 nodes (10000 leafes) explored in 37.8248 seconds (3881.23/s).
+Computer says: Q: g3-d3 valued with -1000.00.
+[ Info: Move was correct!
+Chess Board
+1 • • • • • B N R
+2 • • • • • K P P
+3 • • • • Q P • •
+4 • • P • P P • •
+5 • N • P P • • •
+6 • • Q P • • N •
+7 • • P • • • P P
+8 • • • • R K • •
+  h g f e d c b a
+[ Info: Puzzle solved! (Difficulty: 471)
+[ Info: Spent 37.92s.
+================================================================================
+
+
+[ Info: Puzzle 8:
+Chess Board
+1 R • K • • B • R
+2 P P P • • • P P
+3 • • N • • • N •
+4 • • • • • Q N •
+5 • • • • • • • •
+6 • • • • • • • P
+7 P P P Q B P P •
+8 R N • K • • • R
+  h g f e d c b a
+[ Info: 200200 nodes (10000 leafes) explored in 87.3673 seconds (2291.47/s).
+Computer says: B: d7-b5 valued with -0.10.
+[ Info: Move was correct!
+[ Info: Computer says Qb5!
+Chess Board
+1 R • K • • B • R
+2 P P P • • • P P
+3 • • N • • • N •
+4 • • • • • • N •
+5 • • • • • • Q •
+6 • • • • • • • P
+7 P P P Q • P P •
+8 R N • K • • • R
+  h g f e d c b a
+[ Info: 135374 nodes (10000 leafes) explored in 38.4259 seconds (3522.99/s).
+Computer says: P: a6-b5 valued with 3.30.
+[ Info: Move was correct!
+[ Info: Computer says Pc8Q!
+Chess Board
+1 R • K • • B • R
+2 P P P • • • P P
+3 • • N • • • N •
+4 • • • • • • N •
+5 • • • • • • P •
+6 • • • • • • • •
+7 P P P Q • • P •
+8 R N • K • Q • R
+  h g f e d c b a
+[ Info: 132287 nodes (10000 leafes) explored in 32.8641 seconds (4025.28/s).
+Computer says: R: a8-c8 valued with -5.60.
+[ Info: Move was correct!
+Chess Board
+1 R • K • • B • R
+2 P P P • • • P P
+3 • • N • • • N •
+4 • • • • • • N •
+5 • • • • • • P •
+6 • • • • • • • •
+7 P P P Q • • P •
+8 R N • K • R • •
+  h g f e d c b a
+[ Info: Puzzle solved! (Difficulty: 537)
+[ Info: Spent 158.83s.
+================================================================================
+
+
+[ Info: Puzzle 9:
+Chess Board
+1 • K R • • • R •
+2 P P • • • • P P
+3 • • • N • • • •
+4 • • • P P • • •
+5 • • P • P • • •
+6 P • • • P • N P
+7 • P P • • • Q •
+8 R • B K Q • • R
+  h g f e d c b a
+[ Info: 157540 nodes (10000 leafes) explored in 36.1344 seconds (4359.83/s).
+Computer says: N: e3-f1 valued with -3.60.
+[ Info: Puzzle failed! (Difficulty: 586)
+Puzzle
+Chess Board
+1 • K R • • • R •
+2 P P • • • • P P
+3 • • • N • • • •
+4 • • • P P • • •
+5 • • P • P • • •
+6 P • • • P • N P
+7 • P P • • • Q •
+8 R • B K Q • • R
+  h g f e d c b a
+Difficulty:
+586
+Solution:
+Rb8
+[ Info: Spent 36.19s.
+================================================================================
+
+
+[ Info: Puzzle 10:
+Chess Board
+1 • • • • • • • •
+2 • • • • • • • •
+3 • • • • • • • •
+4 P • K • • • P •
+5 P • P • • • • P
+6 • • P • B P • P
+7 • • • K • • P •
+8 • • • • • • • •
+  h g f e d c b a
+[ Info: 84393 nodes (10000 leafes) explored in 5.7102 seconds (14779.36/s).
+Computer says: K: e7-d6 valued with -1.10.
+[ Info: Move was correct!
+[ Info: Computer says Ke4!
+Chess Board
+1 • • • • • • • •
+2 • • • • • • • •
+3 • • • • • • • •
+4 P • • K • • P •
+5 P • P • • • • P
+6 • • P • K P • P
+7 • • • • • • P •
+8 • • • • • • • •
+  h g f e d c b a
+[ Info: 82438 nodes (10000 leafes) explored in 5.0083 seconds (16460.31/s).
+Computer says: P: c6-c5 valued with -1.30.
+[ Info: Move was correct!
+[ Info: Computer says b5!
+Chess Board
+1 • • • • • • • •
+2 • • • • • • • •
+3 • • • • • • • •
+4 P • • K • • • •
+5 P • P • • P P P
+6 • • P • K • • P
+7 • • • • • • P •
+8 • • • • • • • •
+  h g f e d c b a
+[ Info: 82548 nodes (10000 leafes) explored in 5.0361 seconds (16391.25/s).
+Computer says: P: a6-b5 valued with -2.50.
+[ Info: Move was correct!
+[ Info: Computer says a6!
+Chess Board
+1 • • • • • • • •
+2 • • • • • • • •
+3 • • • • • • • •
+4 P • • K • • • •
+5 P • P • • P P •
+6 • • P • K • • P
+7 • • • • • • P •
+8 • • • • • • • •
+  h g f e d c b a
+[ Info: 83569 nodes (10000 leafes) explored in 8.3982 seconds (9950.85/s).
+Computer says: P: b7-a6 valued with -3.80.
+[ Info: Move was correct!
+Chess Board
+1 • • • • • • • •
+2 • • • • • • • •
+3 • • • • • • • •
+4 P • • K • • • •
+5 P • P • • P P •
+6 • • P • K • • P
+7 • • • • • • • •
+8 • • • • • • • •
+  h g f e d c b a
+[ Info: Puzzle solved! (Difficulty: 603)
+[ Info: Spent 24.42s.
+================================================================================
+
+
+[ Info: Puzzle 11:
+Chess Board
+1 R N • K Q • • R
+2 P P P • • • P P
+3 • • • B • N • •
+4 • • • N • • B •
+5 • • • P P • • •
+6 • • • • • • • •
+7 P P P • Q • P P
+8 R • • K • • N R
+  h g f e d c b a
+[ Info: 208517 nodes (10000 leafes) explored in 74.3880 seconds (2803.10/s).
+Computer says: P: a7-a6 valued with -3.10.
+[ Info: Puzzle failed! (Difficulty: 675)
+Puzzle
+Chess Board
+1 R N • K Q • • R
+2 P P P • • • P P
+3 • • • B • N • •
+4 • • • N • • B •
+5 • • • P P • • •
+6 • • • • • • • •
+7 P P P • Q • P P
+8 R • • K • • N R
+  h g f e d c b a
+Difficulty:
+675
+Solution:
+1:      Nc3
+2: bc3, Bc3
+[ Info: Spent 74.43s.
+================================================================================
+
+
+[ Info: Puzzle 12:
+Chess Board
+8 • • • • • • • •
+7 • • • • • • • •
+6 • • • P • • P •
+5 • P • • • • • •
+4 • • • • • • • •
+3 • • • • • • Q •
+2 K • P • • R P K
+1 Q • • • • • • •
+  a b c d e f g h
+[ Info: 139436 nodes (10000 leafes) explored in 29.2754 seconds (4762.91/s).
+Computer says: Q: g3-b3 valued with 1000.00.
+[ Info: Move was correct!
+Chess Board
+8 • • • • • • • •
+7 • • • • • • • •
+6 • • • P • • P •
+5 • P • • • • • •
+4 • • • • • • • •
+3 • Q • • • • • •
+2 K • P • • R P K
+1 Q • • • • • • •
+  a b c d e f g h
+[ Info: Puzzle solved! (Difficulty: 733)
+[ Info: Spent 29.36s.
+================================================================================
+
+
+[ Info: Puzzle 13:
+Chess Board
+8 • K • R • • • •
+7 P P • • B • • P
+6 • • • Q B • • •
+5 • • P • • P • •
+4 • • N • • • • •
+3 • P N N P P • •
+2 P Q • • • • P P
+1 • • K • • B • R
+  a b c d e f g h
+[ Info: 137171 nodes (10000 leafes) explored in 33.8161 seconds (4056.38/s).
+Computer says: B: f1-d3 valued with 1.30.
+[ Info: Move was correct!
+[ Info: Computer says Qd3!
+Chess Board
+8 • K • R • • • •
+7 P P • • B • • P
+6 • • • • B • • •
+5 • • P • • P • •
+4 • • N • • • • •
+3 • P N Q P P • •
+2 P Q • • • • P P
+1 • • K • • • • R
+  a b c d e f g h
+[ Info: 173721 nodes (10000 leafes) explored in 58.6124 seconds (2963.90/s).
+Computer says: R: h1-d1 valued with 1.30.
+[ Info: Move was correct!
+[ Info: Computer says Bc4!
+Chess Board
+8 • K • R • • • •
+7 P P • • B • • P
+6 • • • • • • • •
+5 • • P • • P • •
+4 • • B • • • • •
+3 • P N Q P P • •
+2 P Q • • • • P P
+1 • • K R • • • •
+  a b c d e f g h
+[ Info: 164514 nodes (10000 leafes) explored in 51.4817 seconds (3195.58/s).
+Computer says: R: d1-d3 valued with 2.30.
+[ Info: Move was correct!
+Chess Board
+8 • K • R • • • •
+7 P P • • B • • P
+6 • • • • • • • •
+5 • • P • • P • •
+4 • • B • • • • •
+3 • P N R P P • •
+2 P Q • • • • P P
+1 • • K • • • • •
+  a b c d e f g h
+[ Info: Puzzle solved! (Difficulty: 759)
+[ Info: Spent 144.11s.
+================================================================================
+
+
+[ Info: Puzzle 14:
+Chess Board
+1 R • B K Q • • R
+2 P P • N P P B P
+3 • • • • • • P •
+4 • • N • • • • •
+5 • • • Q • • • •
+6 • • N • • N • •
+7 P P P • • P P P
+8 R • B K • B • R
+  h g f e d c b a
+[ Info: 205810 nodes (10000 leafes) explored in 63.9686 seconds (3217.36/s).
+Computer says: Q: e5-b2 valued with -3.90.
+[ Info: Move was correct!
+[ Info: Computer says Nd3!
+Chess Board
+1 R • B K Q • • R
+2 P P • N P P Q P
+3 • • • • N • P •
+4 • • • • • • • •
+5 • • • • • • • •
+6 • • N • • N • •
+7 P P P • • P P P
+8 R • B K • B • R
+  h g f e d c b a
+[ Info: 189823 nodes (10000 leafes) explored in 49.6669 seconds (3821.92/s).
+Computer says: Q: b2-a3 valued with -4.10.
+[ Info: Move was correct!
+Chess Board
+1 R • B K Q • • R
+2 P P • N P P • P
+3 • • • • N • P Q
+4 • • • • • • • •
+5 • • • • • • • •
+6 • • N • • N • •
+7 P P P • • P P P
+8 R • B K • B • R
+  h g f e d c b a
+[ Info: Puzzle solved! (Difficulty: 846)
+[ Info: Spent 113.78s.
+================================================================================
+
+
+[ Info: Puzzle 15:
+Chess Board
+8 • • • • • • K •
+7 • • • • B P • P
+6 • • • • • • P •
+5 • • • • • • • •
+4 • • • P • P B •
+3 Q • • P • • P •
+2 • • B • P K • P
+1 • Q • • • • • •
+  a b c d e f g h
+[ Info: 152943 nodes (10000 leafes) explored in 34.4523 seconds (4439.27/s).
+Computer says: Q: a3-a8 valued with 0.80.
+[ Info: Move was correct!
+[ Info: Computer says Kg7!
+Chess Board
+8 Q • • • • • • •
+7 • • • • B P K P
+6 • • • • • • P •
+5 • • • • • • • •
+4 • • • P • P B •
+3 • • • P • • P •
+2 • • B • P K • P
+1 • Q • • • • • •
+  a b c d e f g h
+[ Info: 160385 nodes (10000 leafes) explored in 36.9276 seconds (4343.23/s).
+Computer says: B: c2-b1 valued with 5.80.
+[ Info: Move was correct!
+Chess Board
+8 Q • • • • • • •
+7 • • • • B P K P
+6 • • • • • • P •
+5 • • • • • • • •
+4 • • • P • P B •
+3 • • • P • • P •
+2 • • • • P K • P
+1 • B • • • • • •
+  a b c d e f g h
+[ Info: Puzzle solved! (Difficulty: 868)
+[ Info: Spent 71.52s.
+================================================================================
+
+
+[ Info: Puzzle 16:
+Chess Board
+1 K R • • R • • •
+2 P • • • • • B P
+3 • • P • • N P •
+4 • • • • • Q • •
+5 N • • • • • • •
+6 Q P B • • B P P
+7 • • • N • K • •
+8 R • • • • • • R
+  h g f e d c b a
+[ Info: 209795 nodes (10000 leafes) explored in 126.9886 seconds (1652.08/s).
+Computer says: N: h5-g3 valued with -1000.00.
+[ Info: Move was correct!
+[ Info: Computer says Rg3!
+Chess Board
+1 K • • • R • • •
+2 P • • • • • B P
+3 • R P • • N P •
+4 • • • • • Q • •
+5 • • • • • • • •
+6 Q P B • • B P P
+7 • • • N • K • •
+8 R • • • • • • R
+  h g f e d c b a
+[ Info: 144540 nodes (0 leafes) explored in 120.6269 seconds (1198.24/s).
+Computer says: Q: h6-h2 valued with -1000.00.
+[ Info: Move was correct!
+Chess Board
+1 K • • • R • • •
+2 Q • • • • • B P
+3 • R P • • N P •
+4 • • • • • Q • •
+5 • • • • • • • •
+6 • P B • • B P P
+7 • • • N • K • •
+8 R • • • • • • R
+  h g f e d c b a
+[ Info: Puzzle solved! (Difficulty: 949)
+[ Info: Spent 247.76s.
+================================================================================
+
+
+[ Info: Puzzle 17:
+Chess Board
+8 R • • • R • K •
+7 P P Q B • N P P
+6 • • • • • • • •
+5 • • • • P • • •
+4 • • • • • • • •
+3 • Q • • • • • •
+2 P P P • • • P P
+1 • • K R • R • •
+  a b c d e f g h
+[ Info: 200136 nodes (10000 leafes) explored in 75.8445 seconds (2638.77/s).
+Computer says: Q: b3-f7 valued with 1000.00.
+[ Info: Move was correct!
+[ Info: Computer says Kh8!
+Chess Board
+8 R • • • R • • K
+7 P P Q B • Q P P
+6 • • • • • • • •
+5 • • • • P • • •
+4 • • • • • • • •
+3 • • • • • • • •
+2 P P P • • • P P
+1 • • K R • R • •
+  a b c d e f g h
+[ Info: 126665 nodes (0 leafes) explored in 48.8122 seconds (2594.95/s).
+Computer says: R: d1-d7 valued with 3.80.
+[ Info: Move was correct!
+[ Info: Computer says Qd7!
+Chess Board
+8 R • • • R • • K
+7 P P • Q • Q P P
+6 • • • • • • • •
+5 • • • • P • • •
+4 • • • • • • • •
+3 • • • • • • • •
+2 P P P • • • P P
+1 • • K • • R • •
+  a b c d e f g h
+[ Info: 173595 nodes (10000 leafes) explored in 42.1185 seconds (4121.59/s).
+Computer says: Q: f7-d7 valued with 4.90.
+[ Info: Move was correct!
+Chess Board
+8 R • • • R • • K
+7 P P • Q • • P P
+6 • • • • • • • •
+5 • • • • P • • •
+4 • • • • • • • •
+3 • • • • • • • •
+2 P P P • • • P P
+1 • • K • • R • •
+  a b c d e f g h
+[ Info: Puzzle solved! (Difficulty: 995)
+[ Info: Spent 166.95s.
+================================================================================
+
+
+[ Info: Puzzle 18:
+Chess Board
+8 • • • • • R K •
+7 P R • • • • P •
+6 • • • P • • • •
+5 • • • P P • • •
+4 • • • • P R • Q
+3 P • P B • • • •
+2 • • • • • P R •
+1 • • • Q • K • •
+  a b c d e f g h
+[ Info: 180443 nodes (10000 leafes) explored in 51.4666 seconds (3506.02/s).
+Computer says: R: g2-g7 valued with 1000.00.
+[ Info: Move was correct!
+[ Info: Computer says Kh8!
+Chess Board
+8 • • • • • R • K
+7 P R • • • • R •
+6 • • • P • • • •
+5 • • • P P • • •
+4 • • • • P R • Q
+3 P • P B • • • •
+2 • • • • • P • •
+1 • • • Q • K • •
+  a b c d e f g h
+[ Info: 172684 nodes (10000 leafes) explored in 47.3193 seconds (3649.34/s).
+Computer says: R: g7-h7 valued with 7.00.
+[ Info: Move was correct!
+[ Info: Computer says Qh7!
+Chess Board
+8 • • • • • R • K
+7 P R • • • • • Q
+6 • • • P • • • •
+5 • • • P P • • •
+4 • • • • P R • •
+3 P • P B • • • •
+2 • • • • • P • •
+1 • • • Q • K • •
+  a b c d e f g h
+[ Info: 167728 nodes (10000 leafes) explored in 39.8442 seconds (4209.60/s).
+Computer says: R: b7-h7 valued with 2.00.
+[ Info: Move was correct!
+[ Info: Computer says Kh7!
+Chess Board
+8 • • • • • R • •
+7 P • • • • • • K
+6 • • • P • • • •
+5 • • • P P • • •
+4 • • • • P R • •
+3 P • P B • • • •
+2 • • • • • P • •
+1 • • • Q • K • •
+  a b c d e f g h
+[ Info: 141115 nodes (10000 leafes) explored in 22.8216 seconds (6183.39/s).
+Computer says: Q: d1-a4 valued with 2.10.
+[ Info: Puzzle failed! (Difficulty: 1023)
+Puzzle
+Chess Board
+8 • • • • • R K •
+7 P R • • • • P •
+6 • • • P • • • •
+5 • • • P P • • •
+4 • • • • P R • Q
+3 P • P B • • • •
+2 • • • • • P R •
+1 • • • Q • K • •
+  a b c d e f g h
+Difficulty:
+1023
+Solution:
+1: R2g7, Kh8
+3: Rgh7, Qh7
+5: Rh7, Kh7
+7: Qh5, Kg7
+9: Qg5
+[ Info: Spent 161.77s.
+================================================================================
+
+
+[ Info: Puzzle 19:
+Chess Board
+8 • • • • R R K •
+7 B • R • • • P P
+6 • P • • • • • •
+5 P P P P • • N •
+4 P • N • • • • P
+3 • • P • • • P •
+2 • • • • • P K •
+1 • • • • R • • •
+  a b c d e f g h
+[ Info: 157226 nodes (10000 leafes) explored in 29.7320 seconds (5288.10/s).
+Computer says: K: g2-h1 valued with 1.80.
+[ Info: Puzzle failed! (Difficulty: 1075)
+Puzzle
+Chess Board
+8 • • • • R R K •
+7 B • R • • • P P
+6 • P • • • • • •
+5 P P P P • • N •
+4 P • N • • • • P
+3 • • P • • • P •
+2 • • • • • P K •
+1 • • • • R • • •
+  a b c d e f g h
+Difficulty:
+1075
+Solution:
+1: Rf8, Kf8
+3: Ne6, Ke7
+5: Nc7
+[ Info: Spent 29.77s.
+================================================================================
+
+
+[ Info: Puzzle 20:
+Chess Board
+8 R • • R • • K •
+7 • P • B • P P P
+6 • Q • • P • N •
+5 P B • P P • • •
+4 P N • • • • • •
+3 • P B • • N • •
+2 • • • Q • P P P
+1 • • R • R • K •
+  a b c d e f g h
+[ Info: 196735 nodes (10000 leafes) explored in 59.6235 seconds (3299.62/s).
+Computer says: B: b5-d7 valued with 2.00.
+[ Info: Puzzle failed! (Difficulty: 1147)
+Puzzle
+Chess Board
+8 R • • R • • K •
+7 • P • B • P P P
+6 • Q • • P • N •
+5 P B • P P • • •
+4 P N • • • • • •
+3 • P B • • N • •
+2 • • • Q • P P P
+1 • • R • R • K •
+  a b c d e f g h
+Difficulty:
+1147
+Solution:
+1: Bd4, Qb5
+3: ab5
+[ Info: Spent 59.67s.
+================================================================================
+
+
+[ Info: Puzzle 21:
+Chess Board
+8 R • • • • • • •
+7 • • • • • • P •
+6 • • • K • • • P
+5 P • • B P • • •
+4 R N P • • P • •
+3 • • • K • P • •
+2 P • • • • • P P
+1 • • • • • • • •
+  a b c d e f g h
+[ Info: 127714 nodes (10000 leafes) explored in 21.1784 seconds (6030.40/s).
+Computer says: R: a4-b4 valued with -0.80.
+[ Info: Move was correct!
+[ Info: Computer says ab4!
+Chess Board
+8 R • • • • • • •
+7 • • • • • • P •
+6 • • • K • • • P
+5 • • • B P • • •
+4 • P P • • P • •
+3 • • • K • P • •
+2 P • • • • • P P
+1 • • • • • • • •
+  a b c d e f g h
+[ Info: 136479 nodes (10000 leafes) explored in 18.9146 seconds (7215.54/s).
+Computer says: B: d5-a8 valued with 2.90.
+[ Info: Move was correct!
+Chess Board
+8 B • • • • • • •
+7 • • • • • • P •
+6 • • • K • • • P
+5 • • • • P • • •
+4 • P P • • P • •
+3 • • • K • P • •
+2 P • • • • • P P
+1 • • • • • • • •
+  a b c d e f g h
+[ Info: Puzzle solved! (Difficulty: 1178)
+[ Info: Spent 40.25s.
+================================================================================
+
+
+[ Info: Puzzle 22:
+Chess Board
+1 • K R • • R • •
+2 • • P • • • P P
+3 • P Q P • • • •
+4 P • • • • • • •
+5 • • • • • • P P
+6 B P B B • Q • •
+7 P • P • • • • •
+8 • K • • • • • R
+  h g f e d c b a
+[ Info: 191050 nodes (10000 leafes) explored in 67.3928 seconds (2834.87/s).
+Computer says: B: e6-d5 valued with -0.90.
+[ Info: Move was correct!
+[ Info: Computer says Qd5!
+Chess Board
+1 • K R • • R • •
+2 • • P • • • P P
+3 • P Q P • • • •
+4 P • • • • • • •
+5 • • • • Q • P P
+6 B P B • • • • •
+7 P • P • • • • •
+8 • K • • • • • R
+  h g f e d c b a
+[ Info: 171412 nodes (10000 leafes) explored in 49.7450 seconds (3445.81/s).
+Computer says: Q: f3-d5 valued with -2.90.
+[ Info: Move was correct!
+Chess Board
+1 • K R • • R • •
+2 • • P • • • P P
+3 • P • P • • • •
+4 P • • • • • • •
+5 • • • • Q • P P
+6 B P B • • • • •
+7 P • P • • • • •
+8 • K • • • • • R
+  h g f e d c b a
+[ Info: Puzzle solved! (Difficulty: 1210)
+[ Info: Spent 117.29s.
+================================================================================
+
+
+[ Info: Puzzle 23:
+Chess Board
+1 R • • K Q • • R
+2 P P P • • P P P
+3 • • • • • • • •
+4 • • • • P • • •
+5 • • • • • • B •
+6 P • • P P • • •
+7 • P P • N • P P
+8 R • • K Q B • R
+  h g f e d c b a
+[ Info: 152147 nodes (10000 leafes) explored in 37.9732 seconds (4006.69/s).
+Computer says: B: c8-d7 valued with 0.10.
+[ Info: Puzzle failed! (Difficulty: 1282)
+Puzzle
+Chess Board
+1 R • • K Q • • R
+2 P P P • • P P P
+3 • • • • • • • •
+4 • • • • P • • •
+5 • • • • • • B •
+6 P • • P P • • •
+7 • P P • N • P P
+8 R • • K Q B • R
+  h g f e d c b a
+Difficulty:
+1282
+Solution:
+1:      Qa5
+2: Qd2, Qb5
+4: Nf6, gf6
+[ Info: Spent 38.03s.
+================================================================================
+
+
+[ Info: Puzzle 24:
+Chess Board
+1 • K • • • • • R
+2 • P P • R • • N
+3 P • • P • • • •
+4 • • • P P R • •
+5 • • • • P B P •
+6 • P • B • • • •
+7 P B P • • • P •
+8 • K • R • • • •
+  h g f e d c b a
+[ Info: 158616 nodes (10000 leafes) explored in 32.3903 seconds (4897.03/s).
+Computer says: R: c4-c5 valued with -1.90.
+[ Info: Move was correct!
+[ Info: Computer says dc5!
+Chess Board
+1 • K • • • • • R
+2 • P P • R • • N
+3 P • • P • • • •
+4 • • • P • • • •
+5 • • • • P P P •
+6 • P • B • • • •
+7 P B P • • • P •
+8 • K • R • • • •
+  h g f e d c b a
+[ Info: 151367 nodes (10000 leafes) explored in 28.9968 seconds (5220.13/s).
+Computer says: B: g7-a1 valued with -1.90.
+[ Info: Move was correct!
+Chess Board
+1 • K • • • • • B
+2 • P P • R • • N
+3 P • • P • • • •
+4 • • • P • • • •
+5 • • • • P P P •
+6 • P • B • • • •
+7 P • P • • • P •
+8 • K • R • • • •
+  h g f e d c b a
+[ Info: Puzzle solved! (Difficulty: 1317)
+[ Info: Spent 61.54s.
+================================================================================
+
+
+Puzzle 1 (Difficulty 100):      Solved in 36.41s
+Puzzle 2 (Difficulty 215):      Solved in 30.11s
+Puzzle 3 (Difficulty 272):      Solved in 21.37s
+Puzzle 4 (Difficulty 331):      Solved in 195.95s
+Puzzle 5 (Difficulty 370):      Solved in 51.74s
+Puzzle 6 (Difficulty 421):      Solved in 114.49s
+Puzzle 7 (Difficulty 471):      Solved in 37.92s
+Puzzle 8 (Difficulty 537):      Solved in 158.83s
+Puzzle 9 (Difficulty 586):      Failed in 36.19s
+Puzzle 10 (Difficulty 603):     Solved in 24.42s
+Puzzle 11 (Difficulty 675):     Failed in 74.43s
+Puzzle 12 (Difficulty 733):     Solved in 29.36s
+Puzzle 13 (Difficulty 759):     Solved in 144.11s
+Puzzle 14 (Difficulty 846):     Solved in 113.78s
+Puzzle 15 (Difficulty 868):     Solved in 71.52s
+Puzzle 16 (Difficulty 949):     Solved in 247.76s
+Puzzle 17 (Difficulty 995):     Solved in 166.95s
+Puzzle 18 (Difficulty 1023):    Failed in 161.77s
+Puzzle 19 (Difficulty 1075):    Failed in 29.77s
+Puzzle 20 (Difficulty 1147):    Failed in 59.67s
+Puzzle 21 (Difficulty 1178):    Solved in 40.25s
+Puzzle 22 (Difficulty 1210):    Solved in 117.29s
+Puzzle 23 (Difficulty 1282):    Failed in 38.03s
+Puzzle 24 (Difficulty 1317):    Solved in 61.54s
+[ Info: Solved 18 out of 24.
