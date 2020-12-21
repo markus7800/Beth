@@ -9,11 +9,11 @@ function expand!(node::Node, board::Board, white::Bool)
 end
 
 
-function TreeSearchSlow(board=Board(); N=10^5, kind=:BFS, BFSdepth=10)
+function TreeSearchSlow(board=Board(), white=true; N=10^5, kind=:BFS, BFSdepth=10)
     _board = deepcopy(board)
     root = Node()
 
-    Q = [(root, deepcopy(board), true, 0)]
+    Q = [(root, deepcopy(board), white, 0)]
     n = 0
     max_depth = 0
 
@@ -91,3 +91,9 @@ end
 count_nodes(root)
 
 print_tree(root)
+
+board = Board()
+move!(board, true, 'P', "e2", "e4")
+print_board(board)
+
+root = TreeSearchSlow(board, false, BFSdepth=4)

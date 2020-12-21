@@ -65,20 +65,11 @@ function minimax_search(beth::Beth; board=beth.board, white=beth.white)
     v,t = @timed minimax(beth, root, depth, -Inf, Inf, white)
 
     @info(@sprintf "%d nodes (%d leafes) explored in %.4f seconds (%.2f/s)." beth.n_explored_nodes beth.n_leafes t (beth.n_explored_nodes/t) )
+
     return root
 end
 
 function (beth::Beth)(board::Board, white::Bool)
-    # beth.board = board
-    # beth.white = white
-
-    # root = beam_search(beth)
-
-    # nodes = sort(root.children, lt=(x,y)->x.score<y.score, rev=white)
-    # for n in nodes
-    #     println(n)
-    # end
-
     root = beth.search_algorithm(beth, board=board, white=white)
     nodes = sort(root.children, lt=(x,y)->x.score<y.score, rev=white)
 
@@ -139,7 +130,7 @@ function minimax(beth::Beth, node::Node, depth::Int, α::Float64, β::Float64, w
 
             value = max(value, minimax(beth, child, depth-1, α, β, false))
             α = max(α, value)
-            α ≥ β && break ## β cutoff
+            # α ≥ β && break ## β cutoff
         end
         node.score = value
         return value
@@ -153,14 +144,31 @@ function minimax(beth::Beth, node::Node, depth::Int, α::Float64, β::Float64, w
 
             value = min(value, minimax(beth, child, depth-1, α, β, true))
             β = min(β, value)
-            β ≤ α && break # α cutoff
+            # β ≤ α && break # α cutoff
         end
         node.score = value
         return value
     end
 end
 
-function beam_search(beth::Beth, full_depth=4, beam_depth=16, beam_width=10_000)
+function beam_search(beth::Beth; board=beth.board, white=beth.white)
+    beth.board = board
+    beth.white = white
+    beth.n_leafes = 0
+    beth.n_explored_nodes = 0
+
+    full_depth = get(beth.search_args, "full_depth", 4)
+    max_n_leafes = get(beth.search_args, "max_n_leafes", 50_000)
+    beam_depth = get(beth.search_args, "beam_depth", 8)
+    beam_width = get(beth.search_args, "beam_width", 10_000)
+
+    root,t = @timed beam(beth, full_depth, max_n_leafes, beam_depth, beam_width)
+
+    @info(@sprintf "%d nodes (%d leafes) explored in %.4f seconds (%.2f/s)." beth.n_explored_nodes beth.n_leafes t (beth.n_explored_nodes/t) )
+    return root
+end
+
+function beam(beth::Beth, full_depth=4, max_n_leafes=50_000, beam_depth=16, beam_width=10_000)
 
     white = beth.white
     root = Node()
@@ -177,12 +185,23 @@ function beam_search(beth::Beth, full_depth=4, beam_depth=16, beam_width=10_000)
             @assert _white == white
 
             children = map(m->Node(move=m, parent=node), get_moves(beth._board, white))
+            node.children = children
+
             append!(layers[d+1], children)
         end
+        println("$d: white to move: $white")
         white = !white
     end
+
+    for leaf in layers[end]
+        white, = restore_board_position(beth, leaf)
+        leaf.score = beth.value_heuristic(beth._board, white)
+    end
+    sort!(layers[end], lt=(x,y)->x.score<y.score, rev=white)
+    layers[end] = layers[end][1:min(length(layers[end]), max_n_leafes)]
+
     @info @sprintf "Expanded to depth %d in %.2fs." full_depth t1
-    @info @sprintf "Layers sizes: %s" map(l -> length(l), layers)
+    @info @sprintf "Layers sizes: %s" length.(layers)
 
     v,t2, = @timed for d in 1:beam_depth
         l = d - 1 + full_depth
@@ -196,6 +215,7 @@ function beam_search(beth::Beth, full_depth=4, beam_depth=16, beam_width=10_000)
             children = map(x->(x[1],Node(move=x[2], parent=node)), rms)
             append!(ranked_moves, children)
         end
+        println("$l: white to move: $white")
         @info @sprintf "Expanded depth %d in %.2fs." l+1 t
         sort!(ranked_moves, rev=white)
 
@@ -203,21 +223,38 @@ function beam_search(beth::Beth, full_depth=4, beam_depth=16, beam_width=10_000)
         white = !white
     end
 
+
+
     @info @sprintf "Expanded to depth %d in %.2fs." full_depth+beam_depth t1+t2
-    @info @sprintf "Layers sizes: %s" map(l -> length(l), layers)
+    @info @sprintf "Layers sizes: %s" length.(layers)
 
     v,t, = @timed begin
-        for leaf in layers[end]
-            _white, = restore_board_position(beth, leaf)
-            leaf.score = beth.value_heuristic(beth._board, _white)
-        end
+        white = iseven(full_depth+beam_width) ? beth.white : !beth.white
 
-        for d in full_depth+beam_depth:-1:2
+        for d in full_depth+beam_depth:-1:1
+            println("$d: $white $(white ? "min" : "max")")
             for node in layers[d]
-                node.parent.visits += 1
-                node.parent.score = max(node.parent.score, node.score)
-                # node.parent.score += node.score
+                if node.visits == 0
+                    # leaf
+                    _white, = restore_board_position(beth, node)
+                    @assert _white == white
+                    node.score = beth.value_heuristic(beth._board, white)
+                    node.visits = 1
+                end
+
+                if node.parent.visits == 0
+                    node.parent.score = node.score
+                else
+                    if white
+                        node.parent.score = min(node.parent.score, node.score)
+                    else
+                        node.parent.score = max(node.parent.score, node.score)
+                    end
+                end
+
+                node.parent.visits += node.visits
             end
+            white = !white
         end
     end
     @info @sprintf "Backpropagated in %.2fs." t
@@ -226,6 +263,9 @@ function beam_search(beth::Beth, full_depth=4, beam_depth=16, beam_width=10_000)
         println(c)
     end
     @info "Beam end"
+
+    beth.n_explored_nodes = sum(length.(layers))
+    beth.n_leafes = length(layers[end])
     return root
 end
 
@@ -270,6 +310,25 @@ board = game_history[end][3]
   beth_eval, beth_rank_moves, [Inf,Inf,10,Inf,10,10] 80s, gets faster, is good (won a piece)
 =#
 
-b = Beth(value_heuristic=beth_eval, rank_heuristic=rank_moves, depth=depth, bfs=bfs, use_tt=false)
-beam_search(b, 4, 16)
+b = Beth(value_heuristic=beth_eval, rank_heuristic=beth_rank_moves, search_algorithm=beam_search, search_args=Dict("full_depth"=>4, "beam_width"=>10_000, "beam_depth"=>0, "max_n_leafes"=>10^6))
 game_history = play_game(black_player=b)
+
+board = Board()
+move!(board, true, 'P', "e2", "e4")
+root_beam = beam_search(b, board=board, white=false)
+
+bfs = [Inf,Inf,Inf,Inf]
+depth = 4
+b = Beth(value_heuristic=beth_eval, rank_heuristic=beth_rank_moves, search_args=Dict("depth"=>depth, "branching_factors"=>bfs))
+game_history = play_game(black_player=b)
+
+board = Board()
+move!(board, true, 'P', "e2", "e4")
+root_minimax = minimax_search(b, board=board, white=false)
+
+print_tree(root_beam, max_depth=1, white=false, has_to_have_children=false)
+print_tree(root_minimax, max_depth=1, white=false, has_to_have_children=false)
+
+
+print_tree(root_beam["Ng8f6"]["Qd1h5"]["Nf6h5"], max_depth=1, white=false, has_to_have_children=false)
+print_tree(root_minimax["Ng8f6"]["Qd1h5"]["Nf6h5"], max_depth=1, white=false, has_to_have_children=false)
