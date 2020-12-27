@@ -12,10 +12,12 @@ struct Board
     # columns are files
     # c2 -> (2,c) -> (2, 3)
 
-    function Board(start=true)
+    function Board(start=true, castle=true)
         position = falses(8, 8, 8)
         can_en_passant = falses(2, 8)
-        can_castle = trues(2,2)
+        can_castle = falses(2,2)
+        can_castle .= castle
+
         if start
             position[[2,7],:,PAWN] .= 1
             position[[1,8], [3,6], BISHOP] .= 1
@@ -25,6 +27,7 @@ struct Board
             position[[1,8], 5, KING] .= 1
             position[[1,2], :, WHITE] .= 1
             position[[7,8], :, BLACK] .= 1
+            can_castle .= true
         end
         return new(position, can_en_passant, can_castle)
     end
@@ -360,6 +363,10 @@ function print_board(board::Board; highlight=nothing, white=true)
                     col = cols[si]
                     if (rank, file) in highlight_fields
                         col = :red
+                    end
+
+                    if all(any(board[rank,file,7:8]))
+                        col = :magenta
                     end
 
                     printstyled("$s ", color=col, bold=true)

@@ -348,8 +348,26 @@ function chebyshev_distance(f1::FieldSymbol, rank, file)
 end
 
 function reverse_direction_moves(board, player, opponent, piece, rank, file, directions, max_multiple)
-    moves = direction_moves(board, player, opponent, piece, rank, file, directions, max_multiple)
-    moves = map(m -> (m[1], m[3], m[2]), moves)
+    moves = Move[]
+    for dir in directions
+        for i in 1:max_multiple
+
+            r2, f2 = (rank, file) .+ i .* dir
+
+            if r2 < 1 || r2 > 8 || f2 < 1 || f2 > 8
+                # direction out of bounds
+                break # direction finished
+            end
+
+            if !board[r2, f2, player] && !board[r2, f2, opponent]
+                # free tile
+                push!(moves, (piece, symbol(r2, f2), symbol(rank, file)))
+            else
+                # direction blocked by own piece or opponent piece
+                break # direction finished
+            end
+        end
+    end
     return moves
 end
 
