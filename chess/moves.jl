@@ -332,7 +332,7 @@ function is_attacked(board::Board, player, opponent, rf; verbose=false)
     return false
 end
 
-function is_check(board::Board, player; kw...)
+function is_in_check(board::Board, player; kw...)
     opponent = player == WHITE ? BLACK : WHITE
     kingpos = findall(board[:,:,KING])
     r, f = Tuple(kingpos[1])
@@ -340,6 +340,74 @@ function is_check(board::Board, player; kw...)
         r, f = Tuple(kingpos[2])
     end
     return is_attacked(board, player, opponent, (r,f); kw...)
+end
+
+function chebyshev_distance(f1::FieldSymbol, rank, file)
+    c1 = cartesian(field(f1))
+    return max(abs(c1[1] - rank), abs(c1[2] - file))
+end
+
+function reverse_direction_moves(board, player, opponent, piece, rank, file, directions, max_multiple)
+    moves = direction_moves(board, player, opponent, piece, rank, file, directions, max_multiple)
+    moves = map(m -> (m[1], m[3], m[2]), moves)
+    return moves
+end
+
+# checks if king_pos (opponent) would be in check if player undid move
+function would_be_check(board::Board, player::Int, opponent::Int, king_pos::Tuple{Int,Int}, move::Move)
+    p, rf1, rf2 = move
+
+    undo!(board, player==WHITE, p, rf1, rf2, nothing, nothing, nothing)
+
+    b = is_attacked(board, opponent, player, king_pos)
+
+    move!(board, player==WHITE, p, rf1, rf2)
+
+    return b
+end
+
+function get_reverse_moves(board::Board, white::Bool)
+    player = 7 + !white
+    opponent = 7 + white
+    moves = Move[]
+    opponent_kingpos = (-10, -10) # move off board for evaluation without kings
+    king_moves = []
+    for rank in 1:8, file in 1:8
+        if board[rank, file, KING] && board[rank, file, opponent]
+            opponent_kingpos = (rank, file)
+        end
+
+        !board[rank, file, player] && continue
+        #println("Piece: $(SYMBOLS[1,findfirst(board[rank,file,:])]) at $(field(rank,file)) ($rank $file)")
+
+        if board[rank, file, PAWN]
+            # TODO
+
+        elseif board[rank, file, BISHOP]
+            append!(moves, reverse_direction_moves(board,player,opponent,BISHOP,rank,file,DIAG,8))
+
+        elseif board[rank, file, KNIGHT]
+            append!(moves, reverse_direction_moves(board,player,opponent,KNIGHT,rank,file,KNIGHTMOVES,1))
+
+        elseif board[rank, file, ROOK]
+            append!(moves, reverse_direction_moves(board,player,opponent,ROOK,rank,file,CROSS,8))
+
+        elseif board[rank, file, QUEEN]
+            append!(moves, reverse_direction_moves(board,player,opponent,QUEEN,rank,file,DIAGCROSS,8))
+
+        elseif board[rank, file, KING]
+            king_moves = reverse_direction_moves(board,player,opponent,KING,rank,file,DIAGCROSS,1)
+        end
+    end
+
+    filter!(m -> chebyshev_distance(m[2], opponent_kingpos...) > 1, king_moves)
+
+    append!(moves, king_moves)
+
+    # opponent king can not have been in check when player was to move
+    filter!(m -> !would_be_check(board, player, opponent, opponent_kingpos, m), moves)
+
+    return moves
 end
 
 function short_to_long(board::Board, white::Bool, s::String)
