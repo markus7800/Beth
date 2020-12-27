@@ -1,10 +1,9 @@
 include("../chess/chess.jl")
 
-include("tree.jl")
-include("simple_evaluation.jl")
-using Printf
+include("../utils/tree.jl")
+include("../utils/simple_evaluation.jl")
+include("evaluation.jl")
 
-# include("transpositiontable.jl")
 
 mutable struct Beth
     search_algorithm::Function
@@ -259,7 +258,6 @@ function beam(beth::Beth, full_depth=4, max_n_leafes=50_000, beam_depth=16, beam
     return root
 end
 
-include("Beth_eval.jl")
 
 include("../puzzles/puzzle.jl")
 include("../puzzles/puzzle_rush_20_12_13.jl")
