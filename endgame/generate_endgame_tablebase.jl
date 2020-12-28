@@ -114,16 +114,39 @@ function find_mate_position_in_1(desperate_position::Vector{Board})
     return mate_in_1
 end
 
+function mirror_horizontally(board::Board)
+    new_board = deepcopy(board)
+    for r in 1:8, f in 1:8, p in 1:8
+        new_board.position[r,f,p] = board.position[8-r+1, f, p]
+    end
+    return new_board
+end
+function mirror_vertically(board::Board)
+    new_board = deepcopy(board)
+    for r in 1:8, f in 1:8, p in 1:8
+        new_board.position[r,f,p] = board.position[r,8-f+1, p]
+    end
+    return new_board
+end
+function mirror_diagonally(board::Board)
+    new_board = deepcopy(board)
+    for r in 1:8, f in 1:8, p in 1:8
+        new_board.position[r,f,p] = board.position[f, r, p]
+    end
+    return new_board
+end
+
 # finds all position where all moves lead to a known mate (where white is to move)
 # for all known mates go one move backward and collect all positions
 # where all moves lead to a known mates
 #
 # Have to pass in all mates, not only new mates
 # maybe a mate in 1 is avoidable but a mate in 2 not ...
-function find_desperate_positions(all_mates::Vector{Board}, all_desperate_positions::Vector{Board})
+function find_desperate_positions(all_mates::Vector{Board})
     desperate_positions = Board[]
 
-    for mate in all_mates
+    for _mate in all_mates, trafo in [identity, mirror_horizontally, mirror_vertically, mirror_diagonally]
+        mate = trafo(_mate)
         rev_moves = get_reverse_moves(mate, false)
         for rm in rev_moves
             board = deepcopy(mate)
@@ -135,7 +158,7 @@ function find_desperate_positions(all_mates::Vector{Board}, all_desperate_positi
 
             board = normalise_board(board)
 
-            if board in all_desperate_positions || board in desperate_positions
+            if board in desperate_positions
                 # println("prev board is known mate")
                 continue
             end
@@ -186,8 +209,10 @@ function find_all_mates()
         append!(all_mates, new_mates)
         @info("Currently $(length(all_mates)) mates known.")
 
-        desperate_positions = find_desperate_positions(all_mates, all_desperate_positions)
-        @info("Found $(length(desperate_positions)) new desperate positions.")
+        desperate_positions = find_desperate_positions(all_mates)
+        @info("Found $(length(desperate_positions)) desperate positions.")
+        desperate_positions = setdiff(desperate_positions, all_desperate_positions)
+        @info("New ones: $(length(desperate_positions))")
 
         append!(all_desperate_positions, desperate_positions)
         @info("Currently $(length(all_desperate_positions)) desperate positions known.")
@@ -364,52 +389,3 @@ board.position[1, 1, [KING, BLACK]] .= 1
 board.position[3, 2, [KING, WHITE]] .= 1
 board.position[3, 4, [ROOK, WHITE]] .= 1
 board
-
-
-
-""
-# function find_desperate_positions(mates::Vector{Board})
-#     desperate_positions = Board[]
-#
-#     for mate in mates
-#         rev_moves = get_reverse_moves(mate, false)
-#         for rm in rev_moves
-#             board = deepcopy(mate)
-#
-#             # println(board)
-#             undo!(board, false, rm[1], rm[2], rm[3], nothing, nothing, nothing)
-#             # println("prev board")
-#             # println(board)
-#
-#             board = normalise_board(board)
-#
-#             if board in mates
-#                 println("prev board is known mate")
-#                 println(board)
-#                 continue
-#             end
-#
-#             _board = deepcopy(board)
-#             # println(get_moves(_board, false))
-#
-#             is_desparate = true
-#             for m in get_moves(_board, false) # forward moves
-#                 move!(_board, false, m[1], m[2], m[3])
-#
-#                 if !(_board in mates)
-#                     is_desparate = false
-#                     break
-#                 end
-#
-#                 undo!(_board, false, m[1], m[2], m[3], nothing, nothing, nothing)
-#             end
-#
-#             # println("is desperate ", is_desparate)
-#
-#             if is_desparate
-#                 push!(desperate_positions, board)
-#             end
-#         end
-#     end
-#     return desperate_positions
-# end
