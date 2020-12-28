@@ -128,12 +128,10 @@ function find_mate_position_in_1(desperate_position::Vector{Board})
             board = deepcopy(mate)
             undo!(board, true, m[1], m[2], m[3], nothing, nothing, nothing)
             board = normalise_board(board)
-            if !(board in mate_in_1)
-                push!(mate_in_1, board)
-            end
+            push!(mate_in_1, board)
         end
     end
-    return mate_in_1
+    return unique(mate_in_1)
 end
 
 
@@ -186,11 +184,10 @@ function find_desperate_positions!(all_mates::Tablebase, all_desperate_positions
 
             if is_desparate
                 push!(desperate_positions, board)
-                all_desperate_positions[board] = i
             end
         end
     end
-    return desperate_positions
+    return unique(desperate_positions)
 end
 
 function find_all_mates(max_depth=4)
@@ -228,6 +225,10 @@ function find_all_mates(max_depth=4)
         @info("Currently $l2 mates known.")
 
         desperate_positions = find_desperate_positions!(all_mates, all_desperate_positions)
+        for dp in desperate_positions
+            all_desperate_positions[dp] = i
+        end
+
         @info("Found $(length(desperate_positions)) new desperate positions.")
 
         @info("Currently $(length(all_desperate_positions)) desperate positions known.")
@@ -236,59 +237,60 @@ function find_all_mates(max_depth=4)
     end
     @info("Count: $count")
 
-    return mates
+    return mates, all_mates, all_desperate_positions
 end
 
-@time mates = find_all_mates()
+@time mates, all_mates, all_desperate_positions = find_all_mates()
 
-two_piece = generate_2_piece_boards()
-mps = find_mate_positions(two_piece)
-mps1 = find_mate_position_in_1(find_mate_positions(two_piece))
+function test_consistency(mates, all_mates::Tablebase, all_desperate_positions::Tablebase)
+    counts = zeros(Int, 4)
+    for (board, i) in all_mates
+        counts[i] += 1
+    end
+    @assert all(length.(mates) .== counts)
 
-#dp1 = find_desperate_positions(mps1)
-dp2 = find_desperate_positions(mps1, mps)
+    for (_board, i) in all_mates
+        board = deepcopy(_board)
+        best = 10^6
+        # from mating position in i there has to be at least one move that leads to a desperate position in i-1
+        # but there should also be no move that leads to a desperate position in <i-1
+        for wm in get_moves(board, true)
+            move!(board, true, wm[1], wm[2], wm[3])
+            key = normalise_board(board)
+            if haskey(all_desperate_positions, key)
+                j = all_desperate_positions[key]
+                @assert j ≥ i - 1 (board, wm, j, i, _board)
+                best = min(best, j)
+            end
+            undo!(board, true, wm[1], wm[2], wm[3], nothing, nothing, nothing)
+        end
+        @assert best == i - 1 (board, best, i)
+    end
 
-find_mate_position_in_1(find_desperate_positions(mps1))
+    for (_board, j) in all_desperate_positions
+        j == 0 && continue # no moves for black (initial mates)
 
-board = find_mate_in_1(two_piece)[end]
-hash(board.position)
-mates = find_mates(two_piece)
-
-b = find_desperate_positions(mps1)[1]
-
-
-for mate in mates
-    println(mate)
+        # from a desperate position in j all moves should lead to a mating position in <=j
+        # there should be at least one move that leads to a mating position in j
+        board = deepcopy(_board)
+        best = -1
+        for bm in get_moves(board, false)
+            move!(board, false, bm[1], bm[2], bm[3])
+            key = normalise_board(board)
+            @assert haskey(all_mates, key) (board, bm, i, j, _board)
+            i = all_mates[key]
+            @assert i ≤ j
+            best = max(best, j)
+            undo!(board, false, bm[1], bm[2], bm[3], nothing, nothing, nothing)
+        end
+        @assert best == j (board, best, j)
+    end
 end
 
-board = Board(false)
 
-board.position[1,1,[BLACK, KING]] .= 1
-board.position[1,3,[WHITE, KING]] .= 1
+test_consistency(mates, all_mates, all_desperate_positions)
 
-println(get_reverse_moves(board, true))
-
-
-test_symmetry_board = find_desperate_positions(find_mate_positions(two_piece))[1]
-
-
-board = Board(false, false)
-
-board.position[5,8, [KING, BLACK]] .= 1
-
-test_symmetry_board in find_mate_positions([test_symmetry_board])
-
-test_symmetry_board in find_mate_positions(two_piece)
-
-test_symmetry_board in two_piece
-
-
-
-
-mates = find_all_mates()
-
-
-begin
+function test_consistency_with_minimax(mates)
     bfs = [Inf,Inf,Inf, Inf, Inf, Inf]
     depth = 2
     b = Beth(value_heuristic=beth_eval, rank_heuristic=beth_rank_moves, search_args=Dict("depth"=>depth, "branching_factors"=>bfs))
@@ -325,14 +327,12 @@ begin
         @assert root.score < 1000.0 board
     end
     @info("Mate in 3 is not Mate in 2 check")
-
-    b.search_args["depth"] = 6
-    @progress for board in mates[3]
-        root = minimax_search(b, board=board, white=true, verbose=false)
-        @assert root.score == 1000.0 board
-    end
-    @info("Mate in 3 check")
 end
+
+
+
+
+
 
 print_tree(root, expand_best=1, has_to_have_children=false)
 
