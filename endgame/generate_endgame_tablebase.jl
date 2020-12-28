@@ -15,12 +15,12 @@ function normalise_board(board)
     if rank > 4
         # mirror along horizontal axis
         new_board.position .= [new_board.position[r,f,p] for r in 8:-1:1, f in 1:8, p in 1:8]
-        rank = 8 - rank
+        rank = 8 - rank + 1
     end
     if file > 4
         # mirror along vertical axis
         new_board.position .= [new_board.position[r,f,p] for r in 1:8, f in 8:-1:1, p in 1:8]
-        file = 8 - file
+        file = 8 - file + 1
     end
     if rank > file
         # mirror along diagonal axis
@@ -226,6 +226,7 @@ function find_all_mates(max_depth=4)
 
         desperate_positions = find_desperate_positions!(all_mates, all_desperate_positions)
         for dp in desperate_positions
+            @assert !haskey(all_desperate_positions, dp)
             all_desperate_positions[dp] = i
         end
 
@@ -234,20 +235,29 @@ function find_all_mates(max_depth=4)
         @info("Currently $(length(all_desperate_positions)) desperate positions known.")
 
         println()
+
+        length(desperate_positions) == 0 && break
     end
     @info("Count: $count")
 
     return mates, all_mates, all_desperate_positions
 end
 
-@time mates, all_mates, all_desperate_positions = find_all_mates()
+@time mates, all_mates, all_desperate_positions = find_all_mates(10)
 
 function test_consistency(mates, all_mates::Tablebase, all_desperate_positions::Tablebase)
-    counts = zeros(Int, 4)
+    counts = zeros(Int, length(mates))
     for (board, i) in all_mates
         counts[i] += 1
     end
     @assert all(length.(mates) .== counts)
+
+    for (board, i) in all_mates
+        @assert is_normalised(board) board
+    end
+    for (board, i) in all_desperate_positions
+        @assert is_normalised(board) board
+    end
 
     for (_board, i) in all_mates
         board = deepcopy(_board)

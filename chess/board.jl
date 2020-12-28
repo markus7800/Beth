@@ -285,6 +285,8 @@ function Base.show(io::IO, board::Board)
             s = "⋅"
             if sum(board[rank,file,:]) != 0
                 piece = argmax(board[rank,file,1:6])
+                s = SYMBOLS[1, piece]
+
                 if any(board[rank,file,7:8])
                     si = 0
                     if board[rank,file,7]
@@ -297,9 +299,8 @@ function Base.show(io::IO, board::Board)
                             # error
                             si = 3
                         end
+                        s = lowercase(s)
                     end
-
-                    s = SYMBOLS[1, piece]
 
                     printstyled(io, "$s ", color=cols[si], bold=true)
                     continue
