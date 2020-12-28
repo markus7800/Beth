@@ -202,7 +202,6 @@ function find_all_mates(max_depth=4)
     mates = []
     all_mates = Tablebase()
 
-    count = 0
     for i in 1:max_depth
         @info("Iteration $i:")
         found_mates = find_mate_position_in_1(desperate_positions)
@@ -213,7 +212,6 @@ function find_all_mates(max_depth=4)
         new_mates = Board[]
         for mate in found_mates
             if !haskey(all_mates, mate)
-                count += 1
                 all_mates[mate] = i
                 push!(new_mates, mate)
             end
@@ -238,12 +236,11 @@ function find_all_mates(max_depth=4)
 
         length(desperate_positions) == 0 && break
     end
-    @info("Count: $count")
 
     return mates, all_mates, all_desperate_positions
 end
 
-@time mates, all_mates, all_desperate_positions = find_all_mates(10)
+@time mates, all_mates, all_desperate_positions = find_all_mates(20)
 
 function test_consistency(mates, all_mates::Tablebase, all_desperate_positions::Tablebase)
     counts = zeros(Int, length(mates))
@@ -420,37 +417,124 @@ board
 d = Dict(1=>1, 2=>3)
 
 #=
-[ Info: Iteration 1:
+[[ Info: Iteration 1:
 [ Info: Found 672 mates.
 [ Info: New ones: 672
 [ Info: Currently 672 mates known.
-[ Info: Found 405 desperate positions.
-[ Info: New ones: 405
-[ Info: Currently 506 desperate positions known.
+[ Info: Found 350 new desperate positions.
+[ Info: Currently 451 desperate positions known.
 
 [ Info: Iteration 2:
 [ Info: Found 2056 mates.
 [ Info: New ones: 1468
 [ Info: Currently 2140 mates known.
-[ Info: Found 1372 desperate positions.
-[ Info: New ones: 967
-[ Info: Currently 1473 desperate positions known.
+[ Info: Found 785 new desperate positions.
+[ Info: Currently 1236 desperate positions known.
 
 [ Info: Iteration 3:
 [ Info: Found 3755 mates.
 [ Info: New ones: 1884
 [ Info: Currently 4024 mates known.
-[ Info: Found 3028 desperate positions.
-[ Info: New ones: 1656
-[ Info: Currently 3129 desperate positions known.
+[ Info: Found 1317 new desperate positions.
+[ Info: Currently 2553 desperate positions known.
 
 [ Info: Iteration 4:
 [ Info: Found 6214 mates.
 [ Info: New ones: 3347
 [ Info: Currently 7371 mates known.
-[ Info: Found 6176 desperate positions.
-[ Info: New ones: 3148
-[ Info: Currently 6277 desperate positions known.
+[ Info: Found 2475 new desperate positions.
+[ Info: Currently 5028 desperate positions known.
 
-112.107705 seconds (51.59 M allocations: 3.935 GiB, 0.87% gc time) -> 15s
+[ Info: Iteration 5:
+[ Info: Found 10686 mates.
+[ Info: New ones: 4692
+[ Info: Currently 12063 mates known.
+[ Info: Found 4431 new desperate positions.
+[ Info: Currently 9459 desperate positions known.
+
+[ Info: Iteration 6:
+[ Info: Found 16715 mates.
+[ Info: New ones: 6372
+[ Info: Currently 18435 mates known.
+[ Info: Found 6923 new desperate positions.
+[ Info: Currently 16382 desperate positions known.
+
+[ Info: Iteration 7:
+[ Info: Found 21766 mates.
+[ Info: New ones: 6952
+[ Info: Currently 25387 mates known.
+[ Info: Found 9349 new desperate positions.
+[ Info: Currently 25731 desperate positions known.
+
+[ Info: Iteration 8:
+[ Info: Found 23866 mates.
+[ Info: New ones: 5128
+[ Info: Currently 30515 mates known.
+[ Info: Found 8695 new desperate positions.
+[ Info: Currently 34426 desperate positions known.
+
+[ Info: Iteration 9:
+[ Info: Found 21616 mates.
+[ Info: New ones: 3279
+[ Info: Currently 33794 mates known.
+[ Info: Found 3903 new desperate positions.
+[ Info: Currently 38329 desperate positions known.
+
+[ Info: Iteration 10:
+[ Info: Found 15697 mates.
+[ Info: New ones: 2951
+[ Info: Currently 36745 mates known.
+[ Info: Found 2491 new desperate positions.
+[ Info: Currently 40820 desperate positions known.
+
+[ Info: Iteration 11:
+[ Info: Found 12652 mates.
+[ Info: New ones: 2996
+[ Info: Currently 39741 mates known.
+[ Info: Found 3394 new desperate positions.
+[ Info: Currently 44214 desperate positions known.
+
+[ Info: Iteration 12:
+[ Info: Found 14926 mates.
+[ Info: New ones: 3135
+[ Info: Currently 42876 mates known.
+[ Info: Found 4225 new desperate positions.
+[ Info: Currently 48439 desperate positions known.
+
+[ Info: Iteration 13:
+[ Info: Found 16297 mates.
+[ Info: New ones: 3004
+[ Info: Currently 45880 mates known.
+[ Info: Found 5148 new desperate positions.
+[ Info: Currently 53587 desperate positions known.
+
+[ Info: Iteration 14:
+[ Info: Found 17274 mates.
+[ Info: New ones: 2714
+[ Info: Currently 48594 mates known.
+[ Info: Found 5728 new desperate positions.
+[ Info: Currently 59315 desperate positions known.
+
+[ Info: Iteration 15:
+[ Info: Found 14587 mates.
+[ Info: New ones: 1005
+[ Info: Currently 49599 mates known.
+[ Info: Found 2931 new desperate positions.
+[ Info: Currently 62246 desperate positions known.
+
+[ Info: Iteration 16:
+[ Info: Found 8327 mates.
+[ Info: New ones: 187
+[ Info: Currently 49786 mates known.
+[ Info: Found 534 new desperate positions.
+[ Info: Currently 62780 desperate positions known.
+
+[ Info: Iteration 17:
+[ Info: Found 2270 mates.
+[ Info: New ones: 0
+[ Info: Currently 49786 mates known.
+[ Info: Found 0 new desperate positions.
+[ Info: Currently 62780 desperate positions known.
+
+467.129298 seconds (1.56 G allocations: 143.366 GiB, 8.41% gc time)
 =#
