@@ -46,7 +46,7 @@ function restore_board_position(beth::Beth, node::Node)
     restore_board_position(beth.board, beth.white, beth._board, node)
 end
 
-function minimax_search(beth::Beth; board=beth.board, white=beth.white)
+function minimax_search(beth::Beth; board=beth.board, white=beth.white, verbose=true)
     beth.board = board
     beth.white = white
     beth.n_leafes = 0
@@ -63,7 +63,7 @@ function minimax_search(beth::Beth; board=beth.board, white=beth.white)
 
     v,t = @timed minimax(beth, root, depth, -Inf, Inf, white)
 
-    @info(@sprintf "%d nodes (%d leafes) explored in %.4f seconds (%.2f/s)." beth.n_explored_nodes beth.n_leafes t (beth.n_explored_nodes/t) )
+    verbose && @info(@sprintf "%d nodes (%d leafes) explored in %.4f seconds (%.2f/s)." beth.n_explored_nodes beth.n_leafes t (beth.n_explored_nodes/t) )
 
     return root
 end
@@ -103,11 +103,11 @@ function minimax(beth::Beth, node::Node, depth::Int, α::Float64, β::Float64, w
         beth.n_leafes += 1
         score = 0. # stalemate
         if white
-            if is_check(beth._board, WHITE)
+            if is_in_check(beth._board, WHITE)
                 score = -1000. # black checkmated white
             end
         else
-            if is_check(beth._board, BLACK)
+            if is_in_check(beth._board, BLACK)
                 score = 1000. # white checkmated black
             end
         end
@@ -166,7 +166,6 @@ function beam_search(beth::Beth; board=beth.board, white=beth.white)
     @info(@sprintf "%d nodes (%d leafes) explored in %.4f seconds (%.2f/s)." beth.n_explored_nodes beth.n_leafes t (beth.n_explored_nodes/t) )
     return root
 end
-
 function beam(beth::Beth, full_depth=4, max_n_leafes=50_000, beam_depth=16, beam_width=10_000; verbose=false)
     white = beth.white
     root = Node()

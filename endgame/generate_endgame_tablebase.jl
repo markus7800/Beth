@@ -1,6 +1,5 @@
 include("../chess/chess.jl")
 
-const NORMAL_KING_POSITIONS = map(cartesian, ["a1", "b1", "c1", "d1", "b2", "c2", "d2", "c3", "d3", "d4"])
 function normalise_board(board)
     king_pos = (-10, -10)
     # find black king
@@ -29,6 +28,20 @@ function normalise_board(board)
     end
 
     return new_board
+end
+
+function is_normalised(board)
+    king_pos = (-10, -10)
+    # find black king
+    for r in 1:8, f in 1:8
+        if board[r, f, KING] && board[r, f, BLACK]
+            king_pos = (r, f)
+            break
+        end
+    end
+    rank, file = king_pos
+
+    return rank ≤ 4 && file ≤ 4 && rank ≤ file
 end
 
 function generate_2_piece_boards()
@@ -65,6 +78,7 @@ function generate_2_piece_boards()
 end
 
 # finds all positions where black king is mated
+# input are normalised boards
 function find_mate_positions(boards::Vector{Board})
     mates = Board[]
     for board in boards
@@ -80,16 +94,19 @@ end
 #     mates = find_mates(two_piece)
 # end
 
-# find all moves which lead to a position that is a known mate
-function find_mate_position_in_1(mates::Vector{Board})
+# find all moves which lead to a position that is a known mate (desperate position for black)
+# the initial mates are the first desperate positions for black
+# it is sufficient to only pass in newly found desperate positions
+function find_mate_position_in_1(desperate_position::Vector{Board})
     mate_in_1 = Board[]
 
-    for mate in mates
+    for mate in desperate_position
         rev_moves = get_reverse_moves(mate, true)
         for m in rev_moves
             board = deepcopy(mate)
             undo!(board, true, m[1], m[2], m[3], nothing, nothing, nothing)
-            if !(board in mates) && !(board in mate_in_1)
+            board = normalise_board(board)
+            if !(board in mate_in_1)
                 push!(mate_in_1, board)
             end
         end
@@ -97,11 +114,16 @@ function find_mate_position_in_1(mates::Vector{Board})
     return mate_in_1
 end
 
-# finds all position where all moves lead to a known mate
-function find_desperate_positions(mates::Vector{Board})
+# finds all position where all moves lead to a known mate (where white is to move)
+# for all known mates go one move backward and collect all positions
+# where all moves lead to a known mates
+#
+# Have to pass in all mates, not only new mates
+# maybe a mate in 1 is avoidable but a mate in 2 not ...
+function find_desperate_positions(all_mates::Vector{Board}, all_desperate_positions::Vector{Board})
     desperate_positions = Board[]
 
-    for mate in mates
+    for mate in all_mates
         rev_moves = get_reverse_moves(mate, false)
         for rm in rev_moves
             board = deepcopy(mate)
@@ -113,7 +135,7 @@ function find_desperate_positions(mates::Vector{Board})
 
             board = normalise_board(board)
 
-            if board in mates
+            if board in all_desperate_positions || board in desperate_positions
                 # println("prev board is known mate")
                 continue
             end
@@ -122,10 +144,11 @@ function find_desperate_positions(mates::Vector{Board})
             # println(get_moves(_board, false))
 
             is_desparate = true
-            for m in get_moves(_board, false) # forward moves
+            # check if all forward moves lead to known mate
+            for m in get_moves(_board, false)
                 move!(_board, false, m[1], m[2], m[3])
 
-                if !(_board in mates)
+                if !(normalise_board(_board) in all_mates)
                     is_desparate = false
                     break
                 end
@@ -143,18 +166,55 @@ function find_desperate_positions(mates::Vector{Board})
     return desperate_positions
 end
 
+function find_all_mates()
+    two_piece = generate_2_piece_boards()
+
+    desperate_positions = find_mate_positions(two_piece)
+    all_desperate_positions = copy(desperate_positions)
+
+    mates = []
+    all_mates = Board[]
+
+    for i in 1:4
+        @info("Iteration $i:")
+        new_mates = find_mate_position_in_1(desperate_positions)
+        l = length(new_mates)
+        @info("Found $l mates.")
+        new_mates = setdiff(new_mates, all_mates)
+        @info("New ones: $(length(new_mates))")
+        push!(mates, new_mates)
+        append!(all_mates, new_mates)
+        @info("Currently $(length(all_mates)) mates known.")
+
+        desperate_positions = find_desperate_positions(all_mates, all_desperate_positions)
+        @info("Found $(length(desperate_positions)) new desperate positions.")
+
+        append!(all_desperate_positions, desperate_positions)
+        @info("Currently $(length(all_desperate_positions)) desperate positions known.")
+
+        println()
+    end
+
+    return mates
+end
+
+mates = find_all_mates()
 
 two_piece = generate_2_piece_boards()
 mps = find_mate_positions(two_piece)
 mps1 = find_mate_position_in_1(find_mate_positions(two_piece))
 
-find_desperate_positions(mps)
-find_desperate_positions(mps1)
+#dp1 = find_desperate_positions(mps1)
+dp2 = find_desperate_positions(mps1, mps)
 
+find_mate_position_in_1(find_desperate_positions(mps1))
 
 board = find_mate_in_1(two_piece)[end]
 hash(board.position)
 mates = find_mates(two_piece)
+
+b = find_desperate_positions(mps1)[1]
+
 
 for mate in mates
     println(mate)
@@ -180,3 +240,176 @@ test_symmetry_board in find_mate_positions([test_symmetry_board])
 test_symmetry_board in find_mate_positions(two_piece)
 
 test_symmetry_board in two_piece
+
+
+
+
+mates = find_all_mates()
+
+
+begin
+    bfs = [Inf,Inf,Inf, Inf, Inf, Inf]
+    depth = 2
+    b = Beth(value_heuristic=beth_eval, rank_heuristic=beth_rank_moves, search_args=Dict("depth"=>depth, "branching_factors"=>bfs))
+
+
+    for board in mates[1]
+        root = minimax_search(b, board=board, white=true, verbose=false)
+        @assert root.score == 1000.0 board
+    end
+    @info("Mate in 1 check")
+
+
+    @progress for board in mates[2]
+        root = minimax_search(b, board=board, white=true, verbose=false)
+        @assert root.score < 1000.0 board
+    end
+
+    @info("Mate in 2 is not Mate in 1 check")
+
+    b.search_args["depth"] = 4
+    @progress for board in mates[2]
+        root = minimax_search(b, board=board, white=true, verbose=false)
+        @assert root.score == 1000.0 board
+    end
+    @info("Mate in 2 check")
+
+    @progress for board in mates[3]
+        root = minimax_search(b, board=board, white=true, verbose=false)
+        if root.score == 1000.0
+            println(board)
+            println()
+            print_tree(root, expand_best=1, has_to_have_children=false)
+        end
+        @assert root.score < 1000.0 board
+    end
+    @info("Mate in 3 is not Mate in 2 check")
+
+    b.search_args["depth"] = 6
+    @progress for board in mates[3]
+        root = minimax_search(b, board=board, white=true, verbose=false)
+        @assert root.score == 1000.0 board
+    end
+    @info("Mate in 3 check")
+end
+
+print_tree(root, expand_best=1, has_to_have_children=false)
+
+sum(map(length, mates))
+map(length, mates)
+
+dp0 = find_mate_positions(two_piece)
+m1 = find_mate_position_in_1(dp0)
+dp1 = find_desperate_positions(m1, dp0)
+m2 = setdiff(find_mate_position_in_1(dp1), m1)
+
+all(is_normalised.(dp0))
+all(is_normalised.(m1))
+all(is_normalised.(dp1))
+all(is_normalised.(m2))
+
+
+board = Board(false, false)
+board.position[1, 1, [KING, BLACK]] .= 1
+board.position[3, 3, [KING, WHITE]] .= 1
+board.position[4, 3, [ROOK, WHITE]] .= 1
+board
+is_normalised(board)
+normalise_board(board) in m2
+
+board = Board(false, false)
+board.position[1, 1, [KING, BLACK]] .= 1
+board.position[3, 3, [KING, WHITE]] .= 1
+board.position[3, 4, [ROOK, WHITE]] .= 1
+board
+is_normalised(board)
+normalise_board(board) in m2
+
+
+#### HERE LIES THE KEY
+board = Board(false, false)
+board.position[1, 1, [KING, BLACK]] .= 1
+board.position[2, 3, [KING, WHITE]] .= 1
+board.position[4, 3, [ROOK, WHITE]] .= 1
+board
+is_normalised(board)
+normalise_board(board) in dp1
+
+board = Board(false, false)
+board.position[1, 1, [KING, BLACK]] .= 1
+board.position[3, 2, [KING, WHITE]] .= 1
+board.position[3, 4, [ROOK, WHITE]] .= 1
+board
+is_normalised(board)
+normalise_board(board) in dp1
+####
+
+board = Board(false, false)
+board.position[2, 1, [KING, BLACK]] .= 1
+board.position[2, 3, [KING, WHITE]] .= 1
+board.position[4, 3, [ROOK, WHITE]] .= 1
+board
+is_normalised(board)
+normalise_board(board)
+normalise_board(board) in m1
+
+
+
+println(get_reverse_moves(normalise_board(board), false))
+
+
+
+board = Board(false, false)
+board.position[1, 1, [KING, BLACK]] .= 1
+board.position[3, 2, [KING, WHITE]] .= 1
+board.position[3, 4, [ROOK, WHITE]] .= 1
+board
+
+
+
+""
+# function find_desperate_positions(mates::Vector{Board})
+#     desperate_positions = Board[]
+#
+#     for mate in mates
+#         rev_moves = get_reverse_moves(mate, false)
+#         for rm in rev_moves
+#             board = deepcopy(mate)
+#
+#             # println(board)
+#             undo!(board, false, rm[1], rm[2], rm[3], nothing, nothing, nothing)
+#             # println("prev board")
+#             # println(board)
+#
+#             board = normalise_board(board)
+#
+#             if board in mates
+#                 println("prev board is known mate")
+#                 println(board)
+#                 continue
+#             end
+#
+#             _board = deepcopy(board)
+#             # println(get_moves(_board, false))
+#
+#             is_desparate = true
+#             for m in get_moves(_board, false) # forward moves
+#                 move!(_board, false, m[1], m[2], m[3])
+#
+#                 if !(_board in mates)
+#                     is_desparate = false
+#                     break
+#                 end
+#
+#                 undo!(_board, false, m[1], m[2], m[3], nothing, nothing, nothing)
+#             end
+#
+#             # println("is desperate ", is_desparate)
+#
+#             if is_desparate
+#                 push!(desperate_positions, board)
+#             end
+#         end
+#     end
+#     return desperate_positions
+# end

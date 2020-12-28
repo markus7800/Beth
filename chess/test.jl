@@ -171,9 +171,9 @@ end
     @test (KING, symbol("e8"), symbol("c8")) in get_moves(board, false)
 
     move!(board, true, 'R', "a1", "a8")
-    @test is_check(board, BLACK)
+    @test is_in_check(board, BLACK)
     move!(board, true, 'R', "a8", "a2")
-    @test !is_check(board, BLACK)
+    @test !is_in_check(board, BLACK)
 
     @test (KING, symbol("e8"), symbol("g8")) in get_moves(board, false)
     @test !((KING, symbol("e8"), symbol("c8")) in get_moves(board, false))
@@ -239,14 +239,14 @@ end
     board.position[cartesian("c5")..., [KNIGHT, WHITE]] .= 1
     board.position[cartesian("e6")..., [KING, BLACK]] .= 1
 
-    @test is_check(board, BLACK)
+    @test is_in_check(board, BLACK)
 
     # bishop check and !xray attack
     board.position[cartesian("c5")..., [KNIGHT, WHITE]] .= 0
     board.position[cartesian("a2")..., [BISHOP, WHITE]] .= 1
     board.position[cartesian("g8")..., [QUEEN, BLACK]] .= 1
 
-    @test is_check(board, BLACK)
+    @test is_in_check(board, BLACK)
 
     @test !is_attacked(board, WHITE, BLACK, cartesian("g8"))
     @test is_attacked(board, BLACK, WHITE, cartesian("e6"))
@@ -255,7 +255,7 @@ end
     # !xray check, rook attack
     board.position[cartesian("d5")..., [ROOK, WHITE]] .= 1
 
-    @test !is_check(board, BLACK)
+    @test !is_in_check(board, BLACK)
     @test is_attacked(board, BLACK, WHITE, cartesian("d1"))
 
     # pawn checks and not checks (own king)
@@ -272,8 +272,8 @@ end
     board.position[cartesian("d7")..., [PAWN, WHITE]] .= 1
     board.position[cartesian("f7")..., [PAWN, WHITE]] .= 1
 
-    @test !is_check(board, BLACK)
-    @test is_check(board, WHITE)
+    @test !is_in_check(board, BLACK)
+    @test is_in_check(board, WHITE)
 end
 
 @testset "Undos" begin
