@@ -129,7 +129,7 @@ function minimax(beth::Beth, node::Node, depth::Int, α::Float64, β::Float64, w
 
             value = max(value, minimax(beth, child, depth-1, α, β, false))
             α = max(α, value)
-            # α ≥ β && break ## β cutoff
+            α ≥ β && break ## β cutoff
         end
         node.score = value
         return value
@@ -143,7 +143,7 @@ function minimax(beth::Beth, node::Node, depth::Int, α::Float64, β::Float64, w
 
             value = min(value, minimax(beth, child, depth-1, α, β, true))
             β = min(β, value)
-            # β ≤ α && break # α cutoff
+            β ≤ α && break # α cutoff
         end
         node.score = value
         return value
