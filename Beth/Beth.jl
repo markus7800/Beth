@@ -262,9 +262,6 @@ include("../puzzles/puzzle.jl")
 include("../puzzles/puzzle_rush_20_12_13.jl")
 
 
-pz = puzzles[12]
-print_puzzle(pz)
-
 bfs = [Inf,Inf,10,Inf,10,Inf]
 depth = 6
 b = Beth(value_heuristic=simple_piece_count, rank_heuristic=simple_rank_moves, search_args=Dict("depth"=>depth, "branching_factors"=>bfs))
@@ -274,10 +271,15 @@ game_history = play_game(black_player=b)
 play_puzzle(rush_20_12_13[14], b)
 
 puzzle_rush(rush_20_12_13, b, print_solution=true)
-pz = rush_20_12_13[end]
+
+
+pz = rush_20_12_13[13]
 print_puzzle(pz)
-root = search(b, board=deepcopy(pz.board), white=pz.white_to_move)
+@time root = minimax_search(b, board=deepcopy(pz.board), white=pz.white_to_move)
 print_tree(root, max_depth=1, has_to_have_children=false, white=pz.white_to_move)
+
+@time minimax(beth, Node(), 6, -Inf, Inf, white)
+
 
 print_tree(root["Rc4c5"], max_depth=1, has_to_have_children=false, white=!pz.white_to_move)
 print_tree(root["Rc4c5"]["Pd4c5"], max_depth=1, has_to_have_children=false, white=pz.white_to_move)

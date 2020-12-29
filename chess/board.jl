@@ -366,7 +366,7 @@ function print_board(board::Board; highlight=nothing, white=true)
                         col = :red
                     end
 
-                    if all(any(board[rank,file,7:8]))
+                    if all(board[rank,file,7:8])
                         col = :magenta
                     end
 
