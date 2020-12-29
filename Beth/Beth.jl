@@ -46,7 +46,7 @@ function restore_board_position(beth::Beth, node::Node)
     restore_board_position(beth.board, beth.white, beth._board, node)
 end
 
-function minimax_search(beth::Beth; board=beth.board, white=beth.white, verbose=true)
+function minimax_search(beth::Beth; board=beth.board, white=beth.white, verbose=true, lower=-Inf, upper=Inf)
     beth.board = board
     beth.white = white
     beth.n_leafes = 0
@@ -61,7 +61,7 @@ function minimax_search(beth::Beth; board=beth.board, white=beth.white, verbose=
     end
     beth.search_args["branching_factors"] = reverse(bfs) # depth is descending
 
-    v,t = @timed minimax(beth, root, depth, -Inf, Inf, white)
+    v,t = @timed minimax(beth, root, depth, lower, upper, white)
 
     verbose && @info(@sprintf "%d nodes (%d leafes) explored in %.4f seconds (%.2f/s)." beth.n_explored_nodes beth.n_leafes t (beth.n_explored_nodes/t) )
 
@@ -278,7 +278,8 @@ print_puzzle(pz)
 @time root = minimax_search(b, board=deepcopy(pz.board), white=pz.white_to_move)
 print_tree(root, max_depth=1, has_to_have_children=false, white=pz.white_to_move)
 
-@time minimax(beth, Node(), 6, -Inf, Inf, white)
+@time root = minimax_search(b, board=deepcopy(pz.board), white=pz.white_to_move, lower=-1.85, upper=-1.75)
+
 
 
 print_tree(root["Rc4c5"], max_depth=1, has_to_have_children=false, white=!pz.white_to_move)
