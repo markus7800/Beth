@@ -37,7 +37,7 @@ push!(rush_20_12_30, puzzle)
 
 puzzle = PuzzleFEN(
     FEN="rnb1kbnr/ppp3pp/4p3/4Pp2/3P3q/8/PPP3PP/RNBQKBNR w KQkq - 0 1",
-    solution="Qe4 Qe2 Qh8",
+    solution="Qe4 Qe2 Qh1",
     firstmove="g3",
     difficulty=421)
 push!(rush_20_12_30, puzzle)

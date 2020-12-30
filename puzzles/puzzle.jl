@@ -99,8 +99,8 @@ function PuzzleFEN(;FEN::String, solution::String, firstmove=nothing, difficulty
 
     # group 4: en passant right
     if groups[4] != "-"
-        file, rank = cartesian(groups[4])
-        board.can_en_passant[white_to_move+1, file] .= 1
+        file, rank = cartesian(string(groups[4]))
+        board.can_en_passant[white_to_move+1, file] = 1
     end
 
     if firstmove != nothing
