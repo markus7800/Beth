@@ -1,7 +1,7 @@
 # https://people.csail.mit.edu/plaat/mtdf.html#abmem
 
 #                                       depth lower upper
-TranspositionTable = Dict{String, Tuple{Int,Float64,Float64}}
+#TranspositionTable = Dict{String, Tuple{Int,Float64,Float64}}
 AlphaBetaMemory = Dict{String, Tuple{Int,UInt8,Float64}}
 
 const EXACT = 0x0
@@ -124,16 +124,16 @@ function MTDF(beth::Beth; board=beth.board, white=beth.white, guess::Float64, de
     mem = AlphaBetaMemory()
     root = Node()
     _,t = @timed while true
-        β = value == lower ? value + 1 : value
+        β = value == lower ? value + 0.1 : value
         root = Node()
-        value = AlphaBetaWithMemory(beth, root, depth, β-1, β, white, mem)
+        value = AlphaBetaWithMemory(beth, root, depth, β-0.1, β, white, mem)
         if value < β
             upper = value
         else
             lower = value
         end
 
-        @info("value: $value, alpha: $(β-1), beta: $β, lower: $lower, $upper")
+        #@info("value: $value, alpha: $(β-1), beta: $β, lower: $lower, $upper")
 
         if lower ≥ upper
             break
@@ -146,26 +146,84 @@ function MTDF(beth::Beth; board=beth.board, white=beth.white, guess::Float64, de
     return root
 end
 
-function IMTDF(;max_depth::Integer, max_time::Float64)
+function IMTDF(beth::Beth; board=beth.board, white=beth.white, max_depth::Int)
+    guesses = [0.]
+    for depth in 2:2:max_depth
+        guess = guesses[end]
+        @info "Depth: $depth, guess: $guess"
+        @time root = MTDF(beth, board=board, white=white, guess=guess, depth=depth)
+        push!(guesses, root.score)
+    end
+    return guesses[end]
+end
+
+function distributed_search(beth::Beth; board, white)
+    ms = get_moves(board, white)
+    ranked_moves = beth.rank_heuristic(board, white, ms)
+    sort!(ranked_moves, rev=white)
+
+    for (i,(prescore, rm)) in enumerate(ranked_moves)
+        _board = deepcopy(board)
+        move!(_board, white, rm[1], rm[2], rm[3])
+        v = minimax_search(beth, board=_board, white=!white, verbose=false).score
+        @info(@sprintf "%d: %s prescore: %.2f, value: %.2f" i rm prescore v)
+    end
 
 end
 
-pz = rush_20_12_13[20]
+pz = rush_20_12_13[5]
 print_puzzle(pz)
 
-bfs = [Inf,Inf,Inf,Inf]
-depth = 4
+bfs = [Inf,Inf,Inf,Inf,Inf,Inf]
+depth = 5
 beth = Beth(value_heuristic=beth_eval, rank_heuristic=beth_rank_moves, search_args=Dict("depth"=>depth, "branching_factors"=>bfs))
 
 root = minimax_search(beth, board=deepcopy(pz.board), white=pz.white_to_move)
 
-print_tree(root, max_depth=1)
+print_tree(root["Rd7d4"], max_depth=1, white=pz.white_to_move, has_to_have_children=false)
+
+distributed_search(beth, board=deepcopy(pz.board), white=pz.white_to_move)
+
 
 root, mem = alphabeta_search(beth, board=deepcopy(pz.board), white=pz.white_to_move)
 
 root, mem = alphabeta_search(beth, board=deepcopy(pz.board), white=pz.white_to_move, mem=mem)
 
-root = MTDF(beth,  board=deepcopy(pz.board), white=pz.white_to_move, guess=0., depth=6)
+root = MTDF(beth,  board=deepcopy(pz.board), white=pz.white_to_move, guess=0., depth=4)
+
+IMTDF(beth, board=deepcopy(pz.board), white=pz.white_to_move, max_depth=8)
+
+1. B: e3-d4, score: 4.4000, visits: 0, 2 children
+2. K: h3-h4, score: 4.4000, visits: 0, 1 children
+3. K: h3-h2, score: 4.4000, visits: 0, 1 children
+4. R: d7-d8, score: 4.4000, visits: 0, 1 children
+5. R: d7-e7, score: 4.4000, visits: 0, 1 children
+6. R: d7-c7, score: 4.4000, visits: 0, 1 children
+7. R: d7-b7, score: 4.4000, visits: 0, 1 children
+8. R: d7-a7, score: 4.4000, visits: 0, 1 children
+9. R: d7-d2, score: 4.4000, visits: 0, 1 children
+10. R: d7-d1, score: 4.4000, visits: 0, 1 children
+11. B: e3-a7, score: 4.4000, visits: 0, 1 children
+12. B: e3-h6, score: 4.4000, visits: 0, 1 children
+13. B: e3-b6, score: 4.4000, visits: 0, 1 children
+14. B: e3-c5, score: 4.4000, visits: 0, 1 children
+15. B: e3-d2, score: 4.4000, visits: 0, 1 children
+16. P: b2-b3, score: 4.4000, visits: 0, 1 children
+17. B: e3-g1, score: 4.3000, visits: 0, 1 children
+18. B: e3-c1, score: 4.3000, visits: 0, 1 children
+19. P: a3-a4, score: 3.7000, visits: 0, 1 children
+20. P: c3-c4, score: 3.6000, visits: 0, 1 children
+21. P: b2-b4, score: 3.3000, visits: 0, 1 children
+22. R: d7-d4, score: -0.5000, visits: 0, 2 children
+23. R: d7-d6, score: -0.5000, visits: 0, 1 children
+24. R: d7-d3, score: -0.6000, visits: 0, 1 children
+25. B: e3-g5, score: -0.6000, visits: 0, 1 children
+26. B: e3-f2, score: -0.6000, visits: 0, 2 children
+27. B: e3-f4, score: -3.4000, visits: 0, 1 children
+28. R: d7-f7, score: -4.2000, visits: 0, 3 children
+29. R: d7-d5, score: -5.6000, visits: 0, 4 children
+""a
+
 
 #=
 α = β - 1
