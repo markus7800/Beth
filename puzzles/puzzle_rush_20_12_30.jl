@@ -211,3 +211,5 @@ puzzle = PuzzleFEN(
     firstmove="Ne4",
     difficulty=1633)
 push!(rush_20_12_30, puzzle)
+
+nothing

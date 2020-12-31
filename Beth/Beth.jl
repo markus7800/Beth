@@ -260,6 +260,7 @@ end
 
 include("../puzzles/puzzle.jl")
 include("../puzzles/puzzle_rush_20_12_13.jl")
+include("../puzzles/puzzle_rush_20_12_31.jl")
 
 
 bfs = [Inf,Inf,10,Inf,10,Inf]
@@ -268,7 +269,7 @@ b = Beth(value_heuristic=simple_piece_count, rank_heuristic=simple_rank_moves, s
 b = Beth(value_heuristic=beth_eval, rank_heuristic=beth_rank_moves, search_args=Dict("depth"=>depth, "branching_factors"=>bfs))
 game_history = play_game(black_player=b)
 
-play_puzzle(rush_20_12_13[14], b)
+play_puzzle(rush_20_12_31[28], user_input)
 
 puzzle_rush(rush_20_12_13, b, print_solution=true)
 
