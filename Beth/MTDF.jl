@@ -19,7 +19,7 @@ function key(node::Node)::String
     return key
 end
 
-function AlphaBetaWithMemory(beth::Beth, node::Node, depth::Int, α::Float64, β::Float64, white::Bool, tt::AlphaBetaMemory)
+function AlphaBeta(beth::Beth, node::Node, depth::Int, α::Float64, β::Float64, white::Bool, use_tt=true, tt::AlphaBetaMemory=AlphaBetaMemory())
     value = 0.
     _α = α # store
     _β = β # store
@@ -29,11 +29,11 @@ function AlphaBetaWithMemory(beth::Beth, node::Node, depth::Int, α::Float64, β
     @assert _white == white
 
     # transposition table look up
-    if haskey(tt, key(node))
+    if use_tt && haskey(tt, key(node))
         d, flag, value = tt[key(node)]
         if flag == EXACT
             node.score = value
-            return value
+            return value, (0x0, 0x0, 0x0)
         elseif flag == LOWER
             α = max(α, value)
         elseif flag == UPPER
@@ -42,10 +42,12 @@ function AlphaBetaWithMemory(beth::Beth, node::Node, depth::Int, α::Float64, β
 
         if α ≥ β
             node.score = value
-            return value
+            return value, (0x0, 0x0, 0x0)
         end
     end
 
+    best_move = (0x0, 0x0, 0x0)
+    best_value = 0.
 
     if depth == 0
         beth.n_leafes += 1
@@ -53,49 +55,69 @@ function AlphaBetaWithMemory(beth::Beth, node::Node, depth::Int, α::Float64, β
         node.score = value
     else
         ms = get_moves(beth._board, white)
-        ranked_moves = beth.rank_heuristic(beth._board, white, ms)
-        sort!(ranked_moves, rev=white) # try to choose best moves first
 
-        if white
-            value = -Inf
-            for (i,(prescore, m)) in enumerate(ranked_moves)
-                child = Node(move=m, parent=node, score=prescore, visits=0)
-                push!(node.children, child)
-
-                value = max(value, AlphaBetaWithMemory(beth, child, depth-1, α, β, false, tt))
-                α = max(α, value)
-                α ≥ β && break ## β cutoff
-            end
+        if length(ms) == 0
+            beth.n_leafes += 1
+            value, = beth.value_heuristic(beth._board, white)
             node.score = value
         else
-            value = Inf
-            for (i,(prescore, m)) in enumerate(ranked_moves)
-                child = Node(move=m, parent=node, score=prescore, visits=0)
-                push!(node.children, child)
+            ranked_moves = beth.rank_heuristic(beth._board, white, ms)
+            sort!(ranked_moves, rev=white) # try to choose best moves first
 
-                value = min(value, AlphaBetaWithMemory(beth, child, depth-1, α, β, true, tt))
-                β = min(β, value)
-                β ≤ α && break # α cutoff
+            if white
+                best_value = -Inf
+                value = -Inf
+                for (i,(prescore, m)) in enumerate(ranked_moves)
+                    child = Node(move=m, parent=node, score=prescore, visits=0)
+                    #push!(node.children, child)
+
+                    value = max(value, AlphaBeta(beth, child, depth-1, α, β, false, use_tt, tt)[1])
+                    if value > best_value
+                        best_value = value
+                        best_move = m
+                    end
+
+                    α = max(α, value)
+                    α ≥ β && break ## β cutoff
+                end
+                node.score = value
+            else
+                best_value = Inf
+                value = Inf
+                for (i,(prescore, m)) in enumerate(ranked_moves)
+                    child = Node(move=m, parent=node, score=prescore, visits=0)
+                    #push!(node.children, child)
+
+                    value = min(value, AlphaBeta(beth, child, depth-1, α, β, true, use_tt, tt)[1])
+                    if value < best_value
+                        best_value = value
+                        best_move = m
+                    end
+
+                    β = min(β, value)
+                    β ≤ α && break # α cutoff
+                end
+                node.score = value
             end
-            node.score = value
         end
     end
 
-    if value ≤ _α
-        # Fail low result implies an upper bound
-        tt[key(node)] = (depth, UPPER, value)
-    elseif β ≤ value
-        # Fail high result implies a lower bound
-        tt[key(node)] = (depth, LOWER, value)
-    else
-        # Found an accurate minimax value - will not occur if called with zero window (α = β-
-        tt[key(node)] = (depth, EXACT, value)
+    if use_tt
+        if value ≤ _α
+            # Fail low result implies an upper bound
+            tt[key(node)] = (depth, UPPER, value)
+        elseif β ≤ value
+            # Fail high result implies a lower bound
+            tt[key(node)] = (depth, LOWER, value)
+        else
+            # Found an accurate minimax value - will not occur if called with zero window (α = β-
+            tt[key(node)] = (depth, EXACT, value)
+        end
     end
-
-    return value
+    return value, best_move
 end
 
-function alphabeta_search(beth::Beth; board=beth.board, white=beth.white, verbose=true, lower=-Inf, upper=Inf, mem = AlphaBetaMemory())
+function alphabeta_search(beth::Beth; board=beth.board, white=beth.white, verbose=true, lower=-Inf, upper=Inf, mem=nothing)
     beth.board = board
     beth.white = white
     beth.n_leafes = 0
@@ -103,11 +125,15 @@ function alphabeta_search(beth::Beth; board=beth.board, white=beth.white, verbos
 
     root = Node()
 
-    v,t = @timed AlphaBetaWithMemory(beth, root, depth, lower, upper, white, mem)
+    if mem != nothing
+        (v,m), t = @timed AlphaBeta(beth, root, depth, lower, upper, white, true, mem)
+    else
+        (v,m), t = @timed AlphaBeta(beth, root, depth, lower, upper, white, false)
+    end
 
     verbose && @info(@sprintf "%d nodes (%d leafes) explored in %.4f seconds (%.2f/s)." beth.n_explored_nodes beth.n_leafes t (beth.n_explored_nodes/t) )
 
-    return root, mem
+    return v, m,  mem
 end
 
 
@@ -122,11 +148,11 @@ function MTDF(beth::Beth; board=beth.board, white=beth.white, guess::Float64, de
     lower = -Inf
 
     mem = AlphaBetaMemory()
-    root = Node()
+    best_move = (0x0, 0x0, 0x0)
     _,t = @timed while true
         β = value == lower ? value + 0.1 : value
         root = Node()
-        value = AlphaBetaWithMemory(beth, root, depth, β-0.1, β, white, mem)
+        value, best_move = AlphaBeta(beth, Node(), depth, β-0.1, β, white, true, mem)
         if value < β
             upper = value
         else
@@ -143,7 +169,7 @@ function MTDF(beth::Beth; board=beth.board, white=beth.white, guess::Float64, de
     @info(@sprintf "%d nodes (%d leafes) explored in %.4f seconds (%.2f/s)." beth.n_explored_nodes beth.n_leafes t (beth.n_explored_nodes/t) )
 
 
-    return root
+    return value, best_move
 end
 
 function IMTDF(beth::Beth; board=beth.board, white=beth.white, max_depth::Int)
@@ -171,57 +197,64 @@ function distributed_search(beth::Beth; board, white)
 
 end
 
-pz = rush_20_12_13[5]
+using BenchmarkTools
+
+pz = rush_20_12_13[9]
 print_puzzle(pz)
 
 bfs = [Inf,Inf,Inf,Inf,Inf,Inf]
-depth = 5
+depth = 6
 beth = Beth(value_heuristic=beth_eval, rank_heuristic=beth_rank_moves, search_args=Dict("depth"=>depth, "branching_factors"=>bfs))
+beth(pz.board, pz.white_to_move)
 
+# [ Info: 96401 nodes (83717 leafes) explored in 3.7522 seconds (25691.85/s).
 root = minimax_search(beth, board=deepcopy(pz.board), white=pz.white_to_move)
 
-print_tree(root["Rd7d4"], max_depth=1, white=pz.white_to_move, has_to_have_children=false)
+print_tree(root, max_depth=1, white=pz.white_to_move, has_to_have_children=false)
 
 distributed_search(beth, board=deepcopy(pz.board), white=pz.white_to_move)
 
+# [ Info: 96401 nodes (83717 leafes) explored in 3.5562 seconds (27107.75/s).
+v, m, mem = alphabeta_search(beth, board=deepcopy(pz.board), white=pz.white_to_move)
 
-root, mem = alphabeta_search(beth, board=deepcopy(pz.board), white=pz.white_to_move)
+v, m, mem = alphabeta_search(beth, board=deepcopy(pz.board), white=pz.white_to_move, mem=mem)
 
-root, mem = alphabeta_search(beth, board=deepcopy(pz.board), white=pz.white_to_move, mem=mem)
-
-root = MTDF(beth,  board=deepcopy(pz.board), white=pz.white_to_move, guess=0., depth=4)
+# [ Info: 71352 nodes (63444 leafes) explored in 2.6775 seconds (26648.43/s).
+v, m = MTDF(beth, board=deepcopy(pz.board), white=pz.white_to_move, guess=0., depth=6)
 
 IMTDF(beth, board=deepcopy(pz.board), white=pz.white_to_move, max_depth=8)
 
-1. B: e3-d4, score: 4.4000, visits: 0, 2 children
-2. K: h3-h4, score: 4.4000, visits: 0, 1 children
-3. K: h3-h2, score: 4.4000, visits: 0, 1 children
-4. R: d7-d8, score: 4.4000, visits: 0, 1 children
-5. R: d7-e7, score: 4.4000, visits: 0, 1 children
-6. R: d7-c7, score: 4.4000, visits: 0, 1 children
-7. R: d7-b7, score: 4.4000, visits: 0, 1 children
-8. R: d7-a7, score: 4.4000, visits: 0, 1 children
-9. R: d7-d2, score: 4.4000, visits: 0, 1 children
-10. R: d7-d1, score: 4.4000, visits: 0, 1 children
-11. B: e3-a7, score: 4.4000, visits: 0, 1 children
-12. B: e3-h6, score: 4.4000, visits: 0, 1 children
-13. B: e3-b6, score: 4.4000, visits: 0, 1 children
-14. B: e3-c5, score: 4.4000, visits: 0, 1 children
-15. B: e3-d2, score: 4.4000, visits: 0, 1 children
-16. P: b2-b3, score: 4.4000, visits: 0, 1 children
-17. B: e3-g1, score: 4.3000, visits: 0, 1 children
-18. B: e3-c1, score: 4.3000, visits: 0, 1 children
-19. P: a3-a4, score: 3.7000, visits: 0, 1 children
-20. P: c3-c4, score: 3.6000, visits: 0, 1 children
-21. P: b2-b4, score: 3.3000, visits: 0, 1 children
-22. R: d7-d4, score: -0.5000, visits: 0, 2 children
-23. R: d7-d6, score: -0.5000, visits: 0, 1 children
-24. R: d7-d3, score: -0.6000, visits: 0, 1 children
-25. B: e3-g5, score: -0.6000, visits: 0, 1 children
-26. B: e3-f2, score: -0.6000, visits: 0, 2 children
-27. B: e3-f4, score: -3.4000, visits: 0, 1 children
-28. R: d7-f7, score: -4.2000, visits: 0, 3 children
-29. R: d7-d5, score: -5.6000, visits: 0, 4 children
+0. Root Node, score: 4.4000, visits: 0, 29 children
+​    1. B: e3-d4, score: 4.4000, visits: 0, 2 children
+    2. R: d7-d4, score: -0.6000, visits: 0, 15 children
+    3. K: h3-h4, score: -0.6000, visits: 0, 15 children
+    4. K: h3-h2, score: -0.6000, visits: 0, 15 children
+    5. R: d7-d8, score: -0.6000, visits: 0, 15 children
+    6. R: d7-e7, score: -0.6000, visits: 0, 17 children
+    7. R: d7-c7, score: -0.6000, visits: 0, 17 children
+    8. R: d7-b7, score: -0.6000, visits: 0, 17 children
+    9. R: d7-a7, score: -0.6000, visits: 0, 17 children
+    10. R: d7-d2, score: -0.6000, visits: 0, 15 children
+    11. R: d7-d1, score: -0.6000, visits: 0, 15 children
+    12. B: e3-a7, score: -0.6000, visits: 0, 17 children
+    13. B: e3-b6, score: -0.6000, visits: 0, 17 children
+    14. B: e3-c5, score: -0.6000, visits: 0, 16 children
+    15. B: e3-f2, score: -0.6000, visits: 0, 17 children
+    16. B: e3-d2, score: -0.6000, visits: 0, 16 children
+    17. P: b2-b3, score: -0.6000, visits: 0, 15 children
+    18. B: e3-c1, score: -0.7000, visits: 0, 16 children
+    19. P: a3-a4, score: -1.3000, visits: 0, 15 children
+    20. P: c3-c4, score: -1.4000, visits: 0, 16 children
+    21. P: b2-b4, score: -1.7000, visits: 0, 15 children
+    22. B: e3-g5, score: -2.3000, visits: 0, 11 children
+    23. B: e3-g1, score: -2.3000, visits: 0, 17 children
+    24. B: e3-f4, score: -3.5000, visits: 0, 3 children
+    25. B: e3-h6, score: -3.5000, visits: 0, 16 children
+    26. R: d7-f7, score: -4.2000, visits: 0, 14 children
+    27. R: d7-d6, score: -5.5000, visits: 0, 16 children
+    28. R: d7-d3, score: -5.6000, visits: 0, 16 children
+    29. R: d7-d5, score: -5.6000, visits: 0, 4 children
+
 ""a
 
 
