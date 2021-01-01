@@ -58,7 +58,7 @@ push!(rush_20_12_13, puzzle)
 
 puzzle = PuzzleFEN(
     FEN="r2qkb1r/1Q3pp1/p2p3p/3P1P2/N2pP3/4n3/PP4PP/1R3RK1 w - - 0 1",
-    solution="Rb8",
+    solution="Rb8 Qc6 Ke7 Nc4 Nf1 Rf1",
     firstmove="Nb6",
     difficulty=586)
 push!(rush_20_12_13, puzzle)

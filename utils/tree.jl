@@ -46,7 +46,7 @@ function Base.getindex(node::Node, s::String)
 end
 
 
-function lt_children(x,y,white)
+function lt_children(x::Node,y::Node,white)
     if white
         x.score < y.score
     else
@@ -54,7 +54,7 @@ function lt_children(x,y,white)
     end
 end
 
-function print_tree(root::Node; number=0, depth=0, max_depth=Inf, has_to_have_children=true, highlight_best=5, expand_best=Inf, white=true, color=:white)
+function print_tree(root; number=0, depth=0, max_depth=Inf, has_to_have_children=true, highlight_best=5, expand_best=Inf, white=true, color=:white)
     if root.parent == nothing
         color = :yellow
     end

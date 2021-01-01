@@ -108,7 +108,7 @@ function AlphaBeta(beth::Beth, node::Node, depth::Int, α::Float64, β::Float64,
         if value ≤ _α
             # Fail low result implies an upper bound
             tt[key(node)] = (depth, UPPER, value)
-        elseif β ≤ value
+        elseif _β ≤ value
             # Fail high result implies a lower bound
             tt[key(node)] = (depth, LOWER, value)
         else
