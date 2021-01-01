@@ -262,6 +262,7 @@ include("../puzzles/puzzle.jl")
 include("../puzzles/puzzle_rush_20_12_13.jl")
 include("../puzzles/puzzle_rush_20_12_30.jl")
 include("../puzzles/puzzle_rush_20_12_31.jl")
+
 puzzle_rush(rush_20_12_30, user_input)
 
 bfs = [Inf,Inf,Inf,Inf,10,Inf]

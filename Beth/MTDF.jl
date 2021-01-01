@@ -4,9 +4,9 @@
 #TranspositionTable = Dict{String, Tuple{Int,Float64,Float64}}
 AlphaBetaMemory = Dict{String, Tuple{Int,UInt8,Float64}}
 
-const EXACT = 0x0
-const UPPER = 0x1
-const LOWER = 0x2
+const EXACT = 0x1
+const UPPER = 0x2
+const LOWER = 0x3
 
 function key(node::Node)::String
     key = ""
@@ -71,7 +71,10 @@ function AlphaBeta(beth::Beth, node::Node, depth::Int, α::Float64, β::Float64,
                     child = Node(move=m, parent=node, score=prescore, visits=0)
                     #push!(node.children, child)
 
+                    # println(@sprintf "Pre %d %s %.2f %.2f %.2f" i child α β value)
                     value = max(value, AlphaBeta(beth, child, depth-1, α, β, false, use_tt, tt)[1])
+                    # println(@sprintf "After %d %s %.2f %.2f %.2f" i child α β value)
+
                     if value > best_value
                         best_value = value
                         best_move = m
@@ -88,7 +91,10 @@ function AlphaBeta(beth::Beth, node::Node, depth::Int, α::Float64, β::Float64,
                     child = Node(move=m, parent=node, score=prescore, visits=0)
                     #push!(node.children, child)
 
+                    # println(@sprintf "Pre %d %s %.2f %.2f %.2f" i child α β value)
                     value = min(value, AlphaBeta(beth, child, depth-1, α, β, true, use_tt, tt)[1])
+                    # println(@sprintf "After %d %s %.2f %.2f %.2f" i child α β  value)
+
                     if value < best_value
                         best_value = value
                         best_move = m
@@ -137,7 +143,7 @@ function alphabeta_search(beth::Beth; board=beth.board, white=beth.white, verbos
 end
 
 
-function MTDF(beth::Beth; board=beth.board, white=beth.white, guess::Float64, depth::Integer)
+function MTDF(beth::Beth; board=beth.board, white=beth.white, guess::Float64, depth::Integer, verbose=true)
     beth.board = board
     beth.white = white
     beth.n_leafes = 0
@@ -166,7 +172,7 @@ function MTDF(beth::Beth; board=beth.board, white=beth.white, guess::Float64, de
         end
     end
 
-    @info(@sprintf "%d nodes (%d leafes) explored in %.4f seconds (%.2f/s)." beth.n_explored_nodes beth.n_leafes t (beth.n_explored_nodes/t) )
+    verbose && @info(@sprintf "%d nodes (%d leafes) explored in %.4f seconds (%.2f/s)." beth.n_explored_nodes beth.n_leafes t (beth.n_explored_nodes/t) )
 
 
     return value, best_move
@@ -176,9 +182,9 @@ function IMTDF(beth::Beth; board=beth.board, white=beth.white, max_depth::Int)
     guesses = [0.]
     for depth in 2:2:max_depth
         guess = guesses[end]
-        @info "Depth: $depth, guess: $guess"
-        @time root = MTDF(beth, board=board, white=white, guess=guess, depth=depth)
-        push!(guesses, root.score)
+        # @info "Depth: $depth, guess: $guess"
+        @time value, best_move = MTDF(beth, board=board, white=white, guess=guess, depth=depth, verbose=false)
+        push!(guesses, value)
     end
     return guesses[end]
 end
@@ -192,7 +198,7 @@ function pvs(beth::Beth, node::Node, depth::Int, α::Float64, β::Float64, white
 
     if depth == 0
         beth.n_leafes += 1
-        value = abs(beth.value_heuristic(beth._board, white))
+        value = beth.value_heuristic(beth._board, white)
         node.score = value
         return value
     else
@@ -266,10 +272,10 @@ using BenchmarkTools
 pz = rush_20_12_13[9]
 print_puzzle(pz)
 
-bfs = [Inf,Inf,Inf,Inf,Inf,Inf]
+bfs = [Inf,Inf,Inf,Inf,Inf,Inf,Inf,Inf]
 depth = 6
 beth = Beth(value_heuristic=beth_eval, rank_heuristic=beth_rank_moves, search_args=Dict("depth"=>depth, "branching_factors"=>bfs))
-beth(pz.board, pz.white_to_move)
+# beth(pz.board, pz.white_to_move)
 
 # [ Info: 96401 nodes (83717 leafes) explored in 3.7522 seconds (25691.85/s).
 root = minimax_search(beth, board=deepcopy(pz.board), white=pz.white_to_move)
@@ -283,97 +289,209 @@ v, m, mem = alphabeta_search(beth, board=deepcopy(pz.board), white=pz.white_to_m
 
 v, m, mem = alphabeta_search(beth, board=deepcopy(pz.board), white=pz.white_to_move, mem=mem)
 
-# [ Info: 71352 nodes (63444 leafes) explored in 2.6775 seconds (26648.43/s).
-v, m = MTDF(beth, board=deepcopy(pz.board), white=pz.white_to_move, guess=0., depth=4)
+v, root = start_beth_search(beth, board=deepcopy(pz.board), white=pz.white_to_move, depth=6)
 
-IMTDF(beth, board=deepcopy(pz.board), white=pz.white_to_move, max_depth=8)
+# [ Info: 71352 nodes (63444 leafes) explored in 2.6775 seconds (26648.43/s).
+@profiler v, m = MTDF(beth, board=deepcopy(pz.board), white=pz.white_to_move, guess=0., depth=4)
+
+IMTDF(beth, board=deepcopy(pz.board), white=pz.white_to_move, max_depth=4)
 
 pvs_search(beth, board=deepcopy(pz.board), white=pz.white_to_move, depth=4)
 
-0. Root Node, score: 4.4000, visits: 0, 29 children
-​    1. B: e3-d4, score: 4.4000, visits: 0, 2 children
-    2. R: d7-d4, score: -0.6000, visits: 0, 15 children
-    3. K: h3-h4, score: -0.6000, visits: 0, 15 children
-    4. K: h3-h2, score: -0.6000, visits: 0, 15 children
-    5. R: d7-d8, score: -0.6000, visits: 0, 15 children
-    6. R: d7-e7, score: -0.6000, visits: 0, 17 children
-    7. R: d7-c7, score: -0.6000, visits: 0, 17 children
-    8. R: d7-b7, score: -0.6000, visits: 0, 17 children
-    9. R: d7-a7, score: -0.6000, visits: 0, 17 children
-    10. R: d7-d2, score: -0.6000, visits: 0, 15 children
-    11. R: d7-d1, score: -0.6000, visits: 0, 15 children
-    12. B: e3-a7, score: -0.6000, visits: 0, 17 children
-    13. B: e3-b6, score: -0.6000, visits: 0, 17 children
-    14. B: e3-c5, score: -0.6000, visits: 0, 16 children
-    15. B: e3-f2, score: -0.6000, visits: 0, 17 children
-    16. B: e3-d2, score: -0.6000, visits: 0, 16 children
-    17. P: b2-b3, score: -0.6000, visits: 0, 15 children
-    18. B: e3-c1, score: -0.7000, visits: 0, 16 children
-    19. P: a3-a4, score: -1.3000, visits: 0, 15 children
-    20. P: c3-c4, score: -1.4000, visits: 0, 16 children
-    21. P: b2-b4, score: -1.7000, visits: 0, 15 children
-    22. B: e3-g5, score: -2.3000, visits: 0, 11 children
-    23. B: e3-g1, score: -2.3000, visits: 0, 17 children
-    24. B: e3-f4, score: -3.5000, visits: 0, 3 children
-    25. B: e3-h6, score: -3.5000, visits: 0, 16 children
-    26. R: d7-f7, score: -4.2000, visits: 0, 14 children
-    27. R: d7-d6, score: -5.5000, visits: 0, 16 children
-    28. R: d7-d3, score: -5.6000, visits: 0, 16 children
-    29. R: d7-d5, score: -5.6000, visits: 0, 4 children
 
-""a
-
-
-#=
-α = β - 1
-
-β - α = β - (β - 1) = 1
-
-g > α && g < β => β - 1 < g < β
-
-
-0. Root Node, score: 2.1000, visits: 0, 41 children
-​   1. B: c3-d4, score: 2.1000, visits: 0, 37 children
-    2. R: c1-c2, score: 1.9000, visits: 0, 1 children
-    3. R: e1-e3, score: 0.0000, visits: 0, 1 children
-    4. B: b5-e2, score: -0.4000, visits: 0, 2 children
-    5. B: b5-f1, score: -0.5000, visits: 0, 2 children
-    6. B: b5-d7, score: -1.0000, visits: 0, 37 children
-    7. B: c3-b4, score: -1.0000, visits: 0, 2 children
-    8. Q: d2-d5, score: -1.1000, visits: 0, 1 children
-    9. Q: d2-h6, score: -1.9000, visits: 0, 1 children
-    10. B: b5-c4, score: -2.0000, visits: 0, 2 children
-    11. N: f3-d4, score: -2.1000, visits: 0, 2 children
-    12. Q: d2-g5, score: -2.1000, visits: 0, 2 children
-    13. Q: d2-f4, score: -2.1000, visits: 0, 1 children
-    14. Q: d2-d3, score: -2.1000, visits: 0, 1 children
-    15. Q: d2-e2, score: -2.1000, visits: 0, 2 children
-    16. Q: d2-b2, score: -2.1000, visits: 0, 2 children
-    17. Q: d2-d1, score: -2.1000, visits: 0, 2 children
-    18. R: e1-e2, score: -2.1000, visits: 0, 2 children
-    19. R: e1-f1, score: -2.1000, visits: 0, 2 children
-    20. R: e1-d1, score: -2.1000, visits: 0, 2 children
-    21. R: c1-d1, score: -2.1000, visits: 0, 2 children
-    22. R: c1-b1, score: -2.1000, visits: 0, 2 children
-    23. R: c1-a1, score: -2.1000, visits: 0, 2 children
-    24. N: f3-g5, score: -2.1000, visits: 0, 2 children
-    25. N: f3-h4, score: -2.1000, visits: 0, 2 children
-    26. B: b5-c6, score: -2.1000, visits: 0, 2 children
-    27. B: b5-d3, score: -2.1000, visits: 0, 2 children
-    28. B: c3-b2, score: -2.1000, visits: 0, 2 children
-    29. B: c3-a1, score: -2.1000, visits: 0, 2 children
-    30. P: h2-h4, score: -2.1000, visits: 0, 2 children
-    31. P: h2-h3, score: -2.1000, visits: 0, 2 children
-    32. P: g2-g4, score: -2.1000, visits: 0, 2 children
-    33. P: g2-g3, score: -2.1000, visits: 0, 2 children
-    34. K: g1-f1, score: -2.3000, visits: 0, 1 children
-    35. K: g1-h1, score: -2.6000, visits: 0, 1 children
-    36. B: b5-a6, score: -3.9000, visits: 0, 2 children
-    37. Q: d2-d4, score: -3.9000, visits: 0, 1 children
-    38. R: e1-e4, score: -4.0000, visits: 0, 2 children
-    39. Q: d2-e3, score: -4.0000, visits: 0, 1 children
-    40. Q: d2-c2, score: -8.1000, visits: 0, 2 children
-    41. Q: d2-a2, score: -8.1000, visits: 0, 2 children
-
-
-=#
+Pre 1 Q: b7-f7, score: 24.5000, visits: 0, 0 children -Inf Inf -Inf
+After 1 Q: b7-f7, score: -5.5000, visits: 0, 0 children -Inf Inf -5.50
+Pre 2 Q: b7-e7, score: 23.5000, visits: 0, 0 children -5.50 Inf -5.50
+After 2 Q: b7-e7, score: -6.5000, visits: 0, 0 children -5.50 Inf -5.50
+Pre 3 Q: b7-d7, score: 23.5000, visits: 0, 0 children -5.50 Inf -5.50
+After 3 Q: b7-d7, score: -6.5000, visits: 0, 0 children -5.50 Inf -5.50
+Pre 4 Q: b7-c6, score: 23.5000, visits: 0, 0 children -5.50 Inf -5.50
+After 4 Q: b7-c6, score: -6.5000, visits: 0, 0 children -5.50 Inf -5.50
+Pre 5 Q: b7-a8, score: -1.5000, visits: 0, 0 children -5.50 Inf -5.50
+After 5 Q: b7-a8, score: -1.5000, visits: 0, 0 children -5.50 Inf -1.50
+Pre 6 N: b6-a8, score: -1.5000, visits: 0, 0 children -1.50 Inf -1.50
+After 6 N: b6-a8, score: -1.5000, visits: 0, 0 children -1.50 Inf -1.50
+Pre 7 K: g1-f1, score: -3.5000, visits: 0, 0 children -1.50 Inf -1.50
+After 7 K: g1-f1, score: -3.5000, visits: 0, 0 children -1.50 Inf -1.50
+Pre 8 R: b1-f1, score: -3.5000, visits: 0, 0 children -1.50 Inf -1.50
+After 8 R: b1-f1, score: -3.5000, visits: 0, 0 children -1.50 Inf -1.50
+Pre 9 Q: b7-a6, score: -5.2000, visits: 0, 0 children -1.50 Inf -1.50
+After 9 Q: b7-a6, score: -5.2000, visits: 0, 0 children -1.50 Inf -1.50
+Pre 10 K: g1-f2, score: -6.5000, visits: 0, 0 children -1.50 Inf -1.50
+After 10 K: g1-f2, score: -6.5000, visits: 0, 0 children -1.50 Inf -1.50
+Pre 11 K: g1-h1, score: -6.5000, visits: 0, 0 children -1.50 Inf -1.50
+After 11 K: g1-h1, score: -6.5000, visits: 0, 0 children -1.50 Inf -1.50
+Pre 12 Q: b7-c8, score: -6.5000, visits: 0, 0 children -1.50 Inf -1.50
+After 12 Q: b7-c8, score: -6.5000, visits: 0, 0 children -1.50 Inf -1.50
+Pre 13 Q: b7-b8, score: -6.5000, visits: 0, 0 children -1.50 Inf -1.50
+After 13 Q: b7-b8, score: -6.5000, visits: 0, 0 children -1.50 Inf -1.50
+Pre 14 Q: b7-c7, score: -6.5000, visits: 0, 0 children -1.50 Inf -1.50
+After 14 Q: b7-c7, score: -6.5000, visits: 0, 0 children -1.50 Inf -1.50
+Pre 15 Q: b7-a7, score: -6.5000, visits: 0, 0 children -1.50 Inf -1.50
+After 15 Q: b7-a7, score: -6.5000, visits: 0, 0 children -1.50 Inf -1.50
+Pre 16 R: b1-e1, score: -6.5000, visits: 0, 0 children -1.50 Inf -1.50
+After 16 R: b1-e1, score: -6.5000, visits: 0, 0 children -1.50 Inf -1.50
+Pre 17 R: b1-d1, score: -6.5000, visits: 0, 0 children -1.50 Inf -1.50
+After 17 R: b1-d1, score: -6.5000, visits: 0, 0 children -1.50 Inf -1.50
+Pre 18 R: b1-c1, score: -6.5000, visits: 0, 0 children -1.50 Inf -1.50
+After 18 R: b1-c1, score: -6.5000, visits: 0, 0 children -1.50 Inf -1.50
+Pre 19 R: b1-a1, score: -6.5000, visits: 0, 0 children -1.50 Inf -1.50
+After 19 R: b1-a1, score: -6.5000, visits: 0, 0 children -1.50 Inf -1.50
+Pre 20 N: b6-c8, score: -6.5000, visits: 0, 0 children -1.50 Inf -1.50
+After 20 N: b6-c8, score: -6.5000, visits: 0, 0 children -1.50 Inf -1.50
+Pre 21 N: b6-d7, score: -6.5000, visits: 0, 0 children -1.50 Inf -1.50
+After 21 N: b6-d7, score: -6.5000, visits: 0, 0 children -1.50 Inf -1.50
+Pre 22 N: b6-c4, score: -6.5000, visits: 0, 0 children -1.50 Inf -1.50
+After 22 N: b6-c4, score: -6.5000, visits: 0, 0 children -1.50 Inf -1.50
+Pre 23 N: b6-a4, score: -6.5000, visits: 0, 0 children -1.50 Inf -1.50
+After 23 N: b6-a4, score: -6.5000, visits: 0, 0 children -1.50 Inf -1.50
+Pre 24 P: f5-f6, score: -6.5000, visits: 0, 0 children -1.50 Inf -1.50
+After 24 P: f5-f6, score: -6.5000, visits: 0, 0 children -1.50 Inf -1.50
+Pre 25 P: e4-e5, score: -6.5000, visits: 0, 0 children -1.50 Inf -1.50
+After 25 P: e4-e5, score: -6.5000, visits: 0, 0 children -1.50 Inf -1.50
+Pre 26 P: h2-h4, score: -6.5000, visits: 0, 0 children -1.50 Inf -1.50
+After 26 P: h2-h4, score: -6.5000, visits: 0, 0 children -1.50 Inf -1.50
+Pre 27 P: h2-h3, score: -6.5000, visits: 0, 0 children -1.50 Inf -1.50
+After 27 P: h2-h3, score: -6.5000, visits: 0, 0 children -1.50 Inf -1.50
+Pre 28 P: g2-g4, score: -6.5000, visits: 0, 0 children -1.50 Inf -1.50
+After 28 P: g2-g4, score: -6.5000, visits: 0, 0 children -1.50 Inf -1.50
+Pre 29 P: g2-g3, score: -6.5000, visits: 0, 0 children -1.50 Inf -1.50
+After 29 P: g2-g3, score: -6.5000, visits: 0, 0 children -1.50 Inf -1.50
+Pre 30 P: b2-b4, score: -6.5000, visits: 0, 0 children -1.50 Inf -1.50
+After 30 P: b2-b4, score: -6.5000, visits: 0, 0 children -1.50 Inf -1.50
+Pre 31 P: b2-b3, score: -6.5000, visits: 0, 0 children -1.50 Inf -1.50
+After 31 P: b2-b3, score: -6.5000, visits: 0, 0 children -1.50 Inf -1.50
+Pre 32 P: a2-a4, score: -6.5000, visits: 0, 0 children -1.50 Inf -1.50
+After 32 P: a2-a4, score: -6.5000, visits: 0, 0 children -1.50 Inf -1.50
+Pre 33 P: a2-a3, score: -6.5000, visits: 0, 0 children -1.50 Inf -1.50
+After 33 P: a2-a3, score: -6.5000, visits: 0, 0 children -1.50 Inf -1.50
+After 1 N: e3-f1, score: -1.5000, visits: 0, 0 children -Inf Inf -1.50
+Pre 2 Q: d8-b6, score: -4.5000, visits: 0, 0 children -Inf -1.50 -1.50
+Pre 1 Q: b7-a8, score: 30.5000, visits: 0, 0 children -Inf -1.50 -Inf
+After 1 Q: b7-a8, score: 0.5000, visits: 0, 0 children -Inf -1.50 0.50
+After 2 Q: d8-b6, score: 0.5000, visits: 0, 0 children -Inf -1.50 -1.50
+Pre 3 N: e3-d5, score: -2.7000, visits: 0, 0 children -Inf -1.50 -1.50
+Pre 1 Q: b7-f7, score: 28.3000, visits: 0, 0 children -Inf -1.50 -Inf
+After 1 Q: b7-f7, score: -1.7000, visits: 0, 0 children -Inf -1.50 -1.70
+Pre 2 Q: b7-e7, score: 27.3000, visits: 0, 0 children -1.70 -1.50 -1.70
+After 2 Q: b7-e7, score: -2.7000, visits: 0, 0 children -1.70 -1.50 -1.70
+Pre 3 Q: b7-d7, score: 27.3000, visits: 0, 0 children -1.70 -1.50 -1.70
+After 3 Q: b7-d7, score: -2.7000, visits: 0, 0 children -1.70 -1.50 -1.70
+Pre 4 Q: b7-c6, score: 27.3000, visits: 0, 0 children -1.70 -1.50 -1.70
+After 4 Q: b7-c6, score: -2.7000, visits: 0, 0 children -1.70 -1.50 -1.70
+Pre 5 Q: b7-a8, score: 2.3000, visits: 0, 0 children -1.70 -1.50 -1.70
+After 5 Q: b7-a8, score: 2.3000, visits: 0, 0 children -1.70 -1.50 2.30
+After 3 N: e3-d5, score: 2.3000, visits: 0, 0 children -Inf -1.50 -1.50
+Pre 4 N: e3-g2, score: -2.6000, visits: 0, 0 children -Inf -1.50 -1.50
+Pre 1 Q: b7-f7, score: 28.4000, visits: 0, 0 children -Inf -1.50 -Inf
+After 1 Q: b7-f7, score: -1.6000, visits: 0, 0 children -Inf -1.50 -1.60
+Pre 2 Q: b7-e7, score: 27.4000, visits: 0, 0 children -1.60 -1.50 -1.60
+After 2 Q: b7-e7, score: -2.6000, visits: 0, 0 children -1.60 -1.50 -1.60
+Pre 3 Q: b7-d7, score: 27.4000, visits: 0, 0 children -1.60 -1.50 -1.60
+After 3 Q: b7-d7, score: -2.6000, visits: 0, 0 children -1.60 -1.50 -1.60
+Pre 4 Q: b7-c6, score: 27.4000, visits: 0, 0 children -1.60 -1.50 -1.60
+After 4 Q: b7-c6, score: -2.6000, visits: 0, 0 children -1.60 -1.50 -1.60
+Pre 5 Q: b7-a8, score: 2.4000, visits: 0, 0 children -1.60 -1.50 -1.60
+After 5 Q: b7-a8, score: 2.4000, visits: 0, 0 children -1.60 -1.50 2.40
+After 4 N: e3-g2, score: 2.4000, visits: 0, 0 children -Inf -1.50 -1.50
+Pre 5 N: e3-f5, score: -2.5000, visits: 0, 0 children -Inf -1.50 -1.50
+Pre 1 Q: b7-f7, score: 28.5000, visits: 0, 0 children -Inf -1.50 -Inf
+After 1 Q: b7-f7, score: -1.5000, visits: 0, 0 children -Inf -1.50 -1.50
+After 5 N: e3-f5, score: -1.5000, visits: 0, 0 children -Inf -1.50 -1.50
+Pre 6 B: f8-e7, score: -1.6000, visits: 0, 0 children -Inf -1.50 -1.50
+Pre 1 Q: b7-e7, score: 31.4000, visits: 0, 0 children -Inf -1.50 -Inf
+After 1 Q: b7-e7, score: 1.4000, visits: 0, 0 children -Inf -1.50 1.40
+After 6 B: f8-e7, score: 1.4000, visits: 0, 0 children -Inf -1.50 -1.50
+Pre 7 P: a6-a5, score: -1.5000, visits: 0, 0 children -Inf -1.50 -1.50
+Pre 1 Q: b7-f7, score: 29.5000, visits: 0, 0 children -Inf -1.50 -Inf
+After 1 Q: b7-f7, score: -0.5000, visits: 0, 0 children -Inf -1.50 -0.50
+After 7 P: a6-a5, score: -0.5000, visits: 0, 0 children -Inf -1.50 -1.50
+Pre 8 P: h6-h5, score: -1.5000, visits: 0, 0 children -Inf -1.50 -1.50
+Pre 1 Q: b7-f7, score: 29.5000, visits: 0, 0 children -Inf -1.50 -Inf
+After 1 Q: b7-f7, score: -0.5000, visits: 0, 0 children -Inf -1.50 -0.50
+After 8 P: h6-h5, score: -0.5000, visits: 0, 0 children -Inf -1.50 -1.50
+Pre 9 P: f7-f6, score: -1.5000, visits: 0, 0 children -Inf -1.50 -1.50
+Pre 1 Q: b7-f7, score: 28.5000, visits: 0, 0 children -Inf -1.50 -Inf
+After 1 Q: b7-f7, score: -1.5000, visits: 0, 0 children -Inf -1.50 -1.50
+After 9 P: f7-f6, score: -1.5000, visits: 0, 0 children -Inf -1.50 -1.50
+Pre 10 P: g7-g5, score: -1.5000, visits: 0, 0 children -Inf -1.50 -1.50
+Pre 1 Q: b7-f7, score: 29.5000, visits: 0, 0 children -Inf -1.50 -Inf
+After 1 Q: b7-f7, score: -0.5000, visits: 0, 0 children -Inf -1.50 -0.50
+After 10 P: g7-g5, score: -0.5000, visits: 0, 0 children -Inf -1.50 -1.50
+Pre 11 P: g7-g6, score: -1.5000, visits: 0, 0 children -Inf -1.50 -1.50
+Pre 1 Q: b7-f7, score: 29.5000, visits: 0, 0 children -Inf -1.50 -Inf
+After 1 Q: b7-f7, score: -0.5000, visits: 0, 0 children -Inf -1.50 -0.50
+After 11 P: g7-g6, score: -0.5000, visits: 0, 0 children -Inf -1.50 -1.50
+Pre 12 N: e3-d1, score: -1.5000, visits: 0, 0 children -Inf -1.50 -1.50
+Pre 1 Q: b7-f7, score: 29.5000, visits: 0, 0 children -Inf -1.50 -Inf
+After 1 Q: b7-f7, score: -0.5000, visits: 0, 0 children -Inf -1.50 -0.50
+After 12 N: e3-d1, score: -0.5000, visits: 0, 0 children -Inf -1.50 -1.50
+Pre 13 N: e3-c2, score: -1.5000, visits: 0, 0 children -Inf -1.50 -1.50
+Pre 1 Q: b7-f7, score: 29.5000, visits: 0, 0 children -Inf -1.50 -Inf
+After 1 Q: b7-f7, score: -0.5000, visits: 0, 0 children -Inf -1.50 -0.50
+After 13 N: e3-c2, score: -0.5000, visits: 0, 0 children -Inf -1.50 -1.50
+Pre 14 N: e3-c4, score: -1.5000, visits: 0, 0 children -Inf -1.50 -1.50
+Pre 1 Q: b7-f7, score: 29.5000, visits: 0, 0 children -Inf -1.50 -Inf
+After 1 Q: b7-f7, score: -0.5000, visits: 0, 0 children -Inf -1.50 -0.50
+After 14 N: e3-c4, score: -0.5000, visits: 0, 0 children -Inf -1.50 -1.50
+Pre 15 N: e3-g4, score: -1.5000, visits: 0, 0 children -Inf -1.50 -1.50
+Pre 1 Q: b7-f7, score: 29.5000, visits: 0, 0 children -Inf -1.50 -Inf
+After 1 Q: b7-f7, score: -0.5000, visits: 0, 0 children -Inf -1.50 -0.50
+After 15 N: e3-g4, score: -0.5000, visits: 0, 0 children -Inf -1.50 -1.50
+Pre 16 R: a8-a7, score: -1.5000, visits: 0, 0 children -Inf -1.50 -1.50
+Pre 1 Q: b7-f7, score: 29.5000, visits: 0, 0 children -Inf -1.50 -Inf
+After 1 Q: b7-f7, score: -0.5000, visits: 0, 0 children -Inf -1.50 -0.50
+After 16 R: a8-a7, score: -0.5000, visits: 0, 0 children -Inf -1.50 -1.50
+Pre 17 R: a8-b8, score: -1.5000, visits: 0, 0 children -Inf -1.50 -1.50
+Pre 1 Q: b7-f7, score: 29.5000, visits: 0, 0 children -Inf -1.50 -Inf
+After 1 Q: b7-f7, score: -0.5000, visits: 0, 0 children -Inf -1.50 -0.50
+After 17 R: a8-b8, score: -0.5000, visits: 0, 0 children -Inf -1.50 -1.50
+Pre 18 R: a8-c8, score: -1.5000, visits: 0, 0 children -Inf -1.50 -1.50
+Pre 1 Q: b7-f7, score: 29.5000, visits: 0, 0 children -Inf -1.50 -Inf
+After 1 Q: b7-f7, score: -0.5000, visits: 0, 0 children -Inf -1.50 -0.50
+After 18 R: a8-c8, score: -0.5000, visits: 0, 0 children -Inf -1.50 -1.50
+Pre 19 R: h8-h7, score: -1.5000, visits: 0, 0 children -Inf -1.50 -1.50
+Pre 1 Q: b7-f7, score: 29.5000, visits: 0, 0 children -Inf -1.50 -Inf
+After 1 Q: b7-f7, score: -0.5000, visits: 0, 0 children -Inf -1.50 -0.50
+After 19 R: h8-h7, score: -0.5000, visits: 0, 0 children -Inf -1.50 -1.50
+Pre 20 R: h8-g8, score: -1.5000, visits: 0, 0 children -Inf -1.50 -1.50
+Pre 1 Q: b7-f7, score: 29.5000, visits: 0, 0 children -Inf -1.50 -Inf
+After 1 Q: b7-f7, score: -0.5000, visits: 0, 0 children -Inf -1.50 -0.50
+After 20 R: h8-g8, score: -0.5000, visits: 0, 0 children -Inf -1.50 -1.50
+Pre 21 Q: d8-h4, score: -1.5000, visits: 0, 0 children -Inf -1.50 -1.50
+Pre 1 Q: b7-d7, score: 1000.0000, visits: 0, 0 children -Inf -1.50 -Inf
+After 1 Q: b7-d7, score: 1000.0000, visits: 0, 0 children -Inf -1.50 1000.00
+After 21 Q: d8-h4, score: 1000.0000, visits: 0, 0 children -Inf -1.50 -1.50
+Pre 22 Q: d8-g5, score: -1.5000, visits: 0, 0 children -Inf -1.50 -1.50
+Pre 1 Q: b7-d7, score: 1000.0000, visits: 0, 0 children -Inf -1.50 -Inf
+After 1 Q: b7-d7, score: 1000.0000, visits: 0, 0 children -Inf -1.50 1000.00
+After 22 Q: d8-g5, score: 1000.0000, visits: 0, 0 children -Inf -1.50 -1.50
+Pre 23 Q: d8-f6, score: -1.5000, visits: 0, 0 children -Inf -1.50 -1.50
+Pre 1 Q: b7-d7, score: 1000.0000, visits: 0, 0 children -Inf -1.50 -Inf
+After 1 Q: b7-d7, score: 1000.0000, visits: 0, 0 children -Inf -1.50 1000.00
+After 23 Q: d8-f6, score: 1000.0000, visits: 0, 0 children -Inf -1.50 -1.50
+Pre 24 Q: d8-c7, score: -1.5000, visits: 0, 0 children -Inf -1.50 -1.50
+Pre 1 Q: b7-a8, score: 33.5000, visits: 0, 0 children -Inf -1.50 -Inf
+After 1 Q: b7-a8, score: 3.5000, visits: 0, 0 children -Inf -1.50 3.50
+After 24 Q: d8-c7, score: 3.5000, visits: 0, 0 children -Inf -1.50 -1.50
+Pre 25 Q: d8-d7, score: -1.5000, visits: 0, 0 children -Inf -1.50 -1.50
+Pre 1 Q: b7-d7, score: 1000.0000, visits: 0, 0 children -Inf -1.50 -Inf
+After 1 Q: b7-d7, score: 1000.0000, visits: 0, 0 children -Inf -1.50 1000.00
+After 25 Q: d8-d7, score: 1000.0000, visits: 0, 0 children -Inf -1.50 -1.50
+Pre 26 Q: d8-e7, score: -1.5000, visits: 0, 0 children -Inf -1.50 -1.50
+Pre 1 Q: b7-e7, score: 37.5000, visits: 0, 0 children -Inf -1.50 -Inf
+After 1 Q: b7-e7, score: 7.5000, visits: 0, 0 children -Inf -1.50 7.50
+After 26 Q: d8-e7, score: 7.5000, visits: 0, 0 children -Inf -1.50 -1.50
+Pre 27 Q: d8-b8, score: -1.5000, visits: 0, 0 children -Inf -1.50 -1.50
+Pre 1 Q: b7-d7, score: 1000.0000, visits: 0, 0 children -Inf -1.50 -Inf
+After 1 Q: b7-d7, score: 1000.0000, visits: 0, 0 children -Inf -1.50 1000.00
+After 27 Q: d8-b8, score: 1000.0000, visits: 0, 0 children -Inf -1.50 -1.50
+Pre 28 Q: d8-c8, score: -1.5000, visits: 0, 0 children -Inf -1.50 -1.50
+Pre 1 Q: b7-c8, score: 37.5000, visits: 0, 0 children -Inf -1.50 -Inf
+After 1 Q: b7-c8, score: 7.5000, visits: 0, 0 children -Inf -1.50 7.50
+After 28 Q: d8-c8, score: 7.5000, visits: 0, 0 children -Inf -1.50 -1.50
+Pre 29 P: d4-d3, score: -1.4000, visits: 0, 0 children -Inf -1.50 -1.50
+Pre 1 Q: b7-f7, score: 29.6000, visits: 0, 0 children -Inf -1.50 -Inf
+After 1 Q: b7-f7, score: -0.4000, visits: 0, 0 children -Inf -1.50 -0.40
+After 29 P: d4-d3, score: -0.4000, visits: 0, 0 children -Inf -1.50 -1.50
+[ Info: 99 nodes (69 leafes) explored in 0.0817 seconds (1211.07/s).
