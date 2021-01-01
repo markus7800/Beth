@@ -183,6 +183,70 @@ function IMTDF(beth::Beth; board=beth.board, white=beth.white, max_depth::Int)
     return guesses[end]
 end
 
+function pvs(beth::Beth, node::Node, depth::Int, α::Float64, β::Float64, white::Bool)
+    value = 0.
+
+    beth.n_explored_nodes += 1
+    _white, = restore_board_position(beth, node)
+    @assert _white == white
+
+    if depth == 0
+        beth.n_leafes += 1
+        value = abs(beth.value_heuristic(beth._board, white))
+        node.score = value
+        return value
+    else
+        ms = get_moves(beth._board, white)
+
+        if length(ms) == 0
+            beth.n_leafes += 1
+            value = abs(beth.value_heuristic(beth._board, white))
+            node.score = value
+            return value
+        else
+            ranked_moves = beth.rank_heuristic(beth._board, white, ms)
+            sort!(ranked_moves, rev=white) # try to choose best moves first
+
+            for (i,(prescore, m)) in enumerate(ranked_moves)
+                child = Node(move=m, parent=node, score=prescore, visits=0)
+
+                if i == 1 # first child
+                    value = -pvs(beth, child, depth-1, -β, -α, !white)
+                else
+                    # null window search
+                    value = -pvs(beth, child, depth-1, -α-0.1, -α, !white)
+                    if α < value && value < β
+                        # research if it failed high
+                        value = -pvs(beth, child, depth-1, -β, -value, !white)
+                    end
+                end
+
+                α = max(α, value)
+                if α ≥ β
+                    break # beta cut off
+                end
+            end
+            node.score = α
+            return α
+        end
+    end
+end
+
+function pvs_search(beth::Beth; board=beth.board, white=beth.white, verbose=true, lower=-Inf, upper=Inf, depth=6)
+    beth.board = board
+    beth.white = white
+    beth.n_leafes = 0
+    beth.n_explored_nodes = 0
+
+    root = Node()
+
+    v,t, = @timed pvs(beth, root, depth, lower, upper, white)
+
+    verbose && @info(@sprintf "%d nodes (%d leafes) explored in %.4f seconds (%.2f/s)." beth.n_explored_nodes beth.n_leafes t (beth.n_explored_nodes/t) )
+
+    return v
+end
+
 function distributed_search(beth::Beth; board, white)
     ms = get_moves(board, white)
     ranked_moves = beth.rank_heuristic(board, white, ms)
@@ -220,9 +284,11 @@ v, m, mem = alphabeta_search(beth, board=deepcopy(pz.board), white=pz.white_to_m
 v, m, mem = alphabeta_search(beth, board=deepcopy(pz.board), white=pz.white_to_move, mem=mem)
 
 # [ Info: 71352 nodes (63444 leafes) explored in 2.6775 seconds (26648.43/s).
-v, m = MTDF(beth, board=deepcopy(pz.board), white=pz.white_to_move, guess=0., depth=6)
+v, m = MTDF(beth, board=deepcopy(pz.board), white=pz.white_to_move, guess=0., depth=4)
 
 IMTDF(beth, board=deepcopy(pz.board), white=pz.white_to_move, max_depth=8)
+
+pvs_search(beth, board=deepcopy(pz.board), white=pz.white_to_move, depth=4)
 
 0. Root Node, score: 4.4000, visits: 0, 29 children
 ​    1. B: e3-d4, score: 4.4000, visits: 0, 2 children
