@@ -82,7 +82,9 @@ function restore_board_position(board::Board, white::Bool, _board::Board, node::
     return _white, depth
 end
 
-function BethSearch(beth::Beth, node::ABNode, depth::Int, α::Float64, β::Float64, white::Bool, use_stored_values=true)
+function BethSearch(beth::Beth, node::ABNode, depth::Int, α::Float64, β::Float64, white::Bool,
+    use_stored_values=true, store_values=true)
+
     beth.n_explored_nodes += 1
     _α = α # store
     _β = β # store
@@ -157,7 +159,7 @@ function BethSearch(beth::Beth, node::ABNode, depth::Int, α::Float64, β::Float
 
             if white
                 # maximise for white
-                value = max(value, BethSearch(beth, child, depth-1, α, β, !white, use_stored_values))
+                value = max(value, BethSearch(beth, child, depth-1, α, β, !white, use_stored_values, store_values))
 
                 # keep track of best move
                 if value > best_value
@@ -169,7 +171,7 @@ function BethSearch(beth::Beth, node::ABNode, depth::Int, α::Float64, β::Float
                 α ≥ β && break # β cutoff
             else
                 # minimise for black
-                value = min(value, BethSearch(beth, child, depth-1, α, β, !white, use_stored_values))
+                value = min(value, BethSearch(beth, child, depth-1, α, β, !white, use_stored_values, store_values))
 
                 # keep track of best move
                 if value < best_value
@@ -187,7 +189,7 @@ function BethSearch(beth::Beth, node::ABNode, depth::Int, α::Float64, β::Float
         node.value = value
     end
 
-    if use_stored_values
+    if store_values
         if node.value ≤ _α
             # Fail low result implies an upper bound
             node.flag = UPPER
@@ -204,14 +206,14 @@ function BethSearch(beth::Beth, node::ABNode, depth::Int, α::Float64, β::Float
 end
 
 function start_beth_search(beth::Beth; board=beth.board, white=beth.white, verbose=true,
-    lower=-Inf, upper=Inf, use_stored_values=false, root=ABNode(), depth=beth.search_args["depth"])
+    lower=-Inf, upper=Inf, use_stored_values=false, store_values=false, root=ABNode(), depth=beth.search_args["depth"])
 
     beth.board = board
     beth.white = white
     beth.n_leafes = 0
     beth.n_explored_nodes = 0
 
-    v,t = @timed BethSearch(beth, root, depth, lower, upper, white, use_stored_values)
+    v,t = @timed BethSearch(beth, root, depth, lower, upper, white, use_stored_values, store_values)
 
 
     verbose && @info(@sprintf "%d nodes (%d leafes) explored in %.4f seconds (%.2f/s)." beth.n_explored_nodes beth.n_leafes t (beth.n_explored_nodes/t) )
@@ -232,20 +234,25 @@ function BethMTDF(beth::Beth; board=beth.board, white=beth.white,
     upper = Inf
     lower = -Inf
 
+    use_stored_values = false
+    store_values = true
+
     _,t = @timed while true
         β = value == lower ? value + SMALLEST_VALUE_Δ : value
-        value = BethSearch(beth, root, depth, β-SMALLEST_VALUE_Δ, β, white, true)
+        value = BethSearch(beth, root, depth, β-SMALLEST_VALUE_Δ, β, white, use_stored_values, store_values)
         if value < β
             upper = value
         else
             lower = value
         end
 
-        # @info(@sprintf "value: %.2f, alpha: %.2f, beta: %.2f, lower: %.2f, %.2f" value β-1 β lower upper)
+        @info(@sprintf "value: %.2f, alpha: %.2f, beta: %.2f, lower: %.2f, %.2f" value β-1 β lower upper)
 
         if lower ≥ upper
             break
         end
+
+        use_stored_values = true
     end
 
     verbose && @info(@sprintf "%d nodes (%d leafes) explored in %.4f seconds (%.2f/s)." beth.n_explored_nodes beth.n_leafes t (beth.n_explored_nodes/t) )
@@ -253,6 +260,23 @@ function BethMTDF(beth::Beth; board=beth.board, white=beth.white,
     return value
 end
 
+function BethIMTDF(beth::Beth; board=beth.board, white=beth.white, max_depth::Int)
+    guesses = [0.]
+    root = ABNode()
+    @time for depth in 2:2:max_depth
+        guess = guesses[end]
+        # @info "Depth: $depth, guess: $guess"
+        value = BethMTDF(beth, board=deepcopy(pz.board), white=pz.white_to_move, guess=guess, depth=6, root=root, verbose=false)
+        push!(guesses, value)
+    end
+    return guesses[end]
+end
+
 v, root = start_beth_search(beth, board=deepcopy(pz.board), white=pz.white_to_move, depth=6)
 
 v = BethMTDF(beth, board=deepcopy(pz.board), white=pz.white_to_move, guess=0., depth=6)
+
+BethIMTDF(beth, board=deepcopy(pz.board), white=pz.white_to_move, max_depth=6)
+
+v, root = start_beth_search(beth, board=deepcopy(pz.board), white=pz.white_to_move, depth=6,
+    lower=-0.1, upper=0., use_stored_values=false)

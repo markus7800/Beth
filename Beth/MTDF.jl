@@ -25,8 +25,6 @@ function AlphaBeta(beth::Beth, node::Node, depth::Int, α::Float64, β::Float64,
     _β = β # store
 
     beth.n_explored_nodes += 1
-    _white, = restore_board_position(beth, node)
-    @assert _white == white
 
     # transposition table look up
     if use_tt && haskey(tt, key(node))
@@ -45,6 +43,9 @@ function AlphaBeta(beth::Beth, node::Node, depth::Int, α::Float64, β::Float64,
             return value, (0x0, 0x0, 0x0)
         end
     end
+
+    _white, = restore_board_position(beth, node)
+    @assert _white == white
 
     best_move = (0x0, 0x0, 0x0)
     best_value = 0.
@@ -160,7 +161,7 @@ function MTDF(beth::Beth; board=beth.board, white=beth.white, guess::Float64, de
             lower = value
         end
 
-        @info("value: $value, alpha: $(β-1), beta: $β, lower: $lower, $upper")
+        # @info(@sprintf "value: %.2f, alpha: %.2f, beta: %.2f, lower: %.2f, %.2f" value β-1 β lower upper)
 
         if lower ≥ upper
             break
@@ -177,7 +178,7 @@ function IMTDF(beth::Beth; board=beth.board, white=beth.white, max_depth::Int)
     guesses = [0.]
     for depth in 2:2:max_depth
         guess = guesses[end]
-        # @info "Depth: $depth, guess: $guess"
+        @info "Depth: $depth, guess: $guess"
         @time value, best_move = MTDF(beth, board=board, white=white, guess=guess, depth=depth, verbose=false)
         push!(guesses, value)
     end
@@ -286,8 +287,8 @@ v, m, mem = alphabeta_search(beth, board=deepcopy(pz.board), white=pz.white_to_m
 
 
 # [ Info: 71352 nodes (63444 leafes) explored in 2.6775 seconds (26648.43/s).
-@profiler v, m = MTDF(beth, board=deepcopy(pz.board), white=pz.white_to_move, guess=0., depth=4)
+v, m = MTDF(beth, board=deepcopy(pz.board), white=pz.white_to_move, guess=0., depth=6)
 
-IMTDF(beth, board=deepcopy(pz.board), white=pz.white_to_move, max_depth=4)
+IMTDF(beth, board=deepcopy(pz.board), white=pz.white_to_move, max_depth=6)
 
 pvs_search(beth, board=deepcopy(pz.board), white=pz.white_to_move, depth=4)
