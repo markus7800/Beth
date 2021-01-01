@@ -83,12 +83,9 @@ function restore_board_position(board::Board, white::Bool, _board::Board, node::
 end
 
 function BethSearch(beth::Beth, node::ABNode, depth::Int, α::Float64, β::Float64, white::Bool, use_stored_values=true)
+    beth.n_explored_nodes += 1
     _α = α # store
     _β = β # store
-
-    beth.n_explored_nodes += 1
-    _white, = restore_board_position(beth, node)
-    @assert _white == white # TODO: move down
 
     # look up
     if use_stored_values && node.flag != UNEXPLORED
@@ -106,10 +103,15 @@ function BethSearch(beth::Beth, node::ABNode, depth::Int, α::Float64, β::Float
         end
     end
 
+    _white, = restore_board_position(beth, node)
+    @assert _white == white
+
     if depth == 0
-        # TODO:  retrieve stored value
-        beth.n_leafes += 1
+        # if node.flag != UNEXPLORED
+        #     value = node.value
+        # else
         value = beth.value_heuristic(beth._board, white)
+        beth.n_leafes += 1
         node.value = value
     else
         best_value = white ? -Inf : Inf
@@ -140,7 +142,8 @@ function BethSearch(beth::Beth, node::ABNode, depth::Int, α::Float64, β::Float
                 # first process all exiting children
                 # these were previously the best moves if node was explored
                 # children are in correct prevalue order
-                child = node.n_children[i]
+                child = node.children[i]
+                m = child.move
             else
                 # existing children exhausted
                 # create new nodes if unexplored ranked moves are available
@@ -149,14 +152,12 @@ function BethSearch(beth::Beth, node::ABNode, depth::Int, α::Float64, β::Float
                 prescore, m = popfirst!(node.ranked_moves)
                 child = ABNode(move=m, parent=node, value=prescore, visits=0)
 
-                # push!(node.children, child)
+                push!(node.children, child)
             end
 
             if white
                 # maximise for white
-                # println(@sprintf "Pre %d %s %.2f %.2f %.2f" i child α β value)
                 value = max(value, BethSearch(beth, child, depth-1, α, β, !white, use_stored_values))
-                # println(@sprintf "After %d %s %.2f %.2f %.2f" i child α β value)
 
                 # keep track of best move
                 if value > best_value
@@ -168,9 +169,7 @@ function BethSearch(beth::Beth, node::ABNode, depth::Int, α::Float64, β::Float
                 α ≥ β && break # β cutoff
             else
                 # minimise for black
-                # println(@sprintf "Pre %d %s %.2f %.2f %.2f" i child α β value)
                 value = min(value, BethSearch(beth, child, depth-1, α, β, !white, use_stored_values))
-                # println(@sprintf "After %d %s %.2f %.2f %.2f" i child α β value)
 
                 # keep track of best move
                 if value < best_value
@@ -219,3 +218,41 @@ function start_beth_search(beth::Beth; board=beth.board, white=beth.white, verbo
 
     return v, root
 end
+
+function BethMTDF(beth::Beth; board=beth.board, white=beth.white,
+    guess::Float64, depth::Int,
+    root=ABNode(), verbose=true)
+
+    beth.board = board
+    beth.white = white
+    beth.n_leafes = 0
+    beth.n_explored_nodes = 0
+
+    value = guess
+    upper = Inf
+    lower = -Inf
+
+    _,t = @timed while true
+        β = value == lower ? value + SMALLEST_VALUE_Δ : value
+        value = BethSearch(beth, root, depth, β-SMALLEST_VALUE_Δ, β, white, true)
+        if value < β
+            upper = value
+        else
+            lower = value
+        end
+
+        # @info(@sprintf "value: %.2f, alpha: %.2f, beta: %.2f, lower: %.2f, %.2f" value β-1 β lower upper)
+
+        if lower ≥ upper
+            break
+        end
+    end
+
+    verbose && @info(@sprintf "%d nodes (%d leafes) explored in %.4f seconds (%.2f/s)." beth.n_explored_nodes beth.n_leafes t (beth.n_explored_nodes/t) )
+
+    return value
+end
+
+v, root = start_beth_search(beth, board=deepcopy(pz.board), white=pz.white_to_move, depth=6)
+
+v = BethMTDF(beth, board=deepcopy(pz.board), white=pz.white_to_move, guess=0., depth=6)
