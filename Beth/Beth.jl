@@ -65,18 +65,19 @@ function minimax_search(beth::Beth; board=beth.board, white=beth.white, verbose=
 
     verbose && @info(@sprintf "%d nodes (%d leafes) explored in %.4f seconds (%.2f/s)." beth.n_explored_nodes beth.n_leafes t (beth.n_explored_nodes/t) )
 
-    return root
+    if length(root.children) > 0
+        nodes = sort(root.children, lt=(x,y)->x.score<y.score, rev=white)
+        node = nodes[1]
+        return node.score, node.move
+    else
+        return root.score, root.move
+    end
 end
 
 function (beth::Beth)(board::Board, white::Bool)
-    root = beth.search_algorithm(beth, board=board, white=white)
-    nodes = sort(root.children, lt=(x,y)->x.score<y.score, rev=white)
-
-    if length(nodes) > 0
-        node = nodes[1]
-        println(@sprintf "Computer says: %s valued with %.2f." node.move node.score)
-        return node.move
-    end
+    value, move = beth.search_algorithm(beth, board=board, white=white)
+    println(@sprintf "Computer says: %s valued with %.2f." move value)
+    return move
 end
 
 function minimax(beth::Beth, node::Node, depth::Int, α::Float64, β::Float64, white::Bool)
@@ -166,6 +167,7 @@ function beam_search(beth::Beth; board=beth.board, white=beth.white)
     @info(@sprintf "%d nodes (%d leafes) explored in %.4f seconds (%.2f/s)." beth.n_explored_nodes beth.n_leafes t (beth.n_explored_nodes/t) )
     return root
 end
+
 function beam(beth::Beth, full_depth=4, max_n_leafes=50_000, beam_depth=16, beam_width=10_000; verbose=false)
     white = beth.white
     root = Node()

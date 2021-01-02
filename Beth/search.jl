@@ -226,7 +226,7 @@ function BethSearch(beth::Beth, node::ABNode, max_depth::Int, depth::Int, α::Fl
             value = node.value
         else
             if do_quiesce
-                value = quiesce(beth, node, -Inf, Inf, white)
+                value = quiesce(beth, node, α, β, white)
                 prune!(node)
             else
                 value = beth.value_heuristic(beth._board, white)
@@ -343,8 +343,8 @@ function start_beth_search(beth::Beth; board=beth.board, white=beth.white, verbo
 end
 
 function BethMTDF(beth::Beth; board=beth.board, white=beth.white,
-    guess::Float64, depth::Int,
-    root=ABNode(), verbose=true, do_quiesce=false)
+    guess::Float64=0., depth::Int=beth.search_args["depth"],
+    root=ABNode(), verbose=true, do_quiesce=beth.search_args["do_quiesce"])
 
     beth.board = board
     beth.white = white
@@ -367,7 +367,7 @@ function BethMTDF(beth::Beth; board=beth.board, white=beth.white,
             lower = value
         end
 
-        @info(@sprintf "value: %.2f, alpha: %.2f, beta: %.2f, lower: %.2f, %.2f" value β-1 β lower upper)
+        # @info(@sprintf "value: %.2f, alpha: %.2f, beta: %.2f, lower: %.2f, %.2f" value β-1 β lower upper)
 
         if lower ≥ upper
             break
@@ -461,3 +461,21 @@ beth.value_heuristic(board, white)
 
 
 print_tree(root, white=white, has_to_have_children=false)
+
+function F(;kw...)
+    println(kw)
+    println(kw...)
+end
+
+F(k="1", c="2")
+
+
+
+
+
+beth = Beth(value_heuristic=beth_eval, rank_heuristic=beth_rank_moves,
+    search_algorithm=BethMTDF ,search_args=Dict("depth"=>4, "do_quiesce"=>true))
+
+puzzle_rush(rush_20_12_13, beth)
+puzzle_rush(rush_20_12_30, beth)
+puzzle_rush(rush_20_12_31, beth)

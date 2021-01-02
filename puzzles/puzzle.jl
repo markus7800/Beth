@@ -223,20 +223,20 @@ function play_puzzle(puzzle::Puzzle, player=user_input)
         end
 
         i += 1
-        if i > n_moves
-            print_board(board, white=white)
-            println()
-            @info "Puzzle solved! (Difficulty: $(puzzle.difficulty))"
-            return true
-        end
+        i > n_moves && break
 
         p, rf1, rf2 = short_to_long(board, !white, puzzle.solution[i])
         @info "Computer says $(puzzle.solution[i])!"
         move!(board, !white, p, rf1, rf2)
 
-
         i += 1
+        i > n_moves && break
     end
+
+    print_board(board, white=white)
+    println()
+    @info "Puzzle solved! (Difficulty: $(puzzle.difficulty))"
+    return true
 end
 
 function puzzle_rush(rush::Vector{Puzzle}, player; print_solution=false)
