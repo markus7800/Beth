@@ -112,14 +112,86 @@ function restore_board_position(board::Board, white::Bool, _board::Board, node::
     return _white, depth
 end
 
-# alpha beta search with only capture move and no caching
+
+function get_capture_moves(board::Board, white::Bool, ms::Vector{Move})
+    player = 7 + !white
+    opponent = 7 + white
+    mult = white ? 1 : -1
+
+    ranked_captures = Vector{Tuple{Float64, Move}}()
+    for m in ms
+        r, f = cartesian(m[3]) # destination field
+        if board[r,f,opponent] # capture
+            v = 1*board[r,f,PAWN] + 3*board[r,f,BISHOP] + 3*board[r,f,KNIGHT] + 5*board[r,f,ROOK] + 9*board[r,f,QUEEN]
+            push!(ranked_captures, (v*mult, m))
+        end
+    end
+
+    # TODO: sort here
+    return ranked_captures
+end
+
+# alpha beta search with only capture move and no caching and unlimited depth
 function quiesce(beth::Beth, node::ABNode, α::Float64, β::Float64, white::Bool)
+    beth.n_explored_nodes += 1
 
+    _white, = restore_board_position(beth, node)
+    @assert _white == white
 
+    ms = get_moves(beth._board, white)
+    capture_moves = get_capture_moves(beth._board, white, ms)
+    sort!(capture_moves, rev=white)
+
+    board_value = beth.value_heuristic(beth._board, white)
+
+    if length(capture_moves) == 0
+        beth.n_leafes += 1
+        node.value = board_value
+        return board_value
+    else
+        if white
+            value = -Inf
+            for (prescore, m) in capture_moves
+                child = ABNode(move=m, parent=node, value=prescore, visits=0)
+                push!(node.children, child)
+                value = max(value, quiesce(beth, child, α, β, !white))
+
+                α = max(α, value)
+                α ≥ β && break # β cutoff
+            end
+            # if you dont take max here only the board values where the player
+            # are forced to make all capture moves are taken into account
+            final_value = max(value, board_value)
+            node.value = final_value
+            return final_value
+        else
+            value = Inf
+            for (prescore, m) in capture_moves
+                child = ABNode(move=m, parent=node, value=prescore, visits=0)
+                push!(node.children, child)
+                value = min(value, quiesce(beth, child, α, β, !white))
+
+                β = min(β, value)
+                β ≤ α && break # α cutoff
+            end
+            # if you dont take min here only the board values where the player
+            # are forced to make all capture moves are taken into account
+            final_value = min(value, board_value)
+            node.value = final_value
+            return final_value
+        end
+    end
+end
+
+function prune!(node::ABNode)
+    for child in node.children
+        child.parent = nothing
+    end
+    node.children = []
 end
 
 function BethSearch(beth::Beth, node::ABNode, max_depth::Int, depth::Int, α::Float64, β::Float64, white::Bool,
-    use_stored_values=true, store_values=true)
+    use_stored_values=true, store_values=true, do_quiesce=false)
 
     beth.n_explored_nodes += 1
     _α = α # store
@@ -149,10 +221,17 @@ function BethSearch(beth::Beth, node::ABNode, max_depth::Int, depth::Int, α::Fl
     if depth == 0
         # as in iterative deepening depth will be increased it is impossible
         # that this node was stored in previous "deepening iteration"
-        # if node.flag != UNEXPLORED
-        #     value = node.value
-        # else
-        value = beth.value_heuristic(beth._board, white)
+        if node.flag != UNEXPLORED
+            @assert node.stored_at_max_depth == max_depth
+            value = node.value
+        else
+            if do_quiesce
+                value = quiesce(beth, node, -Inf, Inf, white)
+                prune!(node)
+            else
+                value = beth.value_heuristic(beth._board, white)
+            end
+        end
         beth.n_leafes += 1
         node.value = value
     else
@@ -199,7 +278,7 @@ function BethSearch(beth::Beth, node::ABNode, max_depth::Int, depth::Int, α::Fl
 
             if white
                 # maximise for white
-                value = max(value, BethSearch(beth, child, max_depth, depth-1, α, β, !white, use_stored_values, store_values))
+                value = max(value, BethSearch(beth, child, max_depth, depth-1, α, β, !white, use_stored_values, store_values, do_quiesce))
 
                 # keep track of best move
                 if value > best_value
@@ -211,7 +290,7 @@ function BethSearch(beth::Beth, node::ABNode, max_depth::Int, depth::Int, α::Fl
                 α ≥ β && break # β cutoff
             else
                 # minimise for black
-                value = min(value, BethSearch(beth, child, max_depth, depth-1, α, β, !white, use_stored_values, store_values))
+                value = min(value, BethSearch(beth, child, max_depth, depth-1, α, β, !white, use_stored_values, store_values, do_quiesce))
 
                 # keep track of best move
                 if value < best_value
@@ -248,14 +327,14 @@ function BethSearch(beth::Beth, node::ABNode, max_depth::Int, depth::Int, α::Fl
 end
 
 function start_beth_search(beth::Beth; board=beth.board, white=beth.white, verbose=true,
-    lower=-Inf, upper=Inf, use_stored_values=false, store_values=false, root=ABNode(), depth=beth.search_args["depth"])
+    lower=-Inf, upper=Inf, use_stored_values=false, store_values=false, root=ABNode(), depth=beth.search_args["depth"], do_quiesce=false)
 
     beth.board = board
     beth.white = white
     beth.n_leafes = 0
     beth.n_explored_nodes = 0
 
-    v,t = @timed BethSearch(beth, root, depth, depth, lower, upper, white, use_stored_values, store_values)
+    v,t = @timed BethSearch(beth, root, depth, depth, lower, upper, white, use_stored_values, store_values, do_quiesce)
 
 
     verbose && @info(@sprintf "%d nodes (%d leafes) explored in %.4f seconds (%.2f/s)." beth.n_explored_nodes beth.n_leafes t (beth.n_explored_nodes/t) )
@@ -265,7 +344,7 @@ end
 
 function BethMTDF(beth::Beth; board=beth.board, white=beth.white,
     guess::Float64, depth::Int,
-    root=ABNode(), verbose=true)
+    root=ABNode(), verbose=true, do_quiesce=false)
 
     beth.board = board
     beth.white = white
@@ -281,7 +360,7 @@ function BethMTDF(beth::Beth; board=beth.board, white=beth.white,
 
     _,t = @timed while true
         β = value == lower ? value + SMALLEST_VALUE_Δ : value
-        value = BethSearch(beth, root, depth, depth, β-SMALLEST_VALUE_Δ, β, white, use_stored_values, store_values)
+        value = BethSearch(beth, root, depth, depth, β-SMALLEST_VALUE_Δ, β, white, use_stored_values, store_values, do_quiesce)
         if value < β
             upper = value
         else
@@ -324,9 +403,9 @@ bfs = [Inf,Inf,Inf,Inf,Inf,Inf,Inf,Inf]
 depth = 6
 beth = Beth(value_heuristic=beth_eval, rank_heuristic=beth_rank_moves, search_args=Dict("depth"=>depth, "branching_factors"=>bfs))
 
-v, best_move, root = start_beth_search(beth, board=deepcopy(pz.board), white=pz.white_to_move, depth=6)
+v, best_move, root = start_beth_search(beth, board=deepcopy(pz.board), white=pz.white_to_move, depth=4, do_quiesce=true)
 
-v, best_move = BethMTDF(beth, board=deepcopy(pz.board), white=pz.white_to_move, guess=0., depth=6)
+v, best_move = BethMTDF(beth, board=deepcopy(pz.board), white=pz.white_to_move, guess=0., depth=4, do_quiesce=true)
 
 v, best_move = BethIMTDF(beth, board=deepcopy(pz.board), white=pz.white_to_move, max_depth=6)
 
@@ -369,8 +448,16 @@ move!(board, white, 'K', "e8", "e7")
 move!(board, !white, 'N', "b6", "c4")
 print_board(board, white=white)
 beth.value_heuristic(board, white)
+beth.board = board
+beth.white = white
+root = ABNode()
+quiesce(beth, root, -Inf, Inf, white)
+get_capture_moves(board, white, get_moves(board, white))
 
 move!(board, white, 'N', "e3", "f1")
 move!(board, !white, 'K', "g1", "f1")
 print_board(board, white=white)
 beth.value_heuristic(board, white)
+
+
+print_tree(root, white=white, has_to_have_children=false)

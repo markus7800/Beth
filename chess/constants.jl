@@ -45,6 +45,8 @@ end
 symbol(rank::Int, file::Int) = symbol(field(rank,file))
 field(symbol::FieldSymbol) = FIELDS[symbol]
 
+cartesian(symbol::FieldSymbol) = cartesian(field(symbol))
+
 Piece = UInt8
 const PAWN = Piece(1)
 const BISHOP = Piece(2)

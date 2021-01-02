@@ -54,7 +54,7 @@ function lt_children(x::Node,y::Node,white)
     end
 end
 
-function print_tree(root; number=0, depth=0, max_depth=Inf, has_to_have_children=true, highlight_best=5, expand_best=Inf, white=true, color=:white)
+function print_tree(root; number=0, depth=0, max_depth=Inf, has_to_have_children=true, expand_best=Inf, white=true, color=:white)
     if root.parent == nothing
         color = :yellow
     end
@@ -72,12 +72,10 @@ function print_tree(root; number=0, depth=0, max_depth=Inf, has_to_have_children
             continue
         end
         if count < expand_best
-            color = :light_gray
-            if count < highlight_best
-                color = white ? :white : :light_blue
-            end
+            #color = :light_gray
+            color = white ? :white : :light_blue
             print_tree(c, number=i, depth=depth+1, max_depth=max_depth, has_to_have_children=has_to_have_children,
-                highlight_best=highlight_best, expand_best=expand_best, white=!white, color=color)
+                expand_best=expand_best, white=!white, color=color)
             count += 1
         end
     end
