@@ -144,7 +144,10 @@ function quiesce(beth::Beth, node::ABNode, α::Float64, β::Float64, white::Bool
     capture_moves = get_capture_moves(beth._board, white, ms)
     sort!(capture_moves, rev=white)
 
-    board_value = beth.value_heuristic(beth._board, white)
+    board_value, is_3_men = tb_3_men_lookup(beth.tb_3_men_mates, beth.tb_3_men_desperate_positions, beth._board, white)
+    if !is_3_men
+        board_value = beth.value_heuristic(beth._board, white)
+    end
 
     if length(capture_moves) == 0
         beth.n_leafes += 1
@@ -481,16 +484,54 @@ puzzle_rush(rush_20_12_13, beth)
 puzzle_rush(rush_20_12_30, beth)
 puzzle_rush(rush_20_12_31, beth)
 
-begin
-    i = 1
-    while true
-        if i % 2 == 0
-            i+=1
-            continue
-        end
-        println(i)
-        i+=1
 
-        i == 20 && break
-    end
-end
+
+board = Board(false, false)
+board.position[cartesian("e2")..., [PAWN, WHITE]] .= 1
+board.position[cartesian("e3")..., [KING, WHITE]] .= 1
+board.position[cartesian("e5")..., [KING, BLACK]] .= 1
+print_board(board)
+
+key_white, is_3_men = key_3_men(board, true)
+key_black, is_3_men = key_3_men(board, false)
+
+get(beth.tb_3_men_desperate_positions, key_white, NaN)
+get(beth.tb_3_men_mates, key_white, NaN)
+
+get(beth.tb_3_men_desperate_positions, key_black, NaN)
+get(beth.tb_3_men_mates, key_black, NaN)
+
+tb_3_men_lookup(beth.tb_3_men_mates, beth.tb_3_men_desperate_positions, board, true)
+tb_3_men_lookup(beth.tb_3_men_mates, beth.tb_3_men_desperate_positions, board, false)
+
+v, best_move = BethMTDF(beth, board=board, white=true, guess=0., depth=4, do_quiesce=true)
+root = ABNode()
+v, best_move = BethMTDF(beth, board=board, white=false, guess=0., depth=4, do_quiesce=true, root=root)
+print_tree(root, white=false, has_to_have_children=false)
+
+board = Board(false, false)
+board.position[cartesian("e2")..., [PAWN, WHITE]] .= 1
+board.position[cartesian("d3")..., [KING, WHITE]] .= 1
+board.position[cartesian("e5")..., [KING, BLACK]] .= 1
+print_board(board)
+
+key_white, is_3_men = key_3_men(board, true)
+key_black, is_3_men = key_3_men(board, false)
+
+get(beth.tb_3_men_desperate_positions, key_white, NaN)
+get(beth.tb_3_men_mates, key_white, NaN)
+
+get(beth.tb_3_men_desperate_positions, key_black, NaN)
+get(beth.tb_3_men_mates, key_black, NaN)
+
+tb_3_men_lookup(beth.tb_3_men_mates, beth.tb_3_men_desperate_positions, board, true)
+tb_3_men_lookup(beth.tb_3_men_mates, beth.tb_3_men_desperate_positions, board, false)
+
+
+v, best_move = BethMTDF(beth, board=board, white=false, guess=0., depth=4, do_quiesce=true)
+root = ABNode()
+v, best_move = BethMTDF(beth, board=board, white=true, guess=0., depth=4, do_quiesce=true, root=root)
+print_tree(root, white=true, has_to_have_children=false)
+
+play_game(deepcopy(board), true, white_player=beth, black_player=beth)
+play_game(deepcopy(board), false, white_player=beth, black_player=beth)

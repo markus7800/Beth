@@ -63,4 +63,24 @@ function load_3_men_tablebase()
     return FileIO.load("endgame/tb3men.jld2", "mates", "desperate_positions")
 end
 
-load_3_men_tablebase()
+function tb_3_men_lookup(mates::Dict{String,Int}, desperate_positions::Dict{String,Int}, board::Board, white::Bool)
+    key, is_3_men = key_3_men(board, white)
+    mult = white ? 1 : -1
+    if is_3_men
+        win_in = get(mates, key, NaN)
+        if !isnan(win_in)
+            return (1000. - win_in) * mult, true
+        end
+
+        lose_in = get(desperate_positions, key, NaN)
+        if !isnan(lose_in)
+            return (1000. - lose_in) * -mult, true
+        end
+
+        # draw
+        return 0., true
+
+    else
+        return NaN, false
+    end
+end

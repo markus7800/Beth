@@ -4,6 +4,7 @@ include("../utils/tree.jl")
 include("../utils/simple_evaluation.jl")
 include("evaluation.jl")
 
+include("../endgame/tablebase.jl")
 
 mutable struct Beth
     search_algorithm::Function
@@ -19,6 +20,8 @@ mutable struct Beth
     n_leafes::Int
     n_explored_nodes::Int
 
+    tb_3_men_mates::Dict{String, Int}
+    tb_3_men_desperate_positions::Dict{String, Int}
 
     function Beth(;search_algorithm=minimax_search, value_heuristic, rank_heuristic, board=Board(), white=true, search_args::Dict)
         beth = new()
@@ -38,6 +41,11 @@ mutable struct Beth
 
         beth.n_leafes = 0
         beth.n_explored_nodes = 0
+
+        mates, dps = load_3_men_tablebase()
+        beth.tb_3_men_mates = mates
+        beth.tb_3_men_desperate_positions = dps
+
         return beth
     end
 end

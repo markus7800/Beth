@@ -465,6 +465,14 @@ function play_game(board = Board(), white = true; white_player=user_input, black
         done && check && println("Checkmate!")
         done && !check && println("Stalemate!")
 
+        piece_count = sum(board[:,:,BLACK]) + sum(board[:,:,WHITE])
+        if piece_count ≤ 3
+            if !(any(board[:,:,QUEEN]) || any(board[:,:,ROOK]) || any(board[:,:,PAWN]))
+                done = true
+                println("Draw!")
+            end
+        end
+
         v,move_time, = @timed if !done
             if white
                 p, rf1, rf2 = white_player(board, true)
