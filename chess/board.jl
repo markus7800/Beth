@@ -474,6 +474,23 @@ function play_game(board = Board(), white = true; white_player=user_input, black
                 println("Draw!")
             end
         end
+        if length(game_history) ≥ 3
+            for ply in game_history
+                board_rep = 0
+                for ply´ in game_history
+                    if ply.board == ply´.board
+                        board_rep += 1
+                    end
+                end
+                if board_rep ≥ 3
+                    done = true
+                    println("Draw by repetition!")
+                    break
+                end
+            end
+        end
+
+
 
         v,move_time, = @timed if !done
             if white
