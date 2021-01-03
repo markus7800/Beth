@@ -188,6 +188,14 @@ end
 
     @test !((KING, symbol("e8"), symbol("g8")) in get_moves(board, false))
     @test (KING, symbol("e8"), symbol("c8")) in get_moves(board, false)
+
+    # castling from check not allowed
+    board = Board(false)
+    board.position[cartesian("e1")..., [KING, WHITE]] .= 1
+    board.position[cartesian("a1")..., [ROOK, WHITE]] .= 1
+    board.position[cartesian("h1")..., [QUEEN, BLACK]] .= 1
+    ms = get_moves(board, true)
+    @test !(('K', symbol("e1"), symbol("c1")) in ms)
 end
 
 @testset "Chess notation" begin

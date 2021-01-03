@@ -79,16 +79,18 @@ end
 function king_moves(board, white, player, opponent, rank, file)
     kingmoves = direction_moves(board,player,opponent,KING,rank,file,DIAGCROSS,1)
 
-    if board.can_castle[white+1, LONGCASTLE] && !any(board[rank, 2:4, 7:8]) && all(board[rank,1,[ROOK,player]])
-        if !is_attacked(board, player, opponent, (rank, 3)) && !is_attacked(board, player, opponent, (rank, 4))
-            # castle long
-            push!(kingmoves, (KING, symbol(rank, file), symbol(rank, file-2)))
+    if !is_attacked(board, player, opponent, (rank, file))
+        if board.can_castle[white+1, LONGCASTLE] && !any(board[rank, 2:4, 7:8]) && all(board[rank,1,[ROOK,player]])
+            if !is_attacked(board, player, opponent, (rank, 3)) && !is_attacked(board, player, opponent, (rank, 4))
+                # castle long
+                push!(kingmoves, (KING, symbol(rank, file), symbol(rank, file-2)))
+            end
         end
-    end
-    if board.can_castle[white+1, SHORTCASTLE] && !any(board[rank, 6:7, 7:8]) && all(board[rank,8,[ROOK,player]])
-        if !is_attacked(board, player, opponent, (rank, 6)) && !is_attacked(board, player, opponent, (rank, 7))
-            # castle short
-            push!(kingmoves, (KING, symbol(rank, file), symbol(rank, file+2)))
+        if board.can_castle[white+1, SHORTCASTLE] && !any(board[rank, 6:7, 7:8]) && all(board[rank,8,[ROOK,player]])
+            if !is_attacked(board, player, opponent, (rank, 6)) && !is_attacked(board, player, opponent, (rank, 7))
+                # castle short
+                push!(kingmoves, (KING, symbol(rank, file), symbol(rank, file+2)))
+            end
         end
     end
     return kingmoves
