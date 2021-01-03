@@ -3,10 +3,12 @@ struct Board
 
     # first index player second LEFT/RIGHT
     # if pawn moves up 2 rows it sets to true
+    # 1...black, 2...white (1+white)
     can_en_passant::BitArray{2}
 
     # first index player second LEFT/RIGHT
     # if king or rook moves will be set to false accordingly
+    # 1...black, 2...white (1+white)
     can_castle::BitArray{2}
     # rows are ranks
     # columns are files

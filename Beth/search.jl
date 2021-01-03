@@ -533,5 +533,9 @@ root = ABNode()
 v, best_move = BethMTDF(beth, board=board, white=true, guess=0., depth=4, do_quiesce=true, root=root)
 print_tree(root, white=true, has_to_have_children=false)
 
-play_game(deepcopy(board), true, white_player=beth, black_player=beth)
+history = play_game(deepcopy(board), true, white_player=beth, black_player=beth)
 play_game(deepcopy(board), false, white_player=beth, black_player=beth)
+
+
+
+history = play_game(white_player=beth, black_player=beth)
