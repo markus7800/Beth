@@ -384,12 +384,18 @@ function would_be_check(board::Board, player::Int, opponent::Int, king_pos::Tupl
     return b
 end
 
-function get_reverse_moves(board::Board, white::Bool)
+function get_reverse_moves(board::Board, white::Bool; promotions=false)
     player = 7 + !white
     opponent = 7 + white
     moves = Move[]
     opponent_kingpos = (-10, -10) # move off board for evaluation without kings
-    king_moves = []
+    king_moves = Move[]
+
+    if is_in_check(board, player)
+        # cant do move that leads to being in check
+        return moves
+    end
+
     for rank in 1:8, file in 1:8
         if board[rank, file, KING] && board[rank, file, opponent]
             opponent_kingpos = (rank, file)
@@ -399,8 +405,21 @@ function get_reverse_moves(board::Board, white::Bool)
         #println("Piece: $(SYMBOLS[1,findfirst(board[rank,file,:])]) at $(field(rank,file)) ($rank $file)")
 
         if board[rank, file, PAWN]
-            # TODO
-
+            if white
+                if rank > 2 && !any(board[rank-1,file,:])
+                    push!(moves, (PAWN, symbol(rank-1, file), symbol(rank, file)))
+                end
+                if rank == 4 && !any(board[rank-2,file,:]) && !any(board[rank-1,file,:])
+                    push!(moves, (PAWN, symbol(rank-2, file), symbol(rank, file)))
+                end
+            else
+                if rank < 7 && !any(board[rank+1,file,:])
+                    push!(moves, (PAWN, symbol(rank+1, file), symbol(rank, file)))
+                end
+                if rank == 5 && !any(board[rank+2,file,:]) && !any(board[rank+1,file,:])
+                    push!(moves, (PAWN, symbol(rank+2, file), symbol(rank, file)))
+                end
+            end
         elseif board[rank, file, BISHOP]
             append!(moves, reverse_direction_moves(board,player,opponent,BISHOP,rank,file,DIAG,8))
 
@@ -412,7 +431,17 @@ function get_reverse_moves(board::Board, white::Bool)
 
         elseif board[rank, file, QUEEN]
             append!(moves, reverse_direction_moves(board,player,opponent,QUEEN,rank,file,DIAGCROSS,8))
-
+            if promotions
+                if white
+                    if rank == 8 && !any(board[rank-1,file,:])
+                        push!(moves, (PAWNTOQUEEN, symbol(rank-1, file), symbol(rank, file)))
+                    end
+                else
+                    if rank == 1 && !any(board[rank+1,file,:])
+                        push!(moves, (PAWNTOQUEEN, symbol(rank+1, file), symbol(rank, file)))
+                    end
+                end
+            end
         elseif board[rank, file, KING]
             king_moves = reverse_direction_moves(board,player,opponent,KING,rank,file,DIAGCROSS,1)
         end

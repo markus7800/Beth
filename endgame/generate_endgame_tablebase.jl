@@ -66,7 +66,7 @@ function mirror_diagonally(board::Board)
     return new_board
 end
 
-function generate_2_piece_boards()
+function generate_2_piece_boards() # 69936
     boards = Board[]
     black_king_positions = ["a1", "b1", "c1", "d1", "b2", "c2", "d2", "c3", "d3", "d4"]
 
