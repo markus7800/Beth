@@ -459,7 +459,7 @@ function play_game(board = Board(), white = true; white_player=user_input, black
         println()
 
         n_moves = length(get_moves(board, white))
-        check = is_check(board, white ? WHITE : BLACK)
+        check = is_in_check(board, white ? WHITE : BLACK)
         done = n_moves == 0
         !done && check && println("Check!")
         done && check && println("Checkmate!")

@@ -1,4 +1,4 @@
-const UNEXPLORED = 0x0
+const NOT_STORED = 0x0
 const EXACT = 0x1
 const UPPER = 0x2
 const LOWER = 0x3
@@ -16,9 +16,10 @@ mutable struct ABNode
     value::Float64
     flag::UInt8
     visits::UInt
-    stored_at_max_depth::Int
+    stored_at_iteration::Int
+    is_expanded::Bool
 
-    function ABNode(;move=EMPTY_MOVE, best_move=EMPTY_MOVE, parent=nothing, children=Node[], value=0., visits=0, flag=UNEXPLORED)
+    function ABNode(;move=EMPTY_MOVE, best_move=EMPTY_MOVE, parent=nothing, children=Node[], value=0., visits=0, flag=NOT_STORED)
         this = new()
 
         this.parent = parent
@@ -28,7 +29,8 @@ mutable struct ABNode
         this.value = value
         this.visits = visits
         this.flag = flag
-        this.stored_at_max_depth = 0
+        this.stored_at_iteration = 0
+        this.is_expanded = false
 
         return this
     end
@@ -190,8 +192,8 @@ function prune!(node::ABNode)
     node.children = []
 end
 
-function BethSearch(beth::Beth, node::ABNode, max_depth::Int, depth::Int, α::Float64, β::Float64, white::Bool,
-    use_stored_values=true, store_values=true, do_quiesce=false)
+function BethSearch(beth::Beth, node::ABNode, depth::Int, α::Float64, β::Float64, white::Bool,
+    use_stored_values=true, store_values=true, do_quiesce=false, iter_id::Int=0)
 
     beth.n_explored_nodes += 1
     _α = α # store
@@ -200,7 +202,7 @@ function BethSearch(beth::Beth, node::ABNode, max_depth::Int, depth::Int, α::Fl
     # look up only if node was stored in this iteration of BethSearch
     # used for multiple null window searches
     # but not used in iterative deepening
-    if use_stored_values && node.flag != UNEXPLORED && node.stored_at_max_depth == max_depth
+    if use_stored_values && node.flag != NOT_STORED && node.stored_at_iteration == iter_id
         value = node.value
         if node.flag == EXACT
             return value
@@ -215,14 +217,14 @@ function BethSearch(beth::Beth, node::ABNode, max_depth::Int, depth::Int, α::Fl
         end
     end
 
+    # restore board position, playing all moves that lead node
+    # this is faster than copying the board
     _white, = restore_board_position(beth, node)
     @assert _white == white
 
     if depth == 0
-        # as in iterative deepening depth will be increased it is impossible
-        # that this node was stored in previous "deepening iteration"
-        if node.flag != UNEXPLORED
-            @assert node.stored_at_max_depth == max_depth
+        value = 0.
+        if node.flag != NOT_STORED && node.stored_at_iteration == iter_id
             value = node.value
         else
             if do_quiesce
@@ -234,19 +236,23 @@ function BethSearch(beth::Beth, node::ABNode, max_depth::Int, depth::Int, α::Fl
         end
         beth.n_leafes += 1
         node.value = value
+        # leaf nodes are in general not terminal
+        # and not expanded but can be stored
     else
         best_value = white ? -Inf : Inf
         value = white ? -Inf : Inf
 
-        if node.flag != UNEXPLORED && length(node.children) == 0 # terminal explored node
+        # terminal explored node, retrieve regardless of iteration id
+        if node.flag != NOT_STORED && node.is_expanded && length(node.children) == 0
             return node.value
         end
 
-        if node.flag == UNEXPLORED
+        # successor moves were not generated yet
+        if !node.is_expanded
             ms = get_moves(beth._board, white)
             if length(ms) == 0 # terminal unexplored node
                 beth.n_leafes += 1
-                value = beth.value_heuristic(beth._board, white)
+                value = beth.value_heuristic(beth._board, white) # TODO: stale mate, check mate etc. here
                 node.value = value
                 node.ranked_moves = []
             else
@@ -254,12 +260,22 @@ function BethSearch(beth::Beth, node::ABNode, max_depth::Int, depth::Int, α::Fl
                 sort!(ranked_moves, rev=white) # try to choose best moves first
                 node.ranked_moves = ranked_moves
             end
+            node.is_expanded = true
         end
 
         n_children = length(node.children)
-        i = 1
+        i = 0
         while true
-            if i ≤ n_children
+            if i == 0
+                # try previous best move first
+                if node.best_child_index > 0
+                    child = node.children[node.best_child_index]
+                    m = child.move
+                else
+                    i += 1
+                    continue
+                end
+            elseif i ≤ n_children
                 # first process all exiting children
                 # these were previously the best moves if node was explored
                 # children are in correct prevalue order
@@ -278,24 +294,28 @@ function BethSearch(beth::Beth, node::ABNode, max_depth::Int, depth::Int, α::Fl
 
             if white
                 # maximise for white
-                value = max(value, BethSearch(beth, child, max_depth, depth-1, α, β, !white, use_stored_values, store_values, do_quiesce))
+                value = max(value, BethSearch(beth, child, depth-1, α, β, !white, use_stored_values, store_values, do_quiesce, iter_id))
 
                 # keep track of best move
                 if value > best_value
                     best_value = value
-                    node.best_child_index = i
+                    if i != 0
+                        node.best_child_index = i
+                    end # otherwise: current child is previous best move
                 end
 
                 α = max(α, value)
                 α ≥ β && break # β cutoff
             else
                 # minimise for black
-                value = min(value, BethSearch(beth, child, max_depth, depth-1, α, β, !white, use_stored_values, store_values, do_quiesce))
+                value = min(value, BethSearch(beth, child, depth-1, α, β, !white, use_stored_values, store_values, do_quiesce, iter_id))
 
                 # keep track of best move
                 if value < best_value
                     best_value = value
-                    node.best_child_index = i
+                    if i != 0
+                        node.best_child_index = i
+                    end # otherwise: current child is previous best move
                 end
 
                 β = min(β, value)
@@ -310,7 +330,7 @@ function BethSearch(beth::Beth, node::ABNode, max_depth::Int, depth::Int, α::Fl
 
     if store_values
         # keep track of "deepening iteration" for reuse in null window search in MTDF
-        node.stored_at_max_depth = max_depth
+        node.stored_at_iteration = iter_id
         if node.value ≤ _α
             # Fail low result implies an upper bound
             node.flag = UPPER
@@ -318,7 +338,7 @@ function BethSearch(beth::Beth, node::ABNode, max_depth::Int, depth::Int, α::Fl
             # Fail high result implies a lower bound
             node.flag = LOWER
         else
-            # Found an accurate minimax value - will not occur if called with zero window (α = β-
+            # Found an accurate minimax value - will not occur if called with null window
             node.flag = EXACT
         end
     end
@@ -327,24 +347,24 @@ function BethSearch(beth::Beth, node::ABNode, max_depth::Int, depth::Int, α::Fl
 end
 
 function start_beth_search(beth::Beth; board=beth.board, white=beth.white, verbose=true,
-    lower=-Inf, upper=Inf, use_stored_values=false, store_values=false, root=ABNode(), depth=beth.search_args["depth"], do_quiesce=false)
+    lower=-Inf, upper=Inf, use_stored_values=false, store_values=false, root=ABNode(), depth=beth.search_args["depth"], do_quiesce=false, iter_id=0)
 
     beth.board = board
     beth.white = white
     beth.n_leafes = 0
     beth.n_explored_nodes = 0
 
-    v,t = @timed BethSearch(beth, root, depth, depth, lower, upper, white, use_stored_values, store_values, do_quiesce)
+    v,t = @timed BethSearch(beth, root, depth, lower, upper, white, use_stored_values, store_values, do_quiesce, iter_id)
 
 
     verbose && @info(@sprintf "%d nodes (%d leafes) explored in %.4f seconds (%.2f/s)." beth.n_explored_nodes beth.n_leafes t (beth.n_explored_nodes/t) )
 
-    return v, root.children[root.best_child_index].move, root
+    return v, root.children[root.best_child_index].move
 end
 
 function BethMTDF(beth::Beth; board=beth.board, white=beth.white,
     guess::Float64=0., depth::Int=beth.search_args["depth"],
-    root=ABNode(), verbose=true, do_quiesce=beth.search_args["do_quiesce"])
+    root=ABNode(), verbose=true, do_quiesce=beth.search_args["do_quiesce"], iter_id=0)
 
     beth.board = board
     beth.white = white
@@ -360,7 +380,7 @@ function BethMTDF(beth::Beth; board=beth.board, white=beth.white,
 
     _,t = @timed while true
         β = value == lower ? value + SMALLEST_VALUE_Δ : value
-        value = BethSearch(beth, root, depth, depth, β-SMALLEST_VALUE_Δ, β, white, use_stored_values, store_values, do_quiesce)
+        value = BethSearch(beth, root, depth, β-SMALLEST_VALUE_Δ, β, white, use_stored_values, store_values, do_quiesce, iter_id)
         if value < β
             upper = value
         else
@@ -385,82 +405,63 @@ function BethIMTDF(beth::Beth; board=beth.board, white=beth.white, max_depth::In
 
     guesses = [0.]
     root = ABNode()
-    @time for depth in 2:2:max_depth
+    @time for depth in 2:1:max_depth
         guess = guesses[end]
         @info @sprintf "Depth: %d, guess: %.2f" depth guess
-        # root = ABNode()
-        value, best_move = BethMTDF(beth, guess=guess, depth=depth, root=root, verbose=false)
+        value, best_move = BethMTDF(beth, guess=guess, depth=depth, root=root, verbose=true, iter_id=depth)
         push!(guesses, value)
     end
 
     return guesses[end], root.children[root.best_child_index].move
 end
 
+function BethIterAlphaBeta(beth::Beth; board=beth.board, white=beth.white, max_depth::Int)
+    beth.board = board
+    beth.white = white
+
+    root = ABNode()
+    @time for depth in 2:1:max_depth
+        value, best_move = start_beth_search(beth, depth=depth, root=root, verbose=true, iter_id=depth)
+        @info @sprintf "value %.2f move: %s" value best_move
+    end
+
+    return root.value, root.children[root.best_child_index].move
+end
+
 pz = rush_20_12_13[9]
 print_puzzle(pz)
 
-bfs = [Inf,Inf,Inf,Inf,Inf,Inf,Inf,Inf]
-depth = 6
-beth = Beth(value_heuristic=beth_eval, rank_heuristic=beth_rank_moves, search_args=Dict("depth"=>depth, "branching_factors"=>bfs))
+beth = Beth(value_heuristic=beth_eval, rank_heuristic=beth_rank_moves,
+    search_algorithm=BethMTDF, search_args=Dict("do_quiesce"=>true, "depth"=>4))
+
+history = play_game(black_player=beth)
 
 v, best_move, root = start_beth_search(beth, board=deepcopy(pz.board), white=pz.white_to_move, depth=4, do_quiesce=true)
 
 v, best_move = BethMTDF(beth, board=deepcopy(pz.board), white=pz.white_to_move, guess=0., depth=4, do_quiesce=true)
 
-v, best_move = BethIMTDF(beth, board=deepcopy(pz.board), white=pz.white_to_move, max_depth=6)
+v, best_move = BethIMTDF(beth, board=deepcopy(pz.board), white=pz.white_to_move, max_depth=4)
 
 v, root = start_beth_search(beth, board=deepcopy(pz.board), white=pz.white_to_move, depth=8,
     lower=-0.1, upper=0., use_stored_values=false)
 
-v, best_move = BethIMTDF(beth, board=Board(), white=true, max_depth=8)
+v, best_move = BethIMTDF(beth, board=Board(), white=true, max_depth=4)
+v, best_move = BethIterAlphaBeta(beth, board=Board(), white=true, max_depth=4)
 
 
-print_tree(root, max_depth=1, has_to_have_children=false, white=pz.white_to_move)
-print_tree(root["Ra8b8"], max_depth=1, has_to_have_children=false, white=!pz.white_to_move)
-print_tree(root["Ra8b8"]["Qb7c6"], max_depth=1, has_to_have_children=false, white=pz.white_to_move)
-print_tree(root["Ra8b8"]["Qb7c6"]["Ke8e7"], max_depth=1, has_to_have_children=false, white=!pz.white_to_move)
-print_tree(root["Ra8b8"]["Qb7c6"]["Ke8e7"]["Nb6c8"], max_depth=1, has_to_have_children=false, white=pz.white_to_move)
-print_tree(root["Ra8b8"]["Qb7c6"]["Ke8e7"]["Nb6c8"]["Rb8c8"], max_depth=1, has_to_have_children=false, white=!pz.white_to_move)
-
-
-board = deepcopy(pz.board)
-white = pz.white_to_move
-print_board(board, white=white)
-beth.value_heuristic(board, white)
-
-move!(board, white, 'N', "e3", "f1")
-move!(board, !white, 'N', "b6", "a8")
-print_board(board, white=white)
-beth.value_heuristic(board, white)
-
-
-board = deepcopy(pz.board)
-white = pz.white_to_move
-print_board(board, white=white)
-beth.value_heuristic(board, white)
-
-move!(board, white, 'R', "a8", "b8")
-move!(board, !white, 'Q', "b7", "c6")
-print_board(board, white=white)
-beth.value_heuristic(board, white)
-
-move!(board, white, 'K', "e8", "e7")
-move!(board, !white, 'N', "b6", "c4")
-print_board(board, white=white)
-beth.value_heuristic(board, white)
-beth.board = board
-beth.white = white
 root = ABNode()
-quiesce(beth, root, -Inf, Inf, white)
-get_capture_moves(board, white, get_moves(board, white))
+v, best_move = BethMTDF(beth, board=deepcopy(pz.board), white=pz.white_to_move, guess=0., depth=4, do_quiesce=true, root=root, iter_id=1)
+v, best_move = BethMTDF(beth, board=deepcopy(pz.board), white=pz.white_to_move, guess=0., depth=4, do_quiesce=true, root=root, iter_id=2)
 
-move!(board, white, 'N', "e3", "f1")
-move!(board, !white, 'K', "g1", "f1")
-print_board(board, white=white)
-beth.value_heuristic(board, white)
+root = ABNode()
+v, best_move = BethMTDF(beth, board=deepcopy(pz.board), white=pz.white_to_move, guess=0., depth=4, do_quiesce=true, root=root, iter_id=2)
+
+root = ABNode()
+v, best_move = start_beth_search(beth, board=deepcopy(pz.board), white=pz.white_to_move, depth=4, do_quiesce=true, root=root, iter_id=1)
+v, best_move = start_beth_search(beth, board=deepcopy(pz.board), white=pz.white_to_move, depth=4, do_quiesce=true, root=root, iter_id=2)
 
 
-print_tree(root, white=white, has_to_have_children=false)
+print_tree(root, white=pz.white_to_move, has_to_have_children=false)
 
 function F(;kw...)
     println(kw)
@@ -479,3 +480,17 @@ beth = Beth(value_heuristic=beth_eval, rank_heuristic=beth_rank_moves,
 puzzle_rush(rush_20_12_13, beth)
 puzzle_rush(rush_20_12_30, beth)
 puzzle_rush(rush_20_12_31, beth)
+
+begin
+    i = 1
+    while true
+        if i % 2 == 0
+            i+=1
+            continue
+        end
+        println(i)
+        i+=1
+
+        i == 20 && break
+    end
+end
