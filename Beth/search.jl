@@ -381,6 +381,8 @@ function BethMTDF(beth::Beth; board=beth.board, white=beth.white,
     use_stored_values = true
     store_values = true
 
+    count = 1
+
     _,t = @timed while true
         β = value == lower ? value + SMALLEST_VALUE_Δ : value
         value = BethSearch(beth, root, depth, β-SMALLEST_VALUE_Δ, β, white, use_stored_values, store_values, do_quiesce, iter_id)
@@ -389,12 +391,14 @@ function BethMTDF(beth::Beth; board=beth.board, white=beth.white,
         else
             lower = value
         end
-
-        @info(@sprintf "\tvalue: %.2f, alpha: %.2f, beta: %.2f, lower: %.2f, %.2f" value β-1 β lower upper)
+        best_move = root.children[root.best_child_index].move
+        @info(@sprintf "\tmove: %s value: %.2f, alpha: %.2f, beta: %.2f, lower: %.2f, %.2f" best_move value β-1 β lower upper)
 
         if lower ≥ upper
             break
         end
+
+        count += 1
     end
 
     verbose && @info(@sprintf "%d nodes (%d leafes) explored in %.4f seconds (%.2f/s)." beth.n_explored_nodes beth.n_leafes t (beth.n_explored_nodes/t) )
@@ -418,6 +422,29 @@ function BethIMTDF(beth::Beth; board=beth.board, white=beth.white, max_depth::In
     return guesses[end], root.children[root.best_child_index].move
 end
 
+function BethTimedIMTDF(beth::Beth; board=beth.board, white=beth.white,
+    Δt::Float64=beth.search_args["time"], max_depth::Int=beth.search_args["depth"], do_quiesce=beth.search_args["do_quiesce"])
+    beth.board = board
+    beth.white = white
+
+    t0 = time()
+    t1 = t0 + Δt
+    @info "t1: $t1"
+
+    guesses = [0.]
+    root = ABNode()
+    @time for depth in 2:1:max_depth
+        guess = guesses[end]
+        @info @sprintf "Depth: %d, guess: %.2f" depth guess
+        value, best_move = BethMTDF(beth, guess=guess, depth=depth, root=root, verbose=true, iter_id=depth, do_quiesce=do_quiesce)
+        push!(guesses, value)
+
+        time() > t1 && break
+    end
+
+    return guesses[end], root.children[root.best_child_index].move
+end
+
 function BethIterAlphaBeta(beth::Beth; board=beth.board, white=beth.white, max_depth::Int, do_quiesce=true)
     beth.board = board
     beth.white = white
@@ -433,6 +460,11 @@ end
 
 pz = rush_20_12_13[9]
 print_puzzle(pz)
+
+beth = Beth(value_heuristic=beth_eval, rank_heuristic=beth_rank_moves,
+    search_algorithm=BethTimedIMTDF, search_args=Dict("do_quiesce"=>true, "depth"=>10, "time"=>10.))
+
+beth(pz.board, pz.white_to_move)
 
 beth = Beth(value_heuristic=beth_eval, rank_heuristic=beth_rank_moves,
     search_algorithm=BethMTDF, search_args=Dict("do_quiesce"=>true, "depth"=>4))
@@ -541,5 +573,12 @@ history = play_game(deepcopy(board), true, white_player=beth, black_player=beth)
 play_game(deepcopy(board), false, white_player=beth, black_player=beth)
 
 
+
+history = play_game(white_player=beth, black_player=beth)
+
+
+
+beth = Beth(value_heuristic=beth_eval, rank_heuristic=beth_rank_moves,
+    search_algorithm=BethTimedIMTDF, search_args=Dict("do_quiesce"=>true, "depth"=>10, "time"=>5.))
 
 history = play_game(white_player=beth, black_player=beth)

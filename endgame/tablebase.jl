@@ -1,5 +1,3 @@
-import JLD
-
 function key_3_men(board::Board, white::Bool)
     player = 7 + !white
     opponent = 7 + white

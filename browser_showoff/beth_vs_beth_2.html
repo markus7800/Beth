@@ -1,0 +1,141 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <title>chessboardjs Example #2005 - Animation Speed</title>
+  <link rel="stylesheet"
+      href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css"
+      integrity="sha384-q94+BZtLrkL1/ohfjR8c6L+A6qzNH9R2hBLwyoAfu3i/WCvQjzL2RQJ3uNHDISdU"
+      crossorigin="anonymous">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+  <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"
+        integrity="sha384-8Vi8VHwn3vjQ9eUHUxex3JSN/NFqUg3QbPyX8kWyb93+8AC/pPWTzj+nHtbC5bxD"
+        crossorigin="anonymous"></script>
+</head>
+<body>
+
+<p>Iterative MTDF depth 4, quiesce, 3_men tb, 5s until last depth has to be started, king safety</p>
+
+<div id="myBoard" style="width: 400px"></div>
+<button id="backBtn">Back</button>
+<button id="nextBtn">Next</button>
+
+<script>
+
+
+var game = [
+'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+'rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1',
+'rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq f1 0 1',
+'rnbqkbnr/ppp1pppp/8/3P4/8/8/PPPP1PPP/RNBQKBNR b KQkq c1 0 1',
+'rnb1kbnr/ppp1pppp/8/3q4/8/8/PPPP1PPP/RNBQKBNR w KQkq - 0 1',
+'rnb1kbnr/ppp1pppp/8/3q4/8/8/PPPPNPPP/RNBQKB1R b KQkq - 0 1',
+'rnb1kbnr/ppp2ppp/8/3qp3/8/8/PPPPNPPP/RNBQKB1R w KQkq f1 0 1',
+'rnb1kbnr/ppp2ppp/8/3qp3/8/2N5/PPPPNPPP/R1BQKB1R b KQkq c1 0 1',
+'rnb1kbnr/ppp2ppp/8/4p3/2q5/2N5/PPPPNPPP/R1BQKB1R w KQkq - 0 1',
+'rnb1kbnr/ppp2ppp/8/4p3/2qP4/2N5/PPP1NPPP/R1BQKB1R b KQkq - 0 1',
+'rnb1k1nr/ppp2ppp/3b4/4p3/2qP4/2N5/PPP1NPPP/R1BQKB1R w KQkq - 0 1',
+'rnb1k1nr/ppp2ppp/3b4/4p3/2qP1P2/2N5/PPP1N1PP/R1BQKB1R b KQkq - 0 1',
+'rnb1k1nr/ppp2ppp/3b4/8/2qp1P2/2N5/PPP1N1PP/R1BQKB1R w KQkq - 0 1',
+'rnb1k1nr/ppp2ppp/3b4/8/2qN1P2/2N5/PPP3PP/R1BQKB1R b KQkq - 0 1',
+'rnb1k1nr/ppp2ppp/3b4/8/1q1N1P2/2N5/PPP3PP/R1BQKB1R w KQkq - 0 1',
+'rnb1k1nr/ppp2ppp/3b4/1B6/1q1N1P2/2N5/PPP3PP/R1BQK2R b KQkq - 0 1',
+'rnb1k1nr/pp3ppp/2pb4/1B6/1q1N1P2/2N5/PPP3PP/R1BQK2R w KQkq - 0 1',
+'rnb1k1nr/pp3ppp/2pb4/1B6/1q1N1P2/P1N5/1PP3PP/R1BQK2R b KQkq - 0 1',
+'rnb1k1nr/pp3ppp/2pb4/1Bq5/3N1P2/P1N5/1PP3PP/R1BQK2R w KQkq - 0 1',
+'rnb1k1nr/pp3ppp/2pb4/2q5/3N1P2/P1N5/1PP1B1PP/R1BQK2R b KQkq - 0 1',
+'rn2k1nr/pp3ppp/2pbb3/2q5/3N1P2/P1N5/1PP1B1PP/R1BQK2R w KQkq - 0 1',
+'rn2k1nr/pp3ppp/2pbb3/2q5/3N1P2/P1N1B3/1PP1B1PP/R2QK2R b KQkq - 0 1',
+'rn4nr/pp1k1ppp/2pbb3/2q5/3N1P2/P1N1B3/1PP1B1PP/R2QK2R w KQ - 0 1',
+'rn4nr/pp1k1ppp/2pbb3/2q5/3N1P2/P1N1B3/1PP1BKPP/R2Q3R b - - 0 1',
+'rn4nr/pp1k1ppp/2pbb3/q7/3N1P2/P1N1B3/1PP1BKPP/R2Q3R w - - 0 1',
+'rn4nr/pp1k1ppp/2pbN3/q7/5P2/P1N1B3/1PP1BKPP/R2Q3R b - - 0 1',
+'rn4nr/pp3ppp/2pbk3/q7/5P2/P1N1B3/1PP1BKPP/R2Q3R w - - 0 1',
+'rn4nr/pp3ppp/2pbk3/q7/2B2P2/P1N1B3/1PP2KPP/R2Q3R b - - 0 1',
+'rn4nr/pp2kppp/2pb4/q7/2B2P2/P1N1B3/1PP2KPP/R2Q3R w - - 0 1',
+'rn4nr/pp2kppp/2pb4/q7/2B2P2/P1N1B3/1PP2KPP/R2QR3 b - - 0 1',
+'rn4nr/pp1k1ppp/2pb4/q7/2B2P2/P1N1B3/1PP2KPP/R2QR3 w - - 0 1',
+'rn4nr/pp1k1ppp/2pb4/q7/2B1NP2/P3B3/1PP2KPP/R2QR3 b - - 0 1',
+'rn4nr/ppqk1ppp/2pb4/8/2B1NP2/P3B3/1PP2KPP/R2QR3 w - - 0 1',
+'rn4nr/ppqk1ppp/2pb4/2B5/2B1NP2/P7/1PP2KPP/R2QR3 b - - 0 1',
+'rn4nr/ppqk2pp/2pb1p2/2B5/2B1NP2/P7/1PP2KPP/R2QR3 w - - 0 1',
+'rn4nr/ppqk2pp/2pQ1p2/2B5/2B1NP2/P7/1PP2KPP/R3R3 b - - 0 1',
+'rn4nr/pp1k2pp/2pq1p2/2B5/2B1NP2/P7/1PP2KPP/R3R3 w - - 0 1',
+'rn4nr/pp1k2pp/2pN1p2/2B5/2B2P2/P7/1PP2KPP/R3R3 b - - 0 1',
+'rn5r/pp1k2pp/2pN1p1n/2B5/2B2P2/P7/1PP2KPP/R3R3 w - - 0 1',
+'rn5r/pN1k2pp/2p2p1n/2B5/2B2P2/P7/1PP2KPP/R3R3 b - - 0 1',
+'rn5r/pN1k2pp/2p2p2/2B2n2/2B2P2/P7/1PP2KPP/R3R3 w - - 0 1',
+'rn5r/pN1k2pp/2p1Bp2/2B2n2/5P2/P7/1PP2KPP/R3R3 b - - 0 1',
+'rn5r/pNk3pp/2p1Bp2/2B2n2/5P2/P7/1PP2KPP/R3R3 w - - 0 1',
+'rn5r/pNk3pp/2p2p2/2B2B2/5P2/P7/1PP2KPP/R3R3 b - - 0 1',
+'rn5r/pk4pp/2p2p2/2B2B2/5P2/P7/1PP2KPP/R3R3 w - - 0 1',
+'rn5r/pk2R1pp/2p2p2/2B2B2/5P2/P7/1PP2KPP/R7 b - - 0 1',
+'rn5r/p3R1pp/k1p2p2/2B2B2/5P2/P7/1PP2KPP/R7 w - - 0 1',
+'rn5r/p5Rp/k1p2p2/2B2B2/5P2/P7/1PP2KPP/R7 b - - 0 1',
+'rn1r4/p5Rp/k1p2p2/2B2B2/5P2/P7/1PP2KPP/R7 w - - 0 1',
+'rn1r4/p5Rp/k1p2p2/2B5/5P2/P2B4/1PP2KPP/R7 b - - 0 1',
+'rn1r4/p5Rp/2p2p2/k1B5/5P2/P2B4/1PP2KPP/R7 w - - 0 1',
+'rn1r4/R6p/2p2p2/k1B5/5P2/P2B4/1PP2KPP/R7 b - - 0 1',
+'1n1r4/r6p/2p2p2/k1B5/5P2/P2B4/1PP2KPP/R7 w - - 0 1',
+'1n1r4/r6p/2p2p2/k1B5/1P3P2/P2B4/2P2KPP/R7 b - - 0 1',
+'1n1r4/r6p/2p2p2/2B5/kP3P2/P2B4/2P2KPP/R7 w - - 0 1',
+'1n1r4/B6p/2p2p2/8/kP3P2/P2B4/2P2KPP/R7 b - - 0 1',
+'1n1r4/B7/2p2p2/7p/kP3P2/P2B4/2P2KPP/R7 w - f1 0 1',
+'1n1r4/B7/2p2p2/7p/kP2BP2/P7/2P2KPP/R7 b - c1 0 1',
+'1n1r4/B7/2p2p2/1k5p/1P2BP2/P7/2P2KPP/R7 w - - 0 1',
+'1n1r4/B7/2p2p2/1k5p/1PP1BP2/P7/5KPP/R7 b - - 0 1',
+'1n1r4/B7/2p2p2/7p/1Pk1BP2/P7/5KPP/R7 w - - 0 1',
+'1B1r4/8/2p2p2/7p/1Pk1BP2/P7/5KPP/R7 b - - 0 1',
+'1r6/8/2p2p2/7p/1Pk1BP2/P7/5KPP/R7 w - - 0 1',
+'1r6/8/2B2p2/7p/1Pk2P2/P7/5KPP/R7 b - - 0 1',
+'8/8/1rB2p2/7p/1Pk2P2/P7/5KPP/R7 w - - 0 1',
+'8/8/1r3p2/7p/1Pk1BP2/P7/5KPP/R7 b - - 0 1',
+'8/8/3r1p2/7p/1Pk1BP2/P7/5KPP/R7 w - - 0 1',
+'8/8/3r1p2/7p/1Pk1BP2/P7/5KPP/4R3 b - - 0 1',
+'8/8/3r1p2/8/1Pk1BP1p/P7/5KPP/4R3 w - - 0 1',
+'8/8/3r1p2/8/1Pk1BP1p/P4K2/6PP/4R3 b - - 0 1',
+'8/3r4/5p2/8/1Pk1BP1p/P4K2/6PP/4R3 w - - 0 1',
+'8/3r4/5p2/8/1Pk1BP1p/P4K2/6PP/2R5 b - - 0 1',
+'8/3r4/5p2/8/1P2BP1p/Pk3K2/6PP/2R5 w - - 0 1',
+'8/3r4/2R2p2/8/1P2BP1p/Pk3K2/6PP/8 b - - 0 1',
+'8/3r4/2R2p2/8/1P2BP1p/k4K2/6PP/8 w - - 0 1',
+'8/3r4/5R2/8/1P2BP1p/k4K2/6PP/8 b - - 0 1',
+'8/3r4/5R2/8/1k2BP1p/5K2/6PP/8 w - - 0 1',
+'8/3r4/1R6/8/1k2BP1p/5K2/6PP/8 b - - 0 1',
+'8/3r4/1R6/8/4BP1p/k4K2/6PP/8 w - - 0 1',
+'8/3r4/R7/8/4BP1p/k4K2/6PP/8 b - - 0 1',
+'8/3r4/R7/8/4BP1p/5K2/1k4PP/8 w - - 0 1',
+'8/3r4/1R6/8/4BP1p/5K2/1k4PP/8 b - - 0 1',
+'8/3r4/1R6/8/4BP1p/5K2/6PP/k7 w - - 0 1',
+'8/3r4/R7/8/4BP1p/5K2/6PP/k7 b - - 0 1',
+'8/3r4/R7/8/4BP1p/5K2/1k4PP/8 w - - 0 1',
+'8/3r4/1R6/8/4BP1p/5K2/1k4PP/8 b - - 0 1',
+'8/3r4/1R6/8/4BP1p/5K2/6PP/k7 w - - 0 1',
+'8/3r4/R7/8/4BP1p/5K2/6PP/k7 b - - 0 1',
+'8/3r4/R7/8/4BP1p/5K2/1k4PP/8 w - - 0 1'
+];
+var board = Chessboard('myBoard', {
+  draggable: true,
+  moveSpeed: 'medium',
+  snapbackSpeed: 500,
+  snapSpeed: 100,
+  position: game[0],
+  pieceTheme: 'img/chesspieces/wikipedia/{piece}.png',
+})
+
+var i = 0
+
+$('#backBtn').on('click', function () {
+  i = Math.max(0, i-1)
+  board.position(game[i])
+})
+$('#nextBtn').on('click', function () {
+  i = Math.min(game.length, i+1)
+  board.position(game[i])
+})
+</script>
+</body>
+</html>
