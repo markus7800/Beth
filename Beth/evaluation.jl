@@ -131,15 +131,17 @@ function beth_eval(board::Board, unused::Bool, check_value=0.)
     white_king_score = 0.
     black_king_score = 0.
 
-    if all(board[1, 3, [KING,WHITE]])# || all(board[1, 1, [KING,WHITE]]) || all(board[1, 2, [KING,WHITE]])
-        white_king_score += sum(board[[2,3], [1,2,3], WHITE] .& board[[2,3], [1,2,3], PAWN])
-    elseif all(board[1, 7, [KING,WHITE]])# || all(board[1, 6, [KING,WHITE]]) || all(board[1, 8, [KING,WHITE]])
-        white_king_score += sum(board[[2,3], [6,7,8], WHITE] .& board[[2,3], [6,7,8], PAWN])
-    end
-    if all(board[8, 3, [KING,BLACK]])# || all(board[8, 1, [KING,BLACK]]) || all(board[8, 2, [KING,BLACK]])
-        black_king_score += sum(board[[6,7], [1,2,3], BLACK] .& board[[6,7], [1,2,3], PAWN])
-    elseif all(board[8, 7, [KING,BLACK]])# || all(board[8, 6, [KING,BLACK]]) || all(board[8, 7, [KING,BLACK]])
-        black_king_score += sum(board[[6,7], [6,7,8], BLACK] .& board[[6,7], [6,7,8], PAWN])
+    if piece_count > 12
+        if all(board[1, 3, [KING,WHITE]]) || all(board[1, 1, [KING,WHITE]]) || all(board[1, 2, [KING,WHITE]])
+            white_king_score += sum(board[[2,3], [1,2,3], WHITE] .& board[[2,3], [1,2,3], PAWN])
+        elseif all(board[1, 7, [KING,WHITE]]) || all(board[1, 8, [KING,WHITE]])
+            white_king_score += sum(board[[2,3], [6,7,8], WHITE] .& board[[2,3], [6,7,8], PAWN])
+        end
+        if all(board[8, 3, [KING,BLACK]]) || all(board[8, 1, [KING,BLACK]]) || all(board[8, 2, [KING,BLACK]])
+            black_king_score += sum(board[[6,7], [1,2,3], BLACK] .& board[[6,7], [1,2,3], PAWN])
+        elseif all(board[8, 7, [KING,BLACK]]) || all(board[8, 7, [KING,BLACK]])
+            black_king_score += sum(board[[6,7], [6,7,8], BLACK] .& board[[6,7], [6,7,8], PAWN])
+        end
     end
 
     king_score = white_king_score - black_king_score # ∈ [-3,3]
@@ -147,7 +149,7 @@ function beth_eval(board::Board, unused::Bool, check_value=0.)
     white_pawn_adv_score = 0.
     black_pawn_adv_score = 0.
 
-    if piece_count ≤ 12
+    if piece_count ≤ 16
         white_pawn_adv_score = white_most_adv_pawn - 4 # ∈ [-2, 4]
         black_pawn_adv_score = 8-black_pawn_adv_score+1 - 4 # ∈ [-2, 4]
     end
@@ -169,14 +171,23 @@ end
 
 function beth_rank_moves(board::Board, white::Bool, ms::Vector{Move})
     ranked_moves = []
+
+    player = 7 + !white
+    opponent = 7 + white
+
+    pawn_endgame = sum(board[:,:,opponent]) == 1 && sum(board[:,:,PAWN]) > 0
+    check_score = pawn_endgame ? 0. : 30.
+
     for (p, rf1, rf2) in ms
-        # println((p, rf1, rf2))
-        # print_board(board, white=white)
-        # println()
         cap, enp, cas = move!(board, white, p, rf1, rf2)
-        push!(ranked_moves, (beth_eval(board, !white, 30), (p, rf1, rf2)))
+        v = beth_eval(board, !white, check_score)
+        if pawn_endgame && p == PAWN
+            v += white ? 3 : -1
+        end
+        push!(ranked_moves, (v, (p, rf1, rf2)))
         undo!(board, white, p, rf1, rf2, cap, enp, cas)
     end
+
     return ranked_moves
 end
 

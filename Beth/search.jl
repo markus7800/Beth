@@ -270,13 +270,13 @@ function BethSearch(beth::Beth, node::ABNode, depth::Int, α::Float64, β::Float
         while true
             if i == 0
                 # try previous best move first
-                # if node.best_child_index > 0
-                #     child = node.children[node.best_child_index]
-                #     m = child.move
-                # else
-                #     i += 1
-                #     continue
-                # end
+                if node.best_child_index > 0
+                    child = node.children[node.best_child_index]
+                    m = child.move
+                else
+                    i += 1
+                    continue
+                end
                 i += 1
                 continue
             elseif i ≤ n_children
@@ -291,7 +291,7 @@ function BethSearch(beth::Beth, node::ABNode, depth::Int, α::Float64, β::Float
                 length(node.ranked_moves) == 0 && break
 
                 prescore, m = popfirst!(node.ranked_moves)
-                child = ABNode(move=m, parent=node, value=prescore, visits=0)
+                child = ABNode(move=m, parent=node, value=0., visits=0)
 
                 push!(node.children, child)
             end
@@ -582,10 +582,11 @@ history = play_game(white_player=beth, black_player=beth)
 
 
 beth = Beth(value_heuristic=beth_eval, rank_heuristic=beth_rank_moves,
-    search_algorithm=BethTimedIMTDF, search_args=Dict("do_quiesce"=>true, "min_depth"=>4, "max_depth"=>10, "time"=>5.))
+    search_algorithm=BethTimedIMTDF, search_args=Dict("do_quiesce"=>true, "min_depth"=>4, "max_depth"=>100, "time"=>5.))
 
 history = play_game(white_player=beth, black_player=beth)
 
 # TODO:
 # razoring
 # null move pruning
+# avoid draw by repetition
