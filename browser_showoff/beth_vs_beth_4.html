@@ -1,0 +1,96 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <title>chessboardjs Example #2005 - Animation Speed</title>
+  <link rel="stylesheet"
+      href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css"
+      integrity="sha384-q94+BZtLrkL1/ohfjR8c6L+A6qzNH9R2hBLwyoAfu3i/WCvQjzL2RQJ3uNHDISdU"
+      crossorigin="anonymous">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+  <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"
+        integrity="sha384-8Vi8VHwn3vjQ9eUHUxex3JSN/NFqUg3QbPyX8kWyb93+8AC/pPWTzj+nHtbC5bxD"
+        crossorigin="anonymous"></script>
+</head>
+<body>
+
+<p>Iterative MTDF min depth 4, quiesce, 3_men tb, 5s until last depth has to be started, king safety all game</p>
+
+<div id="myBoard" style="width: 400px"></div>
+<button id="backBtn">Back</button>
+<button id="nextBtn">Next</button>
+
+<script>
+
+
+var game = [
+'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+'rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1',
+'rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq f1 0 1',
+'rnbqkbnr/ppp1pppp/8/3P4/8/8/PPPP1PPP/RNBQKBNR b KQkq c1 0 1',
+'rnb1kbnr/ppp1pppp/8/3q4/8/8/PPPP1PPP/RNBQKBNR w KQkq - 0 1',
+'rnb1kbnr/ppp1pppp/8/3q4/8/8/PPPPNPPP/RNBQKB1R b KQkq - 0 1',
+'rnb1kbnr/ppp2ppp/8/3qp3/8/8/PPPPNPPP/RNBQKB1R w KQkq f1 0 1',
+'rnb1kbnr/ppp2ppp/8/3qp3/8/2N5/PPPP1PPP/RNBQKB1R b KQkq c1 0 1',
+'rnb1kbnr/ppp2ppp/8/4p3/3q4/2N5/PPPP1PPP/RNBQKB1R w KQkq - 0 1',
+'rnb1kbnr/ppp2ppp/8/1B2p3/3q4/2N5/PPPP1PPP/RNBQK2R b KQkq - 0 1',
+'rn2kbnr/pppb1ppp/8/1B2p3/3q4/2N5/PPPP1PPP/RNBQK2R w KQkq - 0 1',
+'rn2kbnr/pppb1ppp/8/1B2p3/3q4/2N5/PPPP1PPP/RNBQ1RK1 b kq - 0 1',
+'rn2k1nr/pppb1ppp/8/1B2p3/1b1q4/2N5/PPPP1PPP/RNBQ1RK1 w kq - 0 1',
+'rn2k1nr/pppb1ppp/8/1B2p3/1b1q4/2NP4/PPP2PPP/RNBQ1RK1 b kq - 0 1',
+'rn2k1nr/pppb1ppp/8/1B2p3/3q4/2bP4/PPP2PPP/RNBQ1RK1 w kq - 0 1',
+'rn2k1nr/pppb1ppp/8/1B2p3/3q4/2NP4/PPP2PPP/R1BQ1RK1 b kq - 0 1',
+'rn2k1nr/ppp2ppp/8/1b2p3/3q4/2NP4/PPP2PPP/R1BQ1RK1 w kq - 0 1',
+'rn2k1nr/ppp2ppp/8/1N2p3/3q4/3P4/PPP2PPP/R1BQ1RK1 b kq - 0 1',
+'rn2k1nr/pppq1ppp/8/1N2p3/8/3P4/PPP2PPP/R1BQ1RK1 w kq - 0 1',
+'rn2k1nr/pppq1ppp/8/1N2p3/P7/3P4/1PP2PPP/R1BQ1RK1 b kq - 0 1',
+'r3k1nr/pppq1ppp/n7/1N2p3/P7/3P4/1PP2PPP/R1BQ1RK1 w kq - 0 1',
+'r3k1nr/pppq1ppp/n7/1N2p2Q/P7/3P4/1PP2PPP/R1B2RK1 b kq - 0 1',
+'r3k1nr/ppp2ppp/n7/1N1qp2Q/P7/3P4/1PP2PPP/R1B2RK1 w kq - 0 1',
+'r3k1nr/ppp2ppp/n7/1N1qp2Q/P7/3P4/1PP2PPP/R1B1R1K1 b kq - 0 1',
+'r3k1nr/ppp2p1p/n7/1N1qp1pQ/P7/3P4/1PP2PPP/R1B1R1K1 w kq f1 0 1',
+'r3k1nr/ppp2p1p/n7/1N1qp1Q1/P7/3P4/1PP2PPP/R1B1R1K1 b kq c1 0 1',
+'r3k2r/ppp1np1p/n7/1N1qp1Q1/P7/3P4/1PP2PPP/R1B1R1K1 w kq - 0 1',
+'r3k2r/ppp1np1p/n7/1N1qR1Q1/P7/3P4/1PP2PPP/R1B3K1 b kq - 0 1',
+'r3k2r/pppqnp1p/n7/1N2R1Q1/P7/3P4/1PP2PPP/R1B3K1 w kq - 0 1',
+'r3k2r/pppqnp1p/n4Q2/1N2R3/P7/3P4/1PP2PPP/R1B3K1 b kq - 0 1',
+'r3k1r1/pppqnp1p/n4Q2/1N2R3/P7/3P4/1PP2PPP/R1B3K1 w kq - 0 1',
+'r3k1r1/pppqnp1p/n4Q2/1N2R1B1/P7/3P4/1PP2PPP/R5K1 b kq - 0 1',
+'r4kr1/pppqnp1p/n4Q2/1N2R1B1/P7/3P4/1PP2PPP/R5K1 w - - 0 1',
+'r4kr1/pppqRp1p/n4Q2/1N4B1/P7/3P4/1PP2PPP/R5K1 b - - 0 1',
+'r4kr1/ppp1Rp1p/n4Q2/1N1q2B1/P7/3P4/1PP2PPP/R5K1 w - - 0 1',
+'r4kr1/ppp1Rp1p/n4Q1B/1N1q4/P7/3P4/1PP2PPP/R5K1 b - - 0 1',
+'r4k2/ppp1Rprp/n4Q1B/1N1q4/P7/3P4/1PP2PPP/R5K1 w - - 0 1',
+'r4k2/ppp1RpBp/n4Q2/1N1q4/P7/3P4/1PP2PPP/R5K1 b - - 0 1',
+'r5k1/ppp1RpBp/n4Q2/1N1q4/P7/3P4/1PP2PPP/R5K1 w - - 0 1',
+'r5k1/ppp1Rp1p/n4Q1B/1N1q4/P7/3P4/1PP2PPP/R5K1 b - - 0 1',
+'r5k1/ppp1Rp1p/n4Q1B/1N6/P7/3P4/1PP2PqP/R5K1 w - - 0 1',
+'r5k1/ppp1Rp1p/n4Q1B/1N6/P7/3P4/1PP2PKP/R7 b - - 0 1',
+'r5k1/p1p1Rp1p/np3Q1B/1N6/P7/3P4/1PP2PKP/R7 w - - 0 1',
+'r5k1/p1p1RpQp/np5B/1N6/P7/3P4/1PP2PKP/R7 b - - 0 1'
+];
+var board = Chessboard('myBoard', {
+  draggable: true,
+  moveSpeed: 'medium',
+  snapbackSpeed: 500,
+  snapSpeed: 100,
+  position: game[0],
+  pieceTheme: 'img/chesspieces/wikipedia/{piece}.png',
+})
+
+var i = 0
+
+$('#backBtn').on('click', function () {
+  i = Math.max(0, i-1)
+  board.position(game[i])
+})
+$('#nextBtn').on('click', function () {
+  i = Math.min(game.length, i+1)
+  board.position(game[i])
+})
+</script>
+</body>
+</html>

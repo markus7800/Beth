@@ -124,23 +124,21 @@ function beth_eval(board::Board, unused::Bool, check_value=0.)
     # @info("development_score: $development_score, $white_development_score, $black_development_score") # ∈ [-12, 12] each ∈ [-6,6]
 
     # TODO: king safety
-    # white_king_score = 0.
-    # black_king_score = 0.
-    #
-    # if piece_count ≥ 24
-    #     # opening => encourage castling
-    #     white_king_score += all(board[1, 3, [KING,WHITE]]) || all(board[1, 7, [KING,WHITE]])
-    #     black_king_score += all(board[8, 3, [KING,BLACK]]) || all(board[8, 7, [KING,BLACK]])
-    # end
-    #
-    # king_score = white_king_score - black_king_score
+    white_king_score = 0.
+    black_king_score = 0.
+
+    white_king_score += all(board[1, 3, [KING,WHITE]]) || all(board[1, 7, [KING,WHITE]])
+    black_king_score += all(board[8, 3, [KING,BLACK]]) || all(board[8, 7, [KING,BLACK]])
+
+
+    king_score = white_king_score - black_king_score
 
     score = piece_score +
         1 * check_score +
         0.1 * pawn_score +
         0.1 * center_score +
-        0.1 * development_score
-        # 0.2 * king_score
+        0.1 * development_score +
+        0.5 * king_score
 
     return score
 end

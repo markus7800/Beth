@@ -423,7 +423,11 @@ function BethIMTDF(beth::Beth; board=beth.board, white=beth.white, max_depth::In
 end
 
 function BethTimedIMTDF(beth::Beth; board=beth.board, white=beth.white,
-    Δt::Float64=beth.search_args["time"], max_depth::Int=beth.search_args["depth"], do_quiesce=beth.search_args["do_quiesce"])
+    Δt::Float64=beth.search_args["time"],
+    min_depth::Int=beth.search_args["min_depth"],
+    max_depth::Int=beth.search_args["max_depth"],
+    do_quiesce=beth.search_args["do_quiesce"])
+
     beth.board = board
     beth.white = white
 
@@ -433,7 +437,7 @@ function BethTimedIMTDF(beth::Beth; board=beth.board, white=beth.white,
 
     guesses = [0.]
     root = ABNode()
-    @time for depth in 2:1:max_depth
+    @time for depth in min_depth:1:max_depth
         guess = guesses[end]
         @info @sprintf "Depth: %d, guess: %.2f" depth guess
         value, best_move = BethMTDF(beth, guess=guess, depth=depth, root=root, verbose=true, iter_id=depth, do_quiesce=do_quiesce)
@@ -579,6 +583,6 @@ history = play_game(white_player=beth, black_player=beth)
 
 
 beth = Beth(value_heuristic=beth_eval, rank_heuristic=beth_rank_moves,
-    search_algorithm=BethTimedIMTDF, search_args=Dict("do_quiesce"=>true, "depth"=>10, "time"=>5.))
+    search_algorithm=BethTimedIMTDF, search_args=Dict("do_quiesce"=>true, "min_depth"=>4, "max_depth"=>10, "time"=>5.))
 
 history = play_game(white_player=beth, black_player=beth)

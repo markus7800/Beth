@@ -67,6 +67,16 @@ for ply in history[2:end]
     println("'" * field(ply.move[2]) * "-" * field(ply.move[3]), "',")
 end
 
+game_strings = String[]
 for ply in history
     println("'" ,FEN(ply.board, ply.white), "',")
+    push!(game_strings, FEN(ply.board, ply.white))
+end
+
+
+import JSON
+import FileIO
+
+open("../browser_showoff/games/beth_vs_beth_3.json","w") do f
+    write(f, JSON.json(game_strings))
 end
