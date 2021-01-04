@@ -11,6 +11,9 @@ function beth_eval(board::Board, unused::Bool, check_value=0.)
     white_pawn_struct = zeros(Int, 8)
     black_pawn_struct = zeros(Int, 8)
 
+    white_most_adv_pawn = 0
+    black_most_adv_pawn = 0
+
     piece_count = 0
     for rank in 1:8, file in 1:8
         if board[rank,file,KING]
@@ -31,8 +34,10 @@ function beth_eval(board::Board, unused::Bool, check_value=0.)
 
         if board[rank,file,PAWN]
             if board[rank,file,WHITE]
+                white_most_adv_pawn = max(white_most_adv_pawn, rank)
                 white_pawn_struct[file] += 1
             else
+                black_most_adv_pawn = min(black_most_adv_pawn, rank)
                 black_pawn_struct[file] += 1
             end
         end
@@ -123,22 +128,39 @@ function beth_eval(board::Board, unused::Bool, check_value=0.)
     # @info("center_score: $center_score, $white_center_score, $black_center_score") # ∈ [-8, 8] each ∈ [-4,4]
     # @info("development_score: $development_score, $white_development_score, $black_development_score") # ∈ [-12, 12] each ∈ [-6,6]
 
-    # TODO: king safety
     white_king_score = 0.
     black_king_score = 0.
 
-    white_king_score += all(board[1, 3, [KING,WHITE]]) || all(board[1, 7, [KING,WHITE]])
-    black_king_score += all(board[8, 3, [KING,BLACK]]) || all(board[8, 7, [KING,BLACK]])
+    if all(board[1, 3, [KING,WHITE]])# || all(board[1, 1, [KING,WHITE]]) || all(board[1, 2, [KING,WHITE]])
+        white_king_score += sum(board[[2,3], [1,2,3], WHITE] .& board[[2,3], [1,2,3], PAWN])
+    elseif all(board[1, 7, [KING,WHITE]])# || all(board[1, 6, [KING,WHITE]]) || all(board[1, 8, [KING,WHITE]])
+        white_king_score += sum(board[[2,3], [6,7,8], WHITE] .& board[[2,3], [6,7,8], PAWN])
+    end
+    if all(board[8, 3, [KING,BLACK]])# || all(board[8, 1, [KING,BLACK]]) || all(board[8, 2, [KING,BLACK]])
+        black_king_score += sum(board[[6,7], [1,2,3], BLACK] .& board[[6,7], [1,2,3], PAWN])
+    elseif all(board[8, 7, [KING,BLACK]])# || all(board[8, 6, [KING,BLACK]]) || all(board[8, 7, [KING,BLACK]])
+        black_king_score += sum(board[[6,7], [6,7,8], BLACK] .& board[[6,7], [6,7,8], PAWN])
+    end
 
+    king_score = white_king_score - black_king_score # ∈ [-3,3]
 
-    king_score = white_king_score - black_king_score
+    white_pawn_adv_score = 0.
+    black_pawn_adv_score = 0.
+
+    if piece_count ≤ 12
+        white_pawn_adv_score = white_most_adv_pawn - 4 # ∈ [-2, 4]
+        black_pawn_adv_score = 8-black_pawn_adv_score+1 - 4 # ∈ [-2, 4]
+    end
+
+    pawn_adv_score = white_pawn_adv_score - black_pawn_adv_score
 
     score = piece_score +
         1 * check_score +
         0.1 * pawn_score +
         0.1 * center_score +
         0.1 * development_score +
-        0.5 * king_score
+        0.5 * king_score +
+        0.1 * pawn_adv_score
 
     return score
 end

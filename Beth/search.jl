@@ -433,7 +433,6 @@ function BethTimedIMTDF(beth::Beth; board=beth.board, white=beth.white,
 
     t0 = time()
     t1 = t0 + Δt
-    @info "t1: $t1"
 
     guesses = [0.]
     root = ABNode()
@@ -586,3 +585,7 @@ beth = Beth(value_heuristic=beth_eval, rank_heuristic=beth_rank_moves,
     search_algorithm=BethTimedIMTDF, search_args=Dict("do_quiesce"=>true, "min_depth"=>4, "max_depth"=>10, "time"=>5.))
 
 history = play_game(white_player=beth, black_player=beth)
+
+# TODO:
+# razoring
+# null move pruning
