@@ -67,10 +67,23 @@ for ply in history[2:end]
     println("'" * field(ply.move[2]) * "-" * field(ply.move[3]), "',")
 end
 
-game_strings = String[]
+# FEN strings
 for ply in history
     println("'" ,FEN(ply.board, ply.white), "',")
-    push!(game_strings, FEN(ply.board, ply.white))
+end
+
+# PGN
+for (i,ply) in enumerate(history[2:end])
+    if i % 2 == 1
+        print(ply.n_move, ". ")
+    end
+    m = ply.move
+    print("$(SYMBOLS[1,m[1]])$(FIELDS[m[2]])$(FIELDS[m[3]])")
+    if i % 2 == 0
+        print("\n")
+    else
+        print(" ")
+    end
 end
 
 

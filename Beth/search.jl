@@ -586,6 +586,7 @@ beth = Beth(value_heuristic=beth_eval, rank_heuristic=beth_rank_moves,
 
 history = play_game(white_player=user_input, black_player=beth)
 
+
 # TODO:
 # razoring
 # null move pruning
