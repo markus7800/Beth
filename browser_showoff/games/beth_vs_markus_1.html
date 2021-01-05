@@ -1,0 +1,111 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <title>chessboardjs Example #2005 - Animation Speed</title>
+  <link rel="stylesheet"
+      href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css"
+      integrity="sha384-q94+BZtLrkL1/ohfjR8c6L+A6qzNH9R2hBLwyoAfu3i/WCvQjzL2RQJ3uNHDISdU"
+      crossorigin="anonymous">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+  <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"
+        integrity="sha384-8Vi8VHwn3vjQ9eUHUxex3JSN/NFqUg3QbPyX8kWyb93+8AC/pPWTzj+nHtbC5bxD"
+        crossorigin="anonymous"></script>
+</head>
+<body>
+
+<p>Iterative MTDF min depth 4, quiesce, 3_men tb, 5s until last depth has to be started, king safety</p>
+
+<div id="myBoard" style="width: 400px"></div>
+<button id="backBtn">Back</button>
+<button id="nextBtn">Next</button>
+
+<script>
+
+
+var game = [
+  'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+  'rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1',
+  'rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq f1 0 1',
+  'rnbqkbnr/ppp1pppp/8/3P4/8/8/PPPP1PPP/RNBQKBNR b KQkq c1 0 1',
+  'rnb1kbnr/ppp1pppp/8/3q4/8/8/PPPP1PPP/RNBQKBNR w KQkq - 0 1',
+  'rnb1kbnr/ppp1pppp/8/3q4/8/2N5/PPPP1PPP/R1BQKBNR b KQkq - 0 1',
+  'rnb1kbnr/ppp1pppp/8/q7/8/2N5/PPPP1PPP/R1BQKBNR w KQkq - 0 1',
+  'rnb1kbnr/ppp1pppp/8/q7/8/2N2N2/PPPP1PPP/R1BQKB1R b KQkq - 0 1',
+  'rn2kbnr/ppp1pppp/8/q7/6b1/2N2N2/PPPP1PPP/R1BQKB1R w KQkq - 0 1',
+  'rn2kbnr/ppp1pppp/8/q7/6b1/2N2N1P/PPPP1PP1/R1BQKB1R b KQkq - 0 1',
+  'rn2kbnr/ppp1pppp/8/q7/8/2N2b1P/PPPP1PP1/R1BQKB1R w KQkq - 0 1',
+  'rn2kbnr/ppp1pppp/8/q7/8/2N2Q1P/PPPP1PP1/R1B1KB1R b KQkq - 0 1',
+  'r3kbnr/ppp1pppp/2n5/q7/8/2N2Q1P/PPPP1PP1/R1B1KB1R w KQkq - 0 1',
+  'r3kbnr/ppp1pppp/2n5/q7/8/2NP1Q1P/PPP2PP1/R1B1KB1R b KQkq - 0 1',
+  '2kr1bnr/ppp1pppp/2n5/q7/8/2NP1Q1P/PPP2PP1/R1B1KB1R w KQ - 0 1',
+  '2kr1bnr/ppp1pppp/2n5/q7/8/2NP1Q1P/PPPB1PP1/R3KB1R b KQ - 0 1',
+  '2kr1bnr/ppp1pppp/8/q7/3n4/2NP1Q1P/PPPB1PP1/R3KB1R w KQ - 0 1',
+  '2kr1bnr/ppp1pppp/8/q7/3n4/2NP3P/PPPB1PP1/R2QKB1R b KQ - 0 1',
+  '2kr1bnr/ppp1pppp/8/8/1q1n4/2NP3P/PPPB1PP1/R2QKB1R w KQ - 0 1',
+  '2kr1bnr/ppp1pppp/8/8/1q1n4/2NP3P/PPPB1PP1/1R1QKB1R b K - 0 1',
+  '2kr1bnr/ppp2ppp/8/4p3/1q1n4/2NP3P/PPPB1PP1/1R1QKB1R w K f1 0 1',
+  '2kr1bnr/ppp2ppp/8/4p3/1q1n4/P1NP3P/1PPB1PP1/1R1QKB1R b K c1 0 1',
+  '2kr1bnr/ppp2ppp/8/q3p3/3n4/P1NP3P/1PPB1PP1/1R1QKB1R w K - 0 1',
+  '2kr1bnr/ppp2ppp/8/q3p3/3n4/P1NP3P/1PPBBPP1/1R1QK2R b K - 0 1',
+  '2kr2nr/ppp2ppp/3b4/q3p3/3n4/P1NP3P/1PPBBPP1/1R1QK2R w K - 0 1',
+  '2kr2nr/ppp2ppp/3b4/q3p3/3n4/P1NP3P/1PPBBPP1/1R1Q1RK1 b - - 0 1',
+  '2kr3r/ppp2ppp/3b1n2/q3p3/3n4/P1NP3P/1PPBBPP1/1R1Q1RK1 w - - 0 1',
+  '2kr3r/ppp2ppp/3b1n2/q3p3/3nN3/P2P3P/1PPBBPP1/1R1Q1RK1 b - - 0 1',
+  '2kr3r/ppp2ppp/3b1n2/3qp3/3nN3/P2P3P/1PPBBPP1/1R1Q1RK1 w - - 0 1',
+  '2kr3r/ppp2ppp/3b1n2/3qp1B1/3nN3/P2P3P/1PP1BPP1/1R1Q1RK1 b - - 0 1',
+  '2kr3r/ppp1bppp/5n2/3qp1B1/3nN3/P2P3P/1PP1BPP1/1R1Q1RK1 w - - 0 1',
+  '2kr3r/ppp1bppp/5N2/3qp1B1/3n4/P2P3P/1PP1BPP1/1R1Q1RK1 b - - 0 1',
+  '2kr3r/ppp2ppp/5b2/3qp1B1/3n4/P2P3P/1PP1BPP1/1R1Q1RK1 w - - 0 1',
+  '2kr3r/ppp2ppp/5B2/3qp3/3n4/P2P3P/1PP1BPP1/1R1Q1RK1 b - - 0 1',
+  '2kr3r/ppp2p1p/5p2/3qp3/3n4/P2P3P/1PP1BPP1/1R1Q1RK1 w - - 0 1',
+  '2kr3r/ppp2p1p/5p2/3qp2B/3n4/P2P3P/1PP2PP1/1R1Q1RK1 b - - 0 1',
+  '2k3rr/ppp2p1p/5p2/3qp2B/3n4/P2P3P/1PP2PP1/1R1Q1RK1 w - - 0 1',
+  '2k3rr/ppp2p1p/5p2/3qp2B/3n4/P2P2PP/1PP2P2/1R1Q1RK1 b - - 0 1',
+  '2k3rr/ppp2p1p/8/3qpp1B/3n4/P2P2PP/1PP2P2/1R1Q1RK1 w - - 0 1',
+  '2k3rr/ppp2p1p/8/3qpp1B/3n4/P1PP2PP/1P3P2/1R1Q1RK1 b - - 0 1',
+  '2k3rr/ppp2p1p/2n5/3qpp1B/8/P1PP2PP/1P3P2/1R1Q1RK1 w - - 0 1',
+  '2k3rr/ppp2p1p/2n5/3qpp1B/2P5/P2P2PP/1P3P2/1R1Q1RK1 b - - 0 1',
+  '2k3rr/ppp2p1p/2n5/4pp1B/2Pq4/P2P2PP/1P3P2/1R1Q1RK1 w - - 0 1',
+  '2k3rr/ppp2B1p/2n5/4pp2/2Pq4/P2P2PP/1P3P2/1R1Q1RK1 b - - 0 1',
+  '2k4r/ppp2B1p/2n5/4pp2/2Pq4/P2P2rP/1P3P2/1R1Q1RK1 w - - 0 1',
+  '2k4r/ppp2B1p/2n5/4pp2/2Pq4/P2P2rP/1P3P1K/1R1Q1R2 b - - 0 1',
+  '2k4r/ppp2B1p/2n5/4pp2/2Pq4/P2r3P/1P3P1K/1R1Q1R2 w - - 0 1',
+  '2k4r/ppp2B1p/2n5/4pp1Q/2Pq4/P2r3P/1P3P1K/1R3R2 b - - 0 1',
+  '2k4r/ppp2B1p/2n5/4p2Q/2Pq1p2/P2r3P/1P3P1K/1R3R2 w - - 0 1',
+  '2k4r/ppp2B1p/2n5/4p2Q/2Pq1p2/P2r3P/1P3P1K/1R1R4 b - - 0 1',
+  '2k4r/ppp2B1p/2n5/4p2Q/2P2p2/P2r3P/1P3q1K/1R1R4 w - - 0 1',
+  '2k4r/ppp2B1p/2n5/4p2Q/2P2p2/P2r3P/1P3q2/1R1R3K b - - 0 1',
+  '2k4r/ppp2B1p/2n5/4p2Q/2P2p2/P6P/1P3q2/1R1r3K w - - 0 1',
+  '2k4r/ppp2B1p/2n5/4p3/2P2p2/P6P/1P3q2/1R1Q3K b - - 0 1',
+  '2k4r/ppp2B1p/2n5/4p3/2P5/P4p1P/1P3q2/1R1Q3K w - - 0 1',
+  '2k4r/ppp4p/2n1B3/4p3/2P5/P4p1P/1P3q2/1R1Q3K b - - 0 1',
+  '1k5r/ppp4p/2n1B3/4p3/2P5/P4p1P/1P3q2/1R1Q3K w - - 0 1',
+  '1k5r/pppQ3p/2n1B3/4p3/2P5/P4p1P/1P3q2/1R5K b - - 0 1',
+  '1k5r/pppQ3p/2n1B3/4p3/2P5/P4p1P/1P4q1/1R5K w - - 0 1'
+];
+var board = Chessboard('myBoard', {
+  draggable: true,
+  moveSpeed: 'medium',
+  snapbackSpeed: 500,
+  snapSpeed: 100,
+  position: game[0],
+  pieceTheme: 'img/chesspieces/wikipedia/{piece}.png',
+})
+
+var i = 0
+
+$('#backBtn').on('click', function () {
+  i = Math.max(0, i-1)
+  board.position(game[i])
+})
+$('#nextBtn').on('click', function () {
+  i = Math.min(game.length, i+1)
+  board.position(game[i])
+})
+</script>
+</body>
+</html>

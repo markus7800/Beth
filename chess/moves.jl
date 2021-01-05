@@ -55,22 +55,42 @@ function get_moves(board::Board, white::Bool)
         end
     end
 
-
-    # for m in moves
-    #     try
-    #         is_check(board, player, opponent, kingpos, m)
-    #     catch
-    #         print_board(board)
-    #         println()
-    #         @info("Move $m throws.")
-    #         r1,f1 = cartesian(field(m[2]))
-    #         r2,f2 = cartesian(field(m[3]))
-    #         @info("FROM: $(board[r1,f1,:])")
-    #         @info("TO: $(board[r2,f2,:])")
-    #     end
-    # end
-
     filter!(m -> !is_check(board, player, opponent, kingpos, m), moves)
+
+    return moves
+end
+
+function get_pseudo_legal_moves(board::Board, white::Bool)
+    player = 7 + !white
+    opponent = 7 + white
+    moves = Move[]
+    kingpos = (-10, -10) # move off board for evaluation without kings
+    for rank in 1:8, file in 1:8
+        !board[rank, file, player] && continue
+        #println("Piece: $(SYMBOLS[1,findfirst(board[rank,file,:])]) at $(field(rank,file)) ($rank $file)")
+
+        if board[rank, file, PAWN]
+            # rank cannot be 1, 8 since then AUTOQUEEN
+            append!(moves, pawn_moves(board, white, rank, file))
+
+        elseif board[rank, file, BISHOP]
+            append!(moves, direction_moves(board,player,opponent,BISHOP,rank,file,DIAG,8))
+
+        elseif board[rank, file, KNIGHT]
+            append!(moves, direction_moves(board,player,opponent,KNIGHT,rank,file,KNIGHTMOVES,1))
+
+        elseif board[rank, file, ROOK]
+            append!(moves, direction_moves(board,player,opponent,ROOK,rank,file,CROSS,8))
+
+        elseif board[rank, file, QUEEN]
+            append!(moves, direction_moves(board,player,opponent,QUEEN,rank,file,DIAGCROSS,8))
+
+        elseif board[rank, file, KING]
+            kingpos = (rank, file)
+            kingmoves = king_moves(board,white,player,opponent,rank,file)
+            append!(moves, kingmoves)
+        end
+    end
 
     return moves
 end

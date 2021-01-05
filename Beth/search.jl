@@ -584,9 +584,23 @@ history = play_game(white_player=beth, black_player=beth)
 beth = Beth(value_heuristic=beth_eval, rank_heuristic=beth_rank_moves,
     search_algorithm=BethTimedIMTDF, search_args=Dict("do_quiesce"=>true, "min_depth"=>4, "max_depth"=>100, "time"=>5.))
 
-history = play_game(white_player=beth, black_player=beth)
+history = play_game(white_player=user_input, black_player=beth)
 
 # TODO:
 # razoring
 # null move pruning
 # avoid draw by repetition
+
+
+@btime get_moves(pz.board, false) # 42μs
+@btime get_pseudo_legal_moves(pz.board, false) # 25μs
+
+
+@btime beth_eval(pz.board, false) # 4μs
+
+ms = get_moves(pz.board, false)
+@btime beth_rank_moves(pz.board, false, ms) # 115μs
+
+@profiler for i in 1:10^3
+    get_pseudo_legal_moves(pz.board, false)
+end

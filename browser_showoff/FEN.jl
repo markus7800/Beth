@@ -80,3 +80,7 @@ import FileIO
 open("../browser_showoff/games/beth_vs_beth_3.json","w") do f
     write(f, JSON.json(game_strings))
 end
+
+import JLD2
+
+JLD2.@save "backlog/21_01_05/beth_vs_markus.jld2" history
