@@ -314,7 +314,9 @@ function Base.show(io::IO, board::Board)
                         s = lowercase(s)
                     end
 
-                    printstyled(io, "$s ", color=cols[si], bold=true)
+                    print(io, "$s ")
+
+                    # printstyled(io, "$s ", color=cols[si], bold=true)
                     continue
                 end
             end

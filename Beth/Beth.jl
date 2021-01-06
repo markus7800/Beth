@@ -5,6 +5,8 @@ include("../utils/simple_evaluation.jl")
 include("evaluation.jl")
 
 include("../endgame/tablebase.jl")
+include("../opening/opening_book.jl")
+
 
 mutable struct Beth
     search_algorithm::Function
@@ -22,6 +24,8 @@ mutable struct Beth
 
     tb_3_men_mates::Dict{String, Int}
     tb_3_men_desperate_positions::Dict{String, Int}
+
+    ob::OpeningBook
 
     function Beth(;search_algorithm=minimax_search, value_heuristic, rank_heuristic, board=Board(), white=true, search_args::Dict)
         beth = new()
@@ -45,6 +49,8 @@ mutable struct Beth
         mates, dps = load_3_men_tablebase()
         beth.tb_3_men_mates = mates
         beth.tb_3_men_desperate_positions = dps
+
+        beth.ob = get_queens_gambit()
 
         return beth
     end
@@ -83,6 +89,11 @@ function minimax_search(beth::Beth; board=beth.board, white=beth.white, verbose=
 end
 
 function (beth::Beth)(board::Board, white::Bool)
+    if haskey(beth.ob, board)
+        @info("Position known.")
+        return beth.ob[board]
+    end
+
     value, move = beth.search_algorithm(beth, board=board, white=white)
     println(@sprintf "Computer says: %s valued with %.2f." move value)
     return move

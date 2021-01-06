@@ -144,7 +144,11 @@ function beth_eval(board::Board, white::Bool; check_value=0., no_moves=false)
     white_center_score = sum(board[4:5,4:5,WHITE])
     black_center_score = sum(board[4:5,4:5,BLACK])
 
-    center_score = white_center_score - black_center_score
+    white_extended_center_score = sum(board[3:6,3:6,WHITE])
+    black_extended_center_score = sum(board[3:6,3:6,BLACK])
+
+    # more importance to center
+    center_score = (white_center_score - black_center_score) + (white_extended_center_score - black_extended_center_score)
 
 
     white_development_score = -sum(board[1, [2,3,6,7], [BISHOP, KNIGHT]] .& board[1, [2,3,6,7], WHITE])
@@ -169,7 +173,7 @@ function beth_eval(board::Board, white::Bool; check_value=0., no_moves=false)
         r, f = white_king_pos
         if f ≤ 3
             white_king_score += sum(min.(1, sum(board[r+1:r+2, 1:3, PAWN] .& board[r+1:r+2, 1:3, WHITE], dims=1)))
-        elseif f ≥ 6
+        elseif f ≥ 7
             white_king_score += sum(min.(1, sum(board[r+1:r+2, 6:8, PAWN] .& board[r+1:r+2, 6:8, WHITE], dims=1)))
         end
         white_king_score -= !all(board[r+1, f, [WHITE,PAWN]])
@@ -177,7 +181,7 @@ function beth_eval(board::Board, white::Bool; check_value=0., no_moves=false)
         r, f = black_king_pos
         if f ≤ 3
             black_king_score += sum(min.(1, sum(board[r-2:r-1, 1:3, PAWN] .& board[r-2:r-1, 1:3, BLACK], dims=1)))
-        elseif f ≥ 6
+        elseif f ≥ 7
             black_king_score += sum(min.(1, sum(board[r-2:r-1, 6:8, PAWN] .& board[r-2:r-1, 6:8, BLACK], dims=1)))
         end
         black_king_score -= !all(board[r-1, f, [BLACK,PAWN]])

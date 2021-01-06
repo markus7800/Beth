@@ -584,7 +584,7 @@ history = play_game(white_player=beth, black_player=beth)
 beth = Beth(value_heuristic=beth_eval, rank_heuristic=beth_rank_moves,
     search_algorithm=BethTimedIMTDF, search_args=Dict("do_quiesce"=>true, "min_depth"=>4, "max_depth"=>100, "time"=>5.))
 
-history = play_game(white_player=user_input, black_player=beth)
+history = play_game(white_player=beth, black_player=beth)
 
 
 # TODO:
