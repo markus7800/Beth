@@ -16,7 +16,14 @@ for (i,ply) in enumerate(history[2:end])
         print(ply.n_move, ". ")
     end
     m = ply.move
-    print("$(SYMBOLS[1,m[1]])$(FIELDS[m[2]])$(FIELDS[m[3]])")
+    if m[1] == PAWNTOQUEEN
+        print("P$(FIELDS[m[2]])$(FIELDS[m[3]])Q")
+    elseif m[1] == PAWNTOKNIGHT
+        print("P$(FIELDS[m[2]])$(FIELDS[m[3]])K")
+    else
+        print("$(SYMBOLS[1,m[1]])$(FIELDS[m[2]])$(FIELDS[m[3]])")
+    end
+    
     if i % 2 == 0
         print("\n")
     else
