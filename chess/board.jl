@@ -464,12 +464,13 @@ end
 function play_game(board = Board(), white = true; white_player=user_input, black_player=user_input)
     game_history = [Ply(0, 0, deepcopy(board), white, (0x0, 0x0, 0x0), 0.)] # current board, white to move, last move
     n_ply = 1
-    # try
+
+    board_orientation = black_player == user_input ? false : true
     while true
         n_move = (n_ply+1) ÷ 2
         println("\nMove $n_move, Ply $n_ply:")
         #print("\u1b[10F")
-        print_board(board)
+        print_board(board, white=board_orientation)
         println()
 
         n_moves = length(get_moves(board, white))

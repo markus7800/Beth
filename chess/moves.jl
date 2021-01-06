@@ -480,12 +480,17 @@ function get_reverse_moves(board::Board, white::Bool; promotions=false)
 end
 
 function short_to_long(board::Board, white::Bool, s::String)
+    ms = get_moves(board, white)
     # println("Input: $s")
     # todo
     if s == "O-O"
+        piece_moves = filter(m->m[1]==KING && m[3] == symbol("g1"), ms)
+        @assert length(piece_moves) > 0 "No moves!"
         return (KING, symbol("e1"), symbol("g1"))
     end
     if s == "O-O-O"
+        piece_moves = filter(m->m[1]==KING && m[3] == symbol("c1"), ms)
+        @assert length(piece_moves) > 0 "No moves!"
         return (KING, symbol("e1"), symbol("c1"))
     end
 
@@ -515,8 +520,6 @@ function short_to_long(board::Board, white::Bool, s::String)
     s = s[2:end]
 
     # println("Piece: $p")
-
-    ms = get_moves(board, white)
 
     f = s[end-1:end] # field
     piece_moves = filter(m->m[1]==piece && m[3] == symbol(f), ms)

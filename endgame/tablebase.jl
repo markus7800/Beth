@@ -7,35 +7,39 @@ function key_3_men(board::Board, white::Bool)
     player_piece = ""
     opponent_piece = ""
 
-    piece_count = 0
+    white_count = sum(board[:,:,WHITE])
+    black_count = sum(board[:,:,BLACK])
+    if white_count + black_count > 3
+        return "", false
+    end
+
     for rank in 1:8, file in 1:8
+        _rank = black_count == 2 ? 8 - rank + 1 : rank # flip rank to get blacks perspective
         if board[rank, file, player]
             if board[rank, file, KING]
-                player_king = 'K' * field(rank, file)
+                player_king = 'K' * field(_rank, file)
             elseif board[rank, file, PAWN]
-                player_piece = 'P' * field(rank, file)
+                player_piece = 'P' * field(_rank, file)
             elseif board[rank, file, ROOK]
-                player_piece = 'R' * field(rank, file)
+                player_piece = 'R' * field(_rank, file)
             elseif board[rank, file, QUEEN]
-                player_piece = 'Q' * field(rank, file)
+                player_piece = 'Q' * field(_rank, file)
             end
-            piece_count += 1
         elseif board[rank, file, opponent]
             if board[rank, file, KING]
-                opponent_king = 'K' * field(rank, file)
+                opponent_king = 'K' * field(_rank, file)
             elseif board[rank, file, PAWN]
-                opponent_piece = 'P' * field(rank, file)
+                opponent_piece = 'P' * field(_rank, file)
             elseif board[rank, file, ROOK]
-                opponent_piece = 'R' * field(rank, file)
+                opponent_piece = 'R' * field(_rank, file)
             elseif board[rank, file, QUEEN]
-                opponent_piece = 'Q' * field(rank, file)
+                opponent_piece = 'Q' * field(_rank, file)
             end
-            piece_count += 1
         end
     end
 
     key = player_king * player_piece * opponent_king * opponent_piece
-    return key, piece_count == 3
+    return key, true
 end
 
 function slimify(all_mates, all_desperate_positions)

@@ -566,6 +566,7 @@ get(beth.tb_3_men_mates, key_black, NaN)
 tb_3_men_lookup(beth.tb_3_men_mates, beth.tb_3_men_desperate_positions, board, true)
 tb_3_men_lookup(beth.tb_3_men_mates, beth.tb_3_men_desperate_positions, board, false)
 
+beth(board, false)
 
 v, best_move = BethMTDF(beth, board=board, white=false, guess=0., depth=4, do_quiesce=true)
 root = ABNode()
@@ -584,7 +585,10 @@ history = play_game(white_player=beth, black_player=beth)
 beth = Beth(value_heuristic=beth_eval, rank_heuristic=beth_rank_moves,
     search_algorithm=BethTimedIMTDF, search_args=Dict("do_quiesce"=>true, "min_depth"=>4, "max_depth"=>100, "time"=>5.))
 
-history = play_game(white_player=beth, black_player=beth)
+history = play_game(white_player=beth, black_player=user_input)
+
+import JLD2
+JLD2.@save "beth_vs_markus_and_papa.jld2" history
 
 
 # TODO:
@@ -617,3 +621,28 @@ v, best_move = BethMTDF(beth, board=board, white=true, guess=0., depth=4, do_qui
 beth = Beth(value_heuristic=beth_eval, rank_heuristic=beth_rank_moves,
     search_algorithm=BethMTDF, search_args=Dict("do_quiesce"=>true, "depth"=>6))
 play_game(deepcopy(board), white_player=beth, black_player=beth)
+
+board = Board(false, false)
+board.position[cartesian("e6")..., [BLACK, KING]] .= 1
+board.position[cartesian("e4")..., [WHITE, KING]] .= 1
+board.position[cartesian("e7")..., [BLACK, PAWN]] .= 1
+
+print_board(board, white=false)
+
+play_game(deepcopy(board), false, white_player=beth, black_player=user_input)
+
+beth_eval(beth.board, true)
+
+beth(board, false)
+
+v, best_move = BethMTDF(beth, board=board, white=false, guess=0., depth=4, do_quiesce=true)
+
+
+key_white, is_3_men = key_3_men(board, true)
+key_black, is_3_men = key_3_men(board, false)
+
+get(beth.tb_3_men_desperate_positions, key_white, NaN)
+get(beth.tb_3_men_mates, key_white, NaN)
+
+get(beth.tb_3_men_desperate_positions, key_black, NaN)
+get(beth.tb_3_men_mates, key_black, NaN)

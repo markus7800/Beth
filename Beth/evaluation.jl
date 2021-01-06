@@ -171,18 +171,18 @@ function beth_eval(board::Board, white::Bool; check_value=0., no_moves=false)
         # score doubled pawns as 1
         # penalize no pawn in front of king
         r, f = white_king_pos
-        if f ≤ 3
-            white_king_score += sum(min.(1, sum(board[r+1:r+2, 1:3, PAWN] .& board[r+1:r+2, 1:3, WHITE], dims=1)))
-        elseif f ≥ 7
-            white_king_score += sum(min.(1, sum(board[r+1:r+2, 6:8, PAWN] .& board[r+1:r+2, 6:8, WHITE], dims=1)))
+        if f ≤ 3 && r < 8
+            white_king_score += sum(min.(1, sum(board[r+1:min(8,r+2), 1:3, PAWN] .& board[r+1:r+2, 1:3, WHITE], dims=1)))
+        elseif f ≥ 7 && r < 8
+            white_king_score += sum(min.(1, sum(board[r+1:min(8,r+2), 6:8, PAWN] .& board[r+1:r+2, 6:8, WHITE], dims=1)))
         end
         white_king_score -= !all(board[r+1, f, [WHITE,PAWN]])
 
         r, f = black_king_pos
-        if f ≤ 3
-            black_king_score += sum(min.(1, sum(board[r-2:r-1, 1:3, PAWN] .& board[r-2:r-1, 1:3, BLACK], dims=1)))
-        elseif f ≥ 7
-            black_king_score += sum(min.(1, sum(board[r-2:r-1, 6:8, PAWN] .& board[r-2:r-1, 6:8, BLACK], dims=1)))
+        if f ≤ 3 && r > 1
+            black_king_score += sum(min.(1, sum(board[max(1,r-2):r-1, 1:3, PAWN] .& board[r-2:r-1, 1:3, BLACK], dims=1)))
+        elseif f ≥ 7 && r > 1
+            black_king_score += sum(min.(1, sum(board[max(1,r-2):r-1, 6:8, PAWN] .& board[r-2:r-1, 6:8, BLACK], dims=1)))
         end
         black_king_score -= !all(board[r-1, f, [BLACK,PAWN]])
     end
