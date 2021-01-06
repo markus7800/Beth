@@ -1,6 +1,7 @@
 using Test
 
 @testset "Pawn Moves" begin
+
     board = Board(false)
     board.position[cartesian("e5")...,[PAWN,WHITE]] .= 1
     # single forward move
@@ -10,7 +11,7 @@ using Test
 
     # en passant
     board.position[cartesian("f5")...,[PAWN,BLACK]] .= 1
-    board.can_en_passant[2, 6] = true
+    board.can_en_passant[1, 6] = true
     ms = get_moves(board, true)
     @test length(ms) == 2 && (PAWN, symbol("e5"), symbol("f6")) in ms
 
@@ -34,17 +35,17 @@ using Test
     @test (PAWN, symbol("e5"), symbol("f6")) in ms
 
     # en passant
+
     board = Board()
     move!(board, true, 'P', "e2", "e4")
     move!(board, false, 'P', "d7", "d5")
     move!(board, true, 'P', "e4", "e5")
+    move!(board, false, 'P', "f7", "f5")
     # check no en passant
     ms = get_moves(board, true)
     @test !((PAWN, symbol("e5"), symbol("d6")) in ms)
-
-    move!(board, false, 'P', "f7", "f5")
     # check yes en passant
-    @test !((PAWN, symbol("e5"), symbol("f6")) in ms)
+    @test ((PAWN, symbol("e5"), symbol("f6")) in ms)
 
     # check promotions
     board = Board(false)

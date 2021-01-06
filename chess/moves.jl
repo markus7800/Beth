@@ -148,15 +148,15 @@ function pawn_moves(board, white, rank, file)
 
     # en passant
     if white && rank == 5
-        if file+1≤8 && board.can_en_passant[2,file+1] && all(board[rank, file+1, [PAWN, BLACK]])
+        if file+1≤8 && board.can_en_passant[1,file+1] && all(board[rank, file+1, [PAWN, BLACK]])
             push!(moves, (PAWN, symbol(rank, file), symbol(rank+1, file+1)))
-        elseif file-1≥1 && board.can_en_passant[2,file-1] && all(board[rank, file-1, [PAWN, BLACK]])
+        elseif file-1≥1 && board.can_en_passant[1,file-1] && all(board[rank, file-1, [PAWN, BLACK]])
             push!(moves, (PAWN, symbol(rank, file), symbol(rank+1, file-1)))
         end
-    elseif !white && rank == 7
-        if file+1≤8 && board.can_en_passant[1,file+1] && all(board[rank, file+1, [PAWN, WHITE]])
+    elseif !white && rank == 4
+        if file+1≤8 && board.can_en_passant[2,file+1] && all(board[rank, file+1, [PAWN, WHITE]])
             push!(moves, (PAWN, symbol(rank, file), symbol(rank-1, file+1)))
-        elseif file-1≥1 && board.can_en_passant[1,file-1] && all(board[rank, file-1, [PAWN, WHITE]])
+        elseif file-1≥1 && board.can_en_passant[2,file-1] && all(board[rank, file-1, [PAWN, WHITE]])
             push!(moves, (PAWN, symbol(rank, file), symbol(rank-1, file-1)))
         end
     end

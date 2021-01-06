@@ -8,7 +8,7 @@ struct Board
 
     # first index player second LEFT/RIGHT
     # if king or rook moves will be set to false accordingly
-    # 1...black, 2...white (1+white)
+    # 1...black, 2...white (1+white) to signal that pawn of white can be en passant captured
     can_castle::BitArray{2}
     # rows are ranks
     # columns are files
@@ -96,6 +96,9 @@ function move!(board::Board, white::Bool, piece::Piece, r1::Int, f1::Int, r2::In
     @assert board[r1,f1,player] "No piece for player ($white) at $r1, $(f1)!"
     @assert !board[r2,f2,player] "Player ($white) tried to capture own piece! $(SYMBOLS[1,piece]) $(field(r1,f1)) $(field(r2,f2))"
 
+    # disable en passant
+    board.can_en_passant[white+1, :] .= false
+
     # handle captures
     if board[r2,f2,opponent]
         captured = (findfirst(board[r2,f2,1:6]), r2, f2)
@@ -129,14 +132,13 @@ function move!(board::Board, white::Bool, piece::Piece, r1::Int, f1::Int, r2::In
     board.position[r2,f2,piece] = true
 
     # handle en passant
-    # enabled / disable
-    board.can_en_passant[white+1, :] .= false
-    if piece == PAWN && abs((r1 - r2) == 2)
+    # enable
+    if (piece == PAWN) && abs(r1 - r2) == 2
         board.can_en_passant[white+1, f1] = true
     end
 
     # capture en passant
-    if piece == PAWN && abs((f1 - f2) == 1)
+    if (piece == PAWN) && (abs(f1 - f2) == 1)
         if captured == nothing
             # landed on empty field -> must be en passant
             @assert board.can_en_passant[!white+1, f2] "Pawn moved diagonally but no en passant allowed."
@@ -173,8 +175,18 @@ function move!(board::Board, white::Bool, piece::Piece, r1::Int, f1::Int, r2::In
         if (white && r1 == 1) || (!white && r1 == 8)
             if f1 == 1
                 board.can_castle[white+1,LONGCASTLE] = false
-            elseif f2 == 8
+            elseif f1 == 8
                 board.can_castle[white+1,SHORTCASTLE] = false
+            end
+        end
+    elseif captured != nothing
+        # no castling for opponent if player captures his rook
+        p, r, f = captured
+        if p == ROOK
+            if f2 == 1
+                board.can_castle[!white+1,LONGCASTLE] = false
+            elseif f2 == 8
+                board.can_castle[!white+1,SHORTCASTLE] = false
             end
         end
     end
@@ -185,8 +197,6 @@ end
 function undo!(board::Board, white::Bool, piece::Piece, r1::Int, f1::Int, r2::Int, f2::Int, captured, en_passant, castle)
     player = 7 + !white
     opponent = 7 + white
-
-
 
     # handle promotions
     if piece == PAWNTOQUEEN || piece == PAWNTOKNIGHT
@@ -525,4 +535,16 @@ function play_game(board = Board(), white = true; white_player=user_input, black
     #     println(e)
     # end
     return game_history
+end
+
+
+function testbool(r1::Int, r2::Int, piece::UInt8)
+    println(r2 - r1)
+    b1 = piece==PAWN
+    println(b1, typeof(b1))
+    b2 = (abs(r1 - r2) == 2)
+    println(b2, typeof(b2))
+    println(b1 && b2)
+    println((piece==PAWN) && (abs(r1 - r2) == 2))
+    println((piece == PAWN) && (abs((r1 - r2) == 2)))
 end
