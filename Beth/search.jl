@@ -254,7 +254,7 @@ function BethSearch(beth::Beth, node::ABNode, depth::Int, α::Float64, β::Float
             ms = get_moves(beth._board, white)
             if length(ms) == 0 # terminal unexplored node
                 beth.n_leafes += 1
-                value = beth.value_heuristic(beth._board, white) # TODO: stale mate, check mate etc. here
+                value = beth.value_heuristic(beth._board, white, no_moves=true)
                 node.value = value
                 node.ranked_moves = []
             else
@@ -605,3 +605,15 @@ ms = get_moves(pz.board, false)
 @profiler for i in 1:10^3
     get_pseudo_legal_moves(pz.board, false)
 end
+
+board = Board(false, false)
+board.position[cartesian("d5")..., [BLACK, KING]] .= 1
+board.position[cartesian("h8")..., [WHITE, KING]] .= 1
+board.position[cartesian("h3")..., [WHITE, KNIGHT]] .= 1
+board.position[cartesian("h2")..., [WHITE, QUEEN]] .= 1
+
+v, best_move = BethMTDF(beth, board=board, white=true, guess=0., depth=4, do_quiesce=true)
+
+beth = Beth(value_heuristic=beth_eval, rank_heuristic=beth_rank_moves,
+    search_algorithm=BethMTDF, search_args=Dict("do_quiesce"=>true, "depth"=>6))
+play_game(deepcopy(board), white_player=beth, black_player=beth)

@@ -1,6 +1,6 @@
 
 # does not check for stalemate
-function beth_eval(board::Board, unused::Bool, check_value=0.)
+function beth_eval(board::Board, white::Bool; check_value=0., no_moves=false)
     # move off board for evaluation without kings
     white_king_pos = (-10, -10)
     black_king_pos = (-10, -10)
@@ -14,7 +14,9 @@ function beth_eval(board::Board, unused::Bool, check_value=0.)
     white_most_adv_pawn = 0
     black_most_adv_pawn = 0
 
-    piece_count = 0
+    white_piece_count = -1
+    black_piece_count = -1
+
     for rank in 1:8, file in 1:8
         if board[rank,file,KING]
             if board[rank,file,WHITE]
@@ -26,10 +28,10 @@ function beth_eval(board::Board, unused::Bool, check_value=0.)
 
         if board[rank,file,WHITE]
             white_piece_score += board[rank,file,PAWN] * 1 + (board[rank,file,KNIGHT] + board[rank,file,BISHOP]) * 3 + board[rank,file,ROOK] * 5 + board[rank,file,QUEEN] * 9
-            piece_count += 1
+            white_piece_count += 1
         elseif board[rank,file,BLACK]
             black_piece_score += board[rank,file,PAWN] * 1 + (board[rank,file,KNIGHT] + board[rank,file,BISHOP]) * 3 + board[rank,file,ROOK] * 5 + board[rank,file,QUEEN] * 9
-            piece_count += 1
+            black_piece_count += 1
         end
 
         if board[rank,file,PAWN]
@@ -43,24 +45,54 @@ function beth_eval(board::Board, unused::Bool, check_value=0.)
         end
     end
 
+    piece_count = white_piece_count + black_piece_count
     piece_score = white_piece_score - black_piece_score
 
     white_in_check = is_attacked(board, WHITE, BLACK, white_king_pos)
     black_in_check = is_attacked(board, BLACK, WHITE, black_king_pos)
 
-    check_score = 0.
-    if white_in_check
-        if length(get_moves(board, true)) == 0
+    if no_moves
+        if white_in_check
             return -1000. # checkmate
-        else
-            check_score += -check_value
-        end
-    end
-    if black_in_check
-        if length(get_moves(board, false)) == 0
+        elseif black_in_check
             return 1000. # checkmate
         else
-            check_score += check_value
+            return 0. # stalemate
+        end
+    end
+
+    check_score = 0.
+    check_score += white_in_check ? -check_value : 0.
+    check_score += black_in_check ? check_value : 0.
+
+    # king endgame
+    if white
+        if black_piece_count - sum(black_pawn_struct) == 0
+            if white_piece_count ≤ 1 && !any(board[:,:,[ROOK, QUEEN]] .& board[:,:,WHITE])
+                return 0 # theoretical draw
+            end
+            # only black king and pawns
+            corner_distance = min(
+                maximum(abs.(black_king_pos .- (1,1))),
+                maximum(abs.(black_king_pos .- (1,8))),
+                maximum(abs.(black_king_pos .- (8,1))),
+                maximum(abs.(black_king_pos .- (8,8))))
+            king_distance = sum(abs.(black_king_pos .- white_king_pos))
+            return 8 - corner_distance + 8 - king_distance + piece_score
+        end
+    else
+        if white_piece_count - sum(white_pawn_struct) == 0
+            if black_piece_count ≤ 1 && !any(board[:,:,[ROOK, QUEEN]] .& board[:,:,BLACK])
+                return 0 # theoretical draw
+            end
+            # only white king and pawns
+            corner_distance = min(
+                sum(abs.(white_king_pos .- (1,1))),
+                sum(abs.(white_king_pos .- (1,8))),
+                sum(abs.(white_king_pos .- (8,1))),
+                sum(abs.(white_king_pos .- (8,8))))
+            king_distance = sum(abs.(black_king_pos .- white_king_pos))
+            return -(8 - corner_distance + 8 - king_distance) + piece_score
         end
     end
 
@@ -132,16 +164,23 @@ function beth_eval(board::Board, unused::Bool, check_value=0.)
     black_king_score = 0.
 
     if piece_count > 12
-        if all(board[1, 3, [KING,WHITE]]) || all(board[1, 1, [KING,WHITE]]) || all(board[1, 2, [KING,WHITE]])
-            white_king_score += sum(board[[2,3], [1,2,3], WHITE] .& board[[2,3], [1,2,3], PAWN])
-        elseif all(board[1, 7, [KING,WHITE]]) || all(board[1, 8, [KING,WHITE]])
-            white_king_score += sum(board[[2,3], [6,7,8], WHITE] .& board[[2,3], [6,7,8], PAWN])
+        # score doubled pawns as 1
+        # penalize no pawn in front of king
+        r, f = white_king_pos
+        if f ≤ 3
+            white_king_score += sum(min.(1, sum(board[r+1:r+2, 1:3, PAWN] .& board[r+1:r+2, 1:3, WHITE], dims=1)))
+        elseif f ≥ 6
+            white_king_score += sum(min.(1, sum(board[r+1:r+2, 6:8, PAWN] .& board[r+1:r+2, 6:8, WHITE], dims=1)))
         end
-        if all(board[8, 3, [KING,BLACK]]) || all(board[8, 1, [KING,BLACK]]) || all(board[8, 2, [KING,BLACK]])
-            black_king_score += sum(board[[6,7], [1,2,3], BLACK] .& board[[6,7], [1,2,3], PAWN])
-        elseif all(board[8, 7, [KING,BLACK]]) || all(board[8, 7, [KING,BLACK]])
-            black_king_score += sum(board[[6,7], [6,7,8], BLACK] .& board[[6,7], [6,7,8], PAWN])
+        white_king_score -= !all(board[r+1, f, [WHITE,PAWN]])
+
+        r, f = black_king_pos
+        if f ≤ 3
+            black_king_score += sum(min.(1, sum(board[r-2:r-1, 1:3, PAWN] .& board[r-2:r-1, 1:3, BLACK], dims=1)))
+        elseif f ≥ 6
+            black_king_score += sum(min.(1, sum(board[r-2:r-1, 6:8, PAWN] .& board[r-2:r-1, 6:8, BLACK], dims=1)))
         end
+        black_king_score -= !all(board[r-1, f, [BLACK,PAWN]])
     end
 
     king_score = white_king_score - black_king_score # ∈ [-3,3]
@@ -176,11 +215,11 @@ function beth_rank_moves(board::Board, white::Bool, ms::Vector{Move})
     opponent = 7 + white
 
     pawn_endgame = sum(board[:,:,opponent]) == 1 && sum(board[:,:,PAWN]) > 0
-    check_score = pawn_endgame ? 0. : 30.
+    check_value = pawn_endgame ? 0. : 30.
 
     for (p, rf1, rf2) in ms
         cap, enp, cas = move!(board, white, p, rf1, rf2)
-        v = beth_eval(board, !white, check_score)
+        v = beth_eval(board, !white, check_value=check_value)
         if pawn_endgame && p == PAWN
             v += white ? 3 : -1
         end
@@ -189,28 +228,6 @@ function beth_rank_moves(board::Board, white::Bool, ms::Vector{Move})
     end
 
     return ranked_moves
-end
-
-
-# only use for leaf nodes
-function beth_eval_til_quite(board::Board, white::Bool)
-    current_score = beth_eval(board, white)
-    while true
-        ms = get_moves(board, white)
-        length(ms) == 0 && break
-
-        rms = beth_rank_moves(board, white, ms)
-
-        score, m = white ? maximum(rms) : minimum(rms)
-        # @info "current: $current_score, move: $m, score: $score"
-        abs(current_score - score) < 1 && break
-
-
-        move!(board, white, m[1], m[2], m[3])
-        current_score = score
-        white = !white
-    end
-    return current_score
 end
 
 # using BenchmarkTools
@@ -249,3 +266,28 @@ end
 # beth_eval(board, true, 30)
 #
 # print_board(board)
+
+
+# board = Board(false, false)
+# board.position[cartesian("d1")..., [BLACK, KING]] .= 1
+# board.position[cartesian("d8")..., [WHITE, KING]] .= 1
+# # board.position[cartesian("h3")..., [WHITE, KNIGHT]] .= 1
+# board.position[cartesian("h2")..., [WHITE, QUEEN]] .= 1
+#
+#
+# beth_eval(board, true)
+#
+# print_board(board)
+
+board = Board(false, false)
+
+board.position[cartesian("b1")..., [BLACK, KING]] .= 1
+board.position[cartesian("b3")..., [WHITE, KING]] .= 1
+board.position[cartesian("c3")..., [WHITE, QUEEN]] .= 1
+
+get_moves(board, false)
+
+beth_eval(board, false, no_moves=true)
+board.position[cartesian("h1")..., [WHITE, QUEEN]] .= 1
+
+beth_eval(board, false, no_moves=true)
