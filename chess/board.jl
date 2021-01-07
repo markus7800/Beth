@@ -466,88 +466,78 @@ function play_game(board = Board(), white = true; white_player=user_input, black
     n_ply = 1
 
     board_orientation = black_player == user_input ? false : true
-    while true
-        n_move = (n_ply+1) ÷ 2
-        println("\nMove $n_move, Ply $n_ply:")
-        #print("\u1b[10F")
-        print_board(board, white=board_orientation)
-        println()
+    try
+        while true
+            n_move = (n_ply+1) ÷ 2
+            println("\nMove $n_move, Ply $n_ply:")
+            #print("\u1b[10F")
+            print_board(board, white=board_orientation)
+            println()
 
-        n_moves = length(get_moves(board, white))
-        check = is_in_check(board, white ? WHITE : BLACK)
-        done = n_moves == 0
-        !done && check && println("Check!")
-        done && check && println("Checkmate!")
-        done && !check && println("Stalemate!")
+            n_moves = length(get_moves(board, white))
+            check = is_in_check(board, white ? WHITE : BLACK)
+            done = n_moves == 0
+            !done && check && println("Check!")
+            done && check && println("Checkmate!")
+            done && !check && println("Stalemate!")
 
-        piece_count = sum(board[:,:,BLACK]) + sum(board[:,:,WHITE])
-        if piece_count ≤ 3
-            if !(any(board[:,:,QUEEN]) || any(board[:,:,ROOK]) || any(board[:,:,PAWN]))
-                done = true
-                println("Draw!")
+            piece_count = sum(board[:,:,BLACK]) + sum(board[:,:,WHITE])
+            if piece_count ≤ 3
+                if !(any(board[:,:,QUEEN]) || any(board[:,:,ROOK]) || any(board[:,:,PAWN]))
+                    done = true
+                    println("Draw!")
+                end
             end
-        end
-        if length(game_history) ≥ 3
-            for ply in game_history
-                board_rep = 0
-                for ply´ in game_history
-                    if ply.board == ply´.board
-                        board_rep += 1
+            if length(game_history) ≥ 3
+                for ply in game_history
+                    board_rep = 0
+                    for ply´ in game_history
+                        if ply.board == ply´.board
+                            board_rep += 1
+                        end
+                    end
+                    if board_rep ≥ 3
+                        done = true
+                        println("Draw by repetition!")
+                        break
                     end
                 end
-                if board_rep ≥ 3
-                    done = true
-                    println("Draw by repetition!")
-                    break
+            end
+
+            p = ""
+
+            v,move_time, = @timed if !done
+                if white
+                    p, rf1, rf2 = white_player(board, true)
+                else
+                    p, rf1, rf2 = black_player(board, false)
                 end
             end
-        end
 
-
-
-        v,move_time, = @timed if !done
-            if white
-                p, rf1, rf2 = white_player(board, true)
-            else
-                p, rf1, rf2 = black_player(board, false)
+            if !done && p == "undo"
+                pop!(game_history) # opponent move
+                pop!(game_history) # my move
+                last_ply = game_history[end]
+                n_ply -= 2
+                board = last_ply.board
+                white = last_ply.white
+                continue
             end
+            if !done && (p == "abort" || p == "resign")
+                break
+            end
+
+
+            done && break
+
+            move!(board, white, p, rf1, rf2)
+            white = !white
+            push!(game_history, Ply(n_ply, n_move, deepcopy(board), white, (p, rf1, rf2), move_time))
+
+            n_ply += 1
         end
-
-        done && break
-
-        if p == "undo"
-            pop!(game_history) # opponent move
-            pop!(game_history) # my move
-            last_ply = game_history[end]
-            n_ply -= 2
-            board = last_ply.board
-            white = last_ply.white
-            continue
-        end
-        if p == "abort" || p == "resign"
-            break
-        end
-
-        move!(board, white, p, rf1, rf2)
-        white = !white
-        push!(game_history, Ply(n_ply, n_move, deepcopy(board), white, (p, rf1, rf2), move_time))
-
-        n_ply += 1
+    catch e
+        println(e)
     end
-    # catch e
-    #     println(e)
-    # end
     return game_history
-end
-
-
-function testbool(r1::Int, r2::Int, piece::UInt8)
-    println(r2 - r1)
-    b1 = piece==PAWN
-    println(b1, typeof(b1))
-    b2 = (abs(r1 - r2) == 2)
-    println(b2, typeof(b2))
-    println(b1 && b2)
-    println((piece==PAWN) && (abs(r1 - r2) == 2))
-    println((piece == PAWN) && (abs((r1 - r2) == 2)))
 end

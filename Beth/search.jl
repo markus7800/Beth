@@ -583,9 +583,9 @@ history = play_game(white_player=beth, black_player=beth)
 
 
 beth = Beth(value_heuristic=beth_eval, rank_heuristic=beth_rank_moves,
-    search_algorithm=BethTimedIMTDF, search_args=Dict("do_quiesce"=>true, "min_depth"=>4, "max_depth"=>100, "time"=>5.))
+    search_algorithm=BethTimedIMTDF, search_args=Dict("do_quiesce"=>true, "min_depth"=>4, "max_depth"=>100, "time"=>10.))
 
-history = play_game(white_player=beth, black_player=user_input)
+history = play_game(white_player=beth, black_player=beth)
 
 import JLD2
 JLD2.@save "beth_vs_markus_and_papa.jld2" history
@@ -595,6 +595,8 @@ JLD2.@save "beth_vs_markus_and_papa.jld2" history
 # razoring
 # null move pruning
 # avoid draw by repetition
+# clean up
+# but board to UInt64 |
 
 
 @btime get_moves(pz.board, false) # 42μs

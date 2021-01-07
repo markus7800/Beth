@@ -1,0 +1,131 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <title>chessboardjs Example #2005 - Animation Speed</title>
+  <link rel="stylesheet"
+      href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css"
+      integrity="sha384-q94+BZtLrkL1/ohfjR8c6L+A6qzNH9R2hBLwyoAfu3i/WCvQjzL2RQJ3uNHDISdU"
+      crossorigin="anonymous">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+  <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"
+        integrity="sha384-8Vi8VHwn3vjQ9eUHUxex3JSN/NFqUg3QbPyX8kWyb93+8AC/pPWTzj+nHtbC5bxD"
+        crossorigin="anonymous"></script>
+</head>
+<body>
+
+<p>Iterative MTDF min depth 4, quiesce, 3_men tb, 10s until last depth has to be started, king safety</p>
+
+<div id="myBoard" style="width: 400px"></div>
+<button id="backBtn">Back</button>
+<button id="nextBtn">Next</button>
+
+<script>
+
+var game = [
+'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+'rnbqkbnr/pppppppp/8/8/3P4/8/PPP1PPPP/RNBQKBNR b KQkq - 0 1',
+'rnbqkbnr/pp1ppppp/8/2p5/3P4/8/PPP1PPPP/RNBQKBNR w KQkq - 0 1',
+'rnbqkbnr/pp1ppppp/8/2P5/8/8/PPP1PPPP/RNBQKBNR b KQkq - 0 1',
+'rnb1kbnr/pp1ppppp/8/q1P5/8/8/PPP1PPPP/RNBQKBNR w KQkq - 0 1',
+'rnb1kbnr/pp1ppppp/8/q1P5/8/2N5/PPP1PPPP/R1BQKBNR b KQkq - 0 1',
+'r1b1kbnr/pp1ppppp/n7/q1P5/8/2N5/PPP1PPPP/R1BQKBNR w KQkq - 0 1',
+'r1b1kbnr/pp1ppppp/n7/q1P5/3Q4/2N5/PPP1PPPP/R1B1KBNR b KQkq - 0 1',
+'r1b1kbnr/pp1ppppp/n7/2q5/3Q4/2N5/PPP1PPPP/R1B1KBNR w KQkq - 0 1',
+'r1b1kbnr/pp1ppppp/n7/2q5/3Q4/2N1B3/PPP1PPPP/R3KBNR b KQkq - 0 1',
+'r1b1kbnr/pp1ppppp/n7/8/3q4/2N1B3/PPP1PPPP/R3KBNR w KQkq - 0 1',
+'r1b1kbnr/pp1ppppp/n7/8/3B4/2N5/PPP1PPPP/R3KBNR b KQkq - 0 1',
+'r1b1kbnr/pp1p1ppp/n7/4p3/3B4/2N5/PPP1PPPP/R3KBNR w KQkq - 0 1',
+'r1b1kbnr/pp1p1ppp/n7/4B3/8/2N5/PPP1PPPP/R3KBNR b KQkq - 0 1',
+'r1b1kbnr/pp3ppp/n2p4/4B3/8/2N5/PPP1PPPP/R3KBNR w KQkq - 0 1',
+'r1b1kbnr/pp3ppp/n2p4/8/3B4/2N5/PPP1PPPP/R3KBNR b KQkq - 0 1',
+'r1b1kbnr/p4ppp/np1p4/8/3B4/2N5/PPP1PPPP/R3KBNR w KQkq - 0 1',
+'r1b1kbnr/p4ppp/np1p4/8/3BP3/2N5/PPP2PPP/R3KBNR b KQkq - 0 1',
+'r3kbnr/pb3ppp/np1p4/8/3BP3/2N5/PPP2PPP/R3KBNR w KQkq - 0 1',
+'r3kbnr/pb3ppp/np1p4/1B6/3BP3/2N5/PPP2PPP/R3K1NR b KQkq - 0 1',
+'r2k1bnr/pb3ppp/np1p4/1B6/3BP3/2N5/PPP2PPP/R3K1NR w KQ - 0 1',
+'r2k1bnr/pb3ppp/Bp1p4/8/3BP3/2N5/PPP2PPP/R3K1NR b KQ - 0 1',
+'r2k1bnr/p4ppp/bp1p4/8/3BP3/2N5/PPP2PPP/R3K1NR w KQ - 0 1',
+'r2k1bnr/p4ppp/bp1p4/8/3BP3/2N5/PPP2PPP/2KR2NR b - - 0 1',
+'r1k2bnr/p4ppp/bp1p4/8/3BP3/2N5/PPP2PPP/2KR2NR w - - 0 1',
+'r1k2bnr/p4ppp/bp1p4/8/3BP3/2N2N2/PPP2PPP/2KR3R b - - 0 1',
+'r1k2b1r/p4ppp/bp1p3n/8/3BP3/2N2N2/PPP2PPP/2KR3R w - - 0 1',
+'r1k2b1r/p4ppp/bp1p3n/8/3BP3/2N2N2/PPP2PPP/1K1R3R b - - 0 1',
+'r1k2b1r/p5pp/bp1p3n/5p2/3BP3/2N2N2/PPP2PPP/1K1R3R w - - 0 1',
+'r1k2b1r/p5pp/bp1p3n/5p2/3BP3/2N2N2/PPP2PPP/1K1RR3 b - - 0 1',
+'r1k2b1r/p5pp/1p1p3n/5p2/2bBP3/2N2N2/PPP2PPP/1K1RR3 w - - 0 1',
+'r1k2b1r/p5pp/1p1p3n/5p2/2bBP3/2N1RN2/PPP2PPP/1K1R4 b - - 0 1',
+'r1k2b1r/p5pp/1p1p3n/8/2bBp3/2N1RN2/PPP2PPP/1K1R4 w - - 0 1',
+'r1k2b1r/p5pp/1p1p3n/8/2bBR3/2N2N2/PPP2PPP/1K1R4 b - - 0 1',
+'r1k2b1r/p4bpp/1p1p3n/8/3BR3/2N2N2/PPP2PPP/1K1R4 w - - 0 1',
+'r1k2b1r/p4bpp/1p1p3n/8/4R3/2N1BN2/PPP2PPP/1K1R4 b - - 0 1',
+'r1k2b1r/p4bpp/1p1p4/5n2/4R3/2N1BN2/PPP2PPP/1K1R4 w - - 0 1',
+'r1k2b1r/p4bpp/1p1p4/3N1n2/4R3/4BN2/PPP2PPP/1K1R4 b - - 0 1',
+'r1k2b1r/p4bpp/1p1p4/3N4/4R3/4nN2/PPP2PPP/1K1R4 w - - 0 1',
+'r1k2b1r/p4bpp/1p1p4/3N4/4R3/4PN2/PPP3PP/1K1R4 b - - 0 1',
+'r4b1r/pk3bpp/1p1p4/3N4/4R3/4PN2/PPP3PP/1K1R4 w - - 0 1',
+'r4b1r/pk3bpp/1p1p4/3N4/3RR3/4PN2/PPP3PP/1K6 b - - 0 1',
+'r4b1r/1k3bpp/1p1p4/p2N4/3RR3/4PN2/PPP3PP/1K6 w - - 0 1',
+'r4b1r/1k3bpp/1p1p4/p2N4/3RR2P/4PN2/PPP3P1/1K6 b - - 0 1',
+'2r2b1r/1k3bpp/1p1p4/p2N4/3RR2P/4PN2/PPP3P1/1K6 w - - 0 1',
+'2r2b1r/1k3bpp/1p1p4/p7/3RRN1P/4PN2/PPP3P1/1K6 b - - 0 1',
+'5b1r/1k3bpp/1p1p4/p1r5/3RRN1P/4PN2/PPP3P1/1K6 w - - 0 1',
+'5b1r/1k3bpp/1p1p4/p1r3N1/3RRN1P/4P3/PPP3P1/1K6 b - - 0 1',
+'5b1r/1k4pp/1p1p4/p1r3N1/3RRN1P/4P3/bPP3P1/1K6 w - - 0 1',
+'5b1r/1k4pp/1p1p4/p1r3N1/3RRN1P/4P3/KPP3P1/8 b - - 0 1',
+'5b1r/1k4pp/1p1p4/p5N1/3RRN1P/4P3/KPr3P1/8 w - - 0 1',
+'5b1r/1k3Npp/1p1p4/p7/3RRN1P/4P3/KPr3P1/8 b - - 0 1',
+'5br1/1k3Npp/1p1p4/p7/3RRN1P/4P3/KPr3P1/8 w - - 0 1',
+'5br1/1k3Npp/1p1p4/p7/3RRN1P/4P3/1Pr3P1/1K6 b - - 0 1',
+'5br1/1k3Npp/1p1p4/p7/3RRN1P/4P3/1P3rP1/1K6 w - - 0 1',
+'5br1/1k3Npp/1p1p4/p7/4RN1P/4P3/1P3rP1/1K1R4 b - - 0 1',
+'5br1/1k3N1p/1p1p2p1/p7/4RN1P/4P3/1P3rP1/1K1R4 w - - 0 1',
+'5br1/1k3N1p/1p1pR1p1/p7/5N1P/4P3/1P3rP1/1K1R4 b - - 0 1',
+'5b2/1k3Nrp/1p1pR1p1/p7/5N1P/4P3/1P3rP1/1K1R4 w - - 0 1',
+'5b2/1k4rp/1p1NR1p1/p7/5N1P/4P3/1P3rP1/1K1R4 b - - 0 1',
+'8/1k4rp/1p1bR1p1/p7/5N1P/4P3/1P3rP1/1K1R4 w - - 0 1',
+'8/1k4rp/1p1RR1p1/p7/5N1P/4P3/1P3rP1/1K6 b - - 0 1',
+'8/1k4rp/1p1RR1p1/p7/5N1P/4P3/1P4P1/1K3r2 w - - 0 1',
+'8/1k4rp/1p1RR1p1/p7/5N1P/4P3/KP4P1/5r2 b - - 0 1',
+'8/1k4rp/1p1RR1p1/p7/5N1P/4P3/KP4P1/7r w - - 0 1',
+'8/1k4rp/1R2R1p1/p7/5N1P/4P3/KP4P1/7r b - - 0 1',
+'k7/6rp/1R2R1p1/p7/5N1P/4P3/KP4P1/7r w - - 0 1',
+'k7/6rp/1R4p1/p3R3/5N1P/4P3/KP4P1/7r b - - 0 1',
+'8/k5rp/1R4p1/p3R3/5N1P/4P3/KP4P1/7r w - - 0 1',
+'8/k5rp/5Rp1/p3R3/5N1P/4P3/KP4P1/7r b - - 0 1',
+'8/k5rp/5Rp1/p3R3/5N1r/4P3/KP4P1/8 w - - 0 1',
+'8/k5rp/5Rp1/R7/5N1r/4P3/KP4P1/8 b - - 0 1',
+'8/1k4rp/5Rp1/R7/5N1r/4P3/KP4P1/8 w - - 0 1',
+'8/1k4rp/5Rp1/1R6/5N1r/4P3/KP4P1/8 b - - 0 1',
+'8/k5rp/5Rp1/1R6/5N1r/4P3/KP4P1/8 w - - 0 1',
+'8/k5rp/5Rp1/R7/5N1r/4P3/KP4P1/8 b - - 0 1',
+'8/1k4rp/5Rp1/R7/5N1r/4P3/KP4P1/8 w - - 0 1',
+'8/1k4rp/5Rp1/1R6/5N1r/4P3/KP4P1/8 b - - 0 1',
+'8/k5rp/5Rp1/1R6/5N1r/4P3/KP4P1/8 w - - 0 1',
+'8/k5rp/5Rp1/R7/5N1r/4P3/KP4P1/8 b - - 0 1'
+];
+var board = Chessboard('myBoard', {
+  draggable: true,
+  moveSpeed: 'medium',
+  snapbackSpeed: 500,
+  snapSpeed: 100,
+  position: game[0],
+  pieceTheme: 'img/chesspieces/wikipedia/{piece}.png',
+})
+
+var i = 0
+
+$('#backBtn').on('click', function () {
+  i = Math.max(0, i-1)
+  board.position(game[i])
+})
+$('#nextBtn').on('click', function () {
+  i = Math.min(game.length, i+1)
+  board.position(game[i])
+})
+</script>
+</body>
+</html>
