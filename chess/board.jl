@@ -519,7 +519,7 @@ function play_game(board = Board(), white = true; white_player=user_input, black
                 pop!(game_history) # my move
                 last_ply = game_history[end]
                 n_ply -= 2
-                board = last_ply.board
+                board = deepcopy(last_ply.board)
                 white = last_ply.white
                 continue
             end
