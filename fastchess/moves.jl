@@ -707,7 +707,7 @@ function get_pinned(board::Board, player::Fields, opponent::Fields, occupied::Fi
 
     for a in attackers
         blockers = fields_between(a, king_field_number) & occupied
-        print_fields(blockers)
+        # print_fields(blockers)
         if is_singleton(blockers)
             pinned |= blockers & player
         end
@@ -721,18 +721,19 @@ function get_moves(board::Board, white::Bool)::MoveList
     player = white ? board.whites : board.blacks
     opponent = white ? board.blacks : board.whites
     occupied = player | opponent
+    pinned = get_pinned(board, player, opponent, occupied)
 
-    get_pawn_moves!(board.pawns, white, player, opponent, occupied, board.en_passant)
-    get_knight_moves!(board.knights, player, movelist)
-    get_bishop_moves!(board.bishops, player, occupied, movelist)
-    get_rook_moves!(board.rooks, player, occupied, movelist)
-    get_queen_moves!(board.queens, player, occupied, movelist)
+    get_pawn_moves!(board, white, player, opponent, occupied, pinned, movelist)
+    get_knight_moves!(board, player, pinned, movelist)
+    get_bishop_moves!(board, player, occupied, pinned, movelist)
+    get_rook_moves!(board, player, occupied, pinned, movelist)
+    get_queen_moves!(board, player, occupied, pinned, movelist)
 
     return movelist
 end
 
-function get_pawn_moves!(pawns::Fields, white::Bool, player::Fields, opponent::Fields, occupied::Fields, en_passant::UInt8, movelist::MoveList)
-    for field_number in pawns & player
+function get_pawn_moves!(board::Board, white::Bool, player::Fields, opponent::Fields, occupied::Fields, pinned::Fields, movelist::MoveList)
+    for field_number in board.pawns & player
         if white
             moves = white_pawn_push_empty(field_number) & ~occupied
             if moves & RANK_3 > 0
@@ -741,7 +742,7 @@ function get_pawn_moves!(pawns::Fields, white::Bool, player::Fields, opponent::F
             caps = white_pawn_cap_empty(field_number)
             moves |= caps & opponent
 
-            if en_passant > 0 && 33 ≤ field_number && field_number ≤ 40
+            if board.en_passant > 0 && 33 ≤ field_number && field_number ≤ 40 # check rank
                 file = get_file(en_passant)
                 moves |= caps & file
             end
@@ -754,7 +755,7 @@ function get_pawn_moves!(pawns::Fields, white::Bool, player::Fields, opponent::F
             caps = black_pawn_cap_empty(field_number)
             moves |= caps & opponent
 
-            if en_passant > 0 && 17 ≤ field_number && field_number ≤ 24
+            if board.en_passant > 0 && 17 ≤ field_number && field_number ≤ 24 # check rank
                 file = get_file(en_passant)
                 moves |= caps & file
             end
@@ -765,23 +766,45 @@ function get_pawn_moves!(pawns::Fields, white::Bool, player::Fields, opponent::F
 
         # println(tostring(field_number))
         # print_fields(moves)
-        # println("promote: ", promote)
+        # println("promote: ", promote)king_field_number = tonumber(board.kings & player)
 
-        for n in moves
-            if !promote
-                push!(movelist, Move(PAWN, field_number, n))
-            else
-                push!(movelist, Move(PAWN, field_number, n, KNIGHT))
-                push!(movelist, Move(PAWN, field_number, n, BISHOP))
-                push!(movelist, Move(PAWN, field_number, n, ROOK))
-                push!(movelist, Move(PAWN, field_number, n, QUEEN))
+        if pinned & tofield(field_number) > 0
+            king_field_number = tonumber(board.kings & player)
+            field = tofield(field_number)
+            for n in moves
+                n_field = tofield(n)
+
+                # dont leave pin
+                if fields_between(field_number, king_field_number) & n_field > 0 || # retreat
+                    fields_between(king_field_number, n) & field > 0 # advance
+
+                    if !promote
+                        push!(movelist, Move(PAWN, field_number, n))
+                    else
+                        push!(movelist, Move(PAWN, field_number, n, KNIGHT))
+                        push!(movelist, Move(PAWN, field_number, n, BISHOP))
+                        push!(movelist, Move(PAWN, field_number, n, ROOK))
+                        push!(movelist, Move(PAWN, field_number, n, QUEEN))
+                    end
+                end
+            end
+        else
+            for n in moves
+                if !promote
+                    push!(movelist, Move(PAWN, field_number, n))
+                else
+                    push!(movelist, Move(PAWN, field_number, n, KNIGHT))
+                    push!(movelist, Move(PAWN, field_number, n, BISHOP))
+                    push!(movelist, Move(PAWN, field_number, n, ROOK))
+                    push!(movelist, Move(PAWN, field_number, n, QUEEN))
+                end
             end
         end
     end
 end
 
-function get_knight_moves!(knights::Fields, player::Fields, movelist::MoveList)
-    for field_number in knights & player
+function get_knight_moves!(board::Board, player::Fields, pinned::Fields, movelist::MoveList)
+    for field_number in board.knights & player & ~pinned
         moves = knight_move_empty(field_number)
         moves &= ~player
         for n in moves
@@ -791,8 +814,8 @@ function get_knight_moves!(knights::Fields, player::Fields, movelist::MoveList)
     end
 end
 
-function get_bishop_moves!(bishops::Fields, player::Fields, occupied::Fields, movelist::MoveList)
-    for field_number in bishops & player
+function get_bishop_moves!(board::Board, player::Fields, occupied::Fields, pinned::Fields, movelist::MoveList)
+    for field_number in board.bishops & player
         moves = bishop_move_empty(field_number)
         occupied_moves = moves & occupied
         for n in occupied_moves
@@ -801,14 +824,28 @@ function get_bishop_moves!(bishops::Fields, player::Fields, occupied::Fields, mo
         moves &= ~player
         # print_fields(moves)
 
-        for n in moves
-            push!(movelist, Move(BISHOP, field_number, n))
+        if pinned & tofield(field_number) > 0
+            king_field_number = tonumber(board.kings & player)
+            field = tofield(field_number)
+            for n in moves
+                n_field = tofield(n)
+                # dont leave pin
+                if fields_between(field_number, king_field_number) & n_field > 0 || # retreat
+                    fields_between(king_field_number, n) & field > 0 # advance
+
+                    push!(movelist, Move(BISHOP, field_number, n))
+                end
+            end
+        else
+            for n in moves
+                push!(movelist, Move(BISHOP, field_number, n))
+            end
         end
     end
 end
 
-function get_rook_moves!(rooks::Fields, player::Fields, occupied::Fields, movelist::MoveList)
-    for field_number in rooks & player
+function get_rook_moves!(board::Board, player::Fields, occupied::Fields, pinned::Fields, movelist::MoveList)
+    for field_number in board.rooks & player
         moves = rook_move_empty(field_number)
         occupied_moves = moves & occupied
         for n in occupied_moves
@@ -817,14 +854,28 @@ function get_rook_moves!(rooks::Fields, player::Fields, occupied::Fields, moveli
         moves &= ~player
         # print_fields(moves)
 
-        for n in moves
-            push!(movelist, Move(ROOK, field_number, n))
+        if pinned & tofield(field_number) > 0
+            king_field_number = tonumber(board.kings & player)
+            field = tofield(field_number)
+            for n in moves
+                n_field = tofield(n)
+                # dont leave pin
+                if fields_between(field_number, king_field_number) & n_field > 0 || # retreat
+                    fields_between(king_field_number, n) & field > 0 # advance
+
+                    push!(movelist, Move(ROOK, field_number, n))
+                end
+            end
+        else
+            for n in moves
+                push!(movelist, Move(ROOK, field_number, n))
+            end
         end
     end
 end
 
-function get_queen_moves!(queens::Fields, player::Fields, occupied::Fields, movelist::MoveList)
-    for field_number in queens & player
+function get_queen_moves!(board::Board, player::Fields, occupied::Fields, pinned::Fields, movelist::MoveList)
+    for field_number in board.queens & player
         moves = queen_move_empty(field_number)
         occupied_moves = moves & occupied
         for n in occupied_moves
@@ -833,8 +884,25 @@ function get_queen_moves!(queens::Fields, player::Fields, occupied::Fields, move
         moves &= ~player
         # print_fields(moves)
 
-        for n in moves
-            push!(movelist, Move(QUEEN, field_number, n))
+        if pinned & tofield(field_number) > 0
+            king_field_number = tonumber(board.kings & player)
+            for n in moves
+                king_field_number = tonumber(board.kings & player)
+                field = tofield(field_number)
+                for n in moves
+                    n_field = tofield(n)
+                    # dont leave pin
+                    if fields_between(field_number, king_field_number) & n_field > 0 || # retreat
+                        fields_between(king_field_number, n) & field > 0 # advance
+
+                        push!(movelist, Move(QUEEN, field_number, n))
+                    end
+                end
+            end
+        else
+            for n in moves
+                push!(movelist, Move(QUEEN, field_number, n))
+            end
         end
     end
 end
@@ -869,3 +937,10 @@ set_piece!(board, Field("e5"), false, ROOK)
 set_piece!(board, Field("h4"), false, BISHOP)
 
 print_fields(get_pinned(board, board.whites, board.blacks, board.whites | board.blacks))
+
+using BenchmarkTools
+get_moves(board, true)
+
+for m in get_moves(board, true)
+    println(m)
+end

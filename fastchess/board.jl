@@ -112,9 +112,13 @@ function tostring(field::Field)
     return Char(96+file) * string(rank)
 end
 
-function tonumber(field::Field)
+function tonumber(field::Field)::Int
     trailing_zeros(field) + 1
 end # ∈ [1,64]
+
+function tofield(number::Int)::Field
+    UInt64(1) << (number - 1)
+end
 
 function rankfile(number::Int)
     (number-1) ÷ 8 + 1, (number-1) % 8 + 1
