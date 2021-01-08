@@ -153,7 +153,7 @@ end
 const PAWNDIAG = [[(-1, 1), (-1, -1)], [(1, 1), (1, -1)]] # black at 1, white at 2
 const DIAG = [(-1,-1), (1,-1), (-1, 1), (1, 1)]
 const CROSS = [(0,1), (0,-1), (1,0), (-1,0)]
-const KNIGHTMOVES = [
+const KNIGHTDIRS = [
         (1,2), (1,-2), (-1,2), (-1,-2),
         (2,1), (2,-1), (-2,1), (-2,-1)
         ]
@@ -177,7 +177,7 @@ function get_moves(board::Board, white::Bool)::Vector{Move}
             append!(moves, direction_moves(board, white, BISHOP, rank, file, DIAG, 8))
 
         elseif piece == KNIGHT
-            append!(moves, direction_moves(board, white, KNIGHT, rank, file, KNIGHTMOVES, 1))
+            append!(moves, direction_moves(board, white, KNIGHT, rank, file, KNIGHTDIRS, 1))
 
         elseif piece == ROOK
             append!(moves, direction_moves(board, white, ROOK, rank, file, CROSS, 8))
@@ -335,7 +335,7 @@ end
 function is_attacked(board::Board, white::Bool, rank::Int, file::Int; verbose=false)
 
     # check knight moves
-    for dir in KNIGHTMOVES
+    for dir in KNIGHTDIRS
         r2, f2 = (rank, file) .+ dir # TODO
         (r2 < 1 || r2 > 8 || f2 < 1 || f2 > 8) && continue
 
@@ -475,3 +475,208 @@ move =Move(QUEEN, Field("d1"), Field("g4"))
 undo = make_move!(board, true, move)
 
 undo_move!(board, true, move, undo)
+
+
+function gen_direction_fields(rank::Int, file::Int, directions::Vector{Tuple{Int,Int}}, max_multiple::Int)::Fields
+    fields = Fields(0)
+    for dir in directions
+        for i in 1:max_multiple
+
+            r2, f2 = (rank, file) .+ i .* dir
+
+            if r2 < 1 || r2 > 8 || f2 < 1 || f2 > 8
+                # direction out of bounds
+                break # direction finished
+            end
+
+            to = Field(r2, f2)
+            fields |= to
+        end
+    end
+
+    fields
+end
+
+function gen_direction_fields(n::Int, directions::Vector{Tuple{Int,Int}}, max_multiple::Int)::Fields
+    return gen_direction_fields(tocartesian(n)..., directions, max_multiple)
+end
+
+const KNIGHT_MOVES_EMPTY = @SVector [gen_direction_fields(n, KNIGHTDIRS, 1) for n in 1:64]
+const BISHOP_MOVES_EMPTY = @SVector [gen_direction_fields(n, DIAG, 8) for n in 1:64]
+const ROOK_MOVES_EMPTY = @SVector [gen_direction_fields(n, CROSS, 8) for n in 1:64]
+const QUEEN_MOVES_EMPTY = @SVector [gen_direction_fields(n, vcat(DIAG,CROSS), 8) for n in 1:64]
+const KING_MOVES_EMPTY = @SVector [gen_direction_fields(n, vcat(DIAG,CROSS), 1) for n in 1:64]
+
+function rook_move_empty(number::UInt)::Fields
+    ROOK_MOVES_EMPTY[number]
+end
+
+
+# diags and crosses only
+# gets fields between and inclusive (r1,f1) (r2,f2)
+function gen_fields_between(r1::Int, f1::Int, r2::Int, f2::Int)::Fields
+    fields = Fields(0)
+
+    if r1 > r2
+        t = r2; r2 = r1; r1 = t;
+        t = f2; f2 = f1; f1 = t;
+    end
+
+
+    if f1 == f2
+        for r in r1:r2
+            fields |= Field(r, f1)
+        end
+    elseif r1 == r2
+        if f1 < f2
+            for f in f1:f2
+                fields |= Field(r1, f)
+            end
+        else
+            for f in f2:f1
+                fields |= Field(r1, f)
+            end
+        end
+    elseif abs(f2 - f1) == abs(r2 - r1)
+        if f1 < f2
+            for i in 0:(f2-f1)
+                fields |= Field(r1+i, f1+i)
+            end
+        else
+            for i in 0:(f1-f2)
+                fields |= Field(r1+i, f1-i)
+            end
+        end
+    end
+
+
+    fields
+end
+
+function gen_fields_between(n1::Int, n2::Int)::Fields
+    return gen_fields_between(tocartesian(n1)..., tocartesian(n2)...)
+end
+
+print_fields(gen_fields_between(tonumber(Field("a1")), tonumber(Field("g7"))))
+print_fields(gen_fields_between(tonumber(Field("e6")), tonumber(Field("c4"))))
+
+print_fields(gen_fields_between(tonumber(Field("b7")), tonumber(Field("g7"))))
+print_fields(gen_fields_between(tonumber(Field("b7")), tonumber(Field("b1"))))
+
+
+print_fields(gen_fields_between(tonumber(Field("b7")), tonumber(Field("f3"))))
+print_fields(gen_fields_between(tonumber(Field("f3")), tonumber(Field("b7"))))
+
+
+const FIELDS_BETWEEN = [gen_fields_between(n1, n2) for n1 in 1:64, n2 in 1:64]
+
+function fields_between(n1::UInt, n2::UInt)::Fields
+    FIELDS_BETWEEN[n1, n2]
+end
+
+
+# generates shadow of (r2,f2) from (r1,f1), (r2, f2) not in shadow
+function gen_shadow(r1::Int, f1::Int, r2::Int, f2::Int)::Fields
+    fields = Fields(0)
+
+    if f1 == f2 && r1 == r2
+        return fields
+    end
+
+    if f1 == f2
+        if r1 < r2
+            fields |= gen_fields_between(r2, f2, 8, f2)
+        else
+            fields |= gen_fields_between(r2, f2, 1, f2)
+        end
+    elseif r1 == r2
+        if f1 < f2
+            fields |= gen_fields_between(r2, f2, r2, 8)
+        else
+            fields |= gen_fields_between(r2, f2, r2, 1)
+        end
+    elseif abs(f2 - f1) == abs(r2 - r1)
+        Δ = abs(f2 - f1)
+        # diagonally
+        if f1 < f2
+            if r1 < r2
+                # field 2 is to the topright of field 1
+                Δ = min(8 - r2, 8 - f2) # minimal distance to right or top border
+                fields |= gen_fields_between(r2, f2, r2 + Δ, f2 + Δ)
+
+            else
+                # field 2 is to the bottomright of field 1
+                Δ = min(r2 - 1, 8 - f2) # minimal distance to right or bottom border
+                fields |= gen_fields_between(r2, f2, r2 - Δ, f2 + Δ)
+            end
+        else
+            if r1 < r2
+                # field 2 is to the topleft of field 1
+                Δ = min(8 - r2, f2 - 1) # minimal distance to top or left border
+                fields |= gen_fields_between(r2, f2, r2 + Δ, f2 - Δ)
+            else
+                # field 2 is to the bottomleft of field 1
+                Δ = min(r2 - 1, f2 - 1) # minimal distance to bottom or keft border
+                fields |= gen_fields_between(r2, f2, r2 - Δ, f2 - Δ)
+            end
+        end
+    end
+
+    fields &= ~Field(r2,f2)
+    return fields
+end
+
+function gen_shadow(n1::Int, n2::Int)::Fields
+    return gen_shadow(tocartesian(n1)..., tocartesian(n2)...)
+end
+
+print_fields(gen_shadow(tonumber(Field("c2")),tonumber(Field("d3"))))
+print_fields(gen_shadow(tonumber(Field("d3")),tonumber(Field("c2"))))
+
+print_fields(gen_shadow(tonumber(Field("b5")),tonumber(Field("d3"))))
+print_fields(gen_shadow(tonumber(Field("d3")),tonumber(Field("b5"))))
+
+print_fields(gen_shadow(tonumber(Field("d3")),tonumber(Field("f5"))))
+print_fields(gen_shadow(tonumber(Field("f5")),tonumber(Field("d3"))))
+
+print_fields(gen_shadow(tonumber(Field("d3")),tonumber(Field("d5"))))
+print_fields(gen_shadow(tonumber(Field("d5")),tonumber(Field("d3"))))
+
+
+print_fields(gen_shadow(tonumber(Field("d3")),tonumber(Field("d7"))))
+print_fields(gen_shadow(tonumber(Field("d7")),tonumber(Field("d3"))))
+
+print_fields(gen_shadow(tonumber(Field("d7")),tonumber(Field("e3"))))
+
+const SHADOW = [gen_shadow(n1, n2) for n1 in 1:64, n2 in 1:64]
+
+function shadow(n1::UInt, n2::UInt)::Fields
+    SHADOW[n1, n2]
+end
+
+function get_moves(board::Board, white::Bool)::Vector{Move}
+    moves = Move[]
+    player = white ? board.whites : board.blacks
+    opponent = white ? board.blacks : board.whites
+
+    target = ~player
+
+    for rook_field_number in board.rooks & player
+        rook_moves = rook_move_empty(rook_field_number)
+        occupied = rook_moves & (player | opponent)
+        for n in occupied
+            rook_moves &= ~shadow(rook_field_number, n)
+        end
+        rook_moves &= ~player
+
+        print_fields(rook_moves)
+    end
+
+    return moves
+end
+
+board = Board("7R/5p2/4b1kp/4B1p1/2pP2P1/2P4P/1rr5/4R1K1 w - - 0 1")
+
+get_moves(board, true)
+
+tonumber(Field("e1"))

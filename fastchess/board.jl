@@ -1,7 +1,8 @@
+
 const Fields = UInt64
 
 function first(fs::Fields)::Field
-    trailing_zeros(fs)
+    trailing_zeros(fs) + 1
 end
 
 function removefirst(fs::Fields)::Field
@@ -66,20 +67,20 @@ function Field(sn::String)::Field
     return Field(r, f)
 end
 
-const tab64 = Int[0, 58, 1, 59, 47, 53, 2, 60, 39, 48, 27, 54, 33, 42, 3, 61,
-    51, 37, 40, 49, 18, 28, 20, 55, 30, 34, 11, 43, 14, 22, 4, 62,
-    57, 46, 52, 38, 26, 32, 41, 50, 36, 17, 19, 29, 10, 13, 21, 56,
-    45, 25, 31, 35, 16, 9, 12, 44, 24, 15, 8, 23, 7, 6, 5, 63 ]
-
-function log2_64(value::UInt64)
-    value |= value >> 1
-    value |= value >> 2
-    value |= value >> 4
-    value |= value >> 8
-    value |= value >> 16
-    value |= value >> 32
-    return tab64[((value * 0x03f6eaf2cd271461) >> 58)+1]
-end
+# const tab64 = Int[0, 58, 1, 59, 47, 53, 2, 60, 39, 48, 27, 54, 33, 42, 3, 61,
+#     51, 37, 40, 49, 18, 28, 20, 55, 30, 34, 11, 43, 14, 22, 4, 62,
+#     57, 46, 52, 38, 26, 32, 41, 50, 36, 17, 19, 29, 10, 13, 21, 56,
+#     45, 25, 31, 35, 16, 9, 12, 44, 24, 15, 8, 23, 7, 6, 5, 63 ]
+#
+# function log2_64(value::UInt64)
+#     value |= value >> 1
+#     value |= value >> 2
+#     value |= value >> 4
+#     value |= value >> 8
+#     value |= value >> 16
+#     value |= value >> 32
+#     return tab64[((value * 0x03f6eaf2cd271461) >> 58)+1]
+# end
 
 function file(field::Field)::Int
     trailing_zeros(field) % 8 + 1
@@ -100,7 +101,11 @@ function tostring(field::Field)
 end
 
 function tonumber(field::Field)
-    trailing_zeros(field)
+    trailing_zeros(field) + 1
+end # ∈ [1,64]
+
+function tocartesian(number::Int)
+    (number-1) ÷ 8 + 1, (number-1) % 8 + 1
 end
 
 # rankfile(Field("a8"))
