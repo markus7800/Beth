@@ -134,6 +134,13 @@ const FILE_F = Field("f1") | Field("f2") | Field("f3") | Field("f4") | Field("f5
 const FILE_G = Field("g1") | Field("g2") | Field("g3") | Field("g4") | Field("g5") | Field("g6") | Field("g7") | Field("g8")
 const FILE_H = Field("h1") | Field("h2") | Field("h3") | Field("h4") | Field("h5") | Field("h6") | Field("h7") | Field("h8")
 
+const FILES = [FILE_A, FILE_B, FILE_C, FILE_D, FILE_E, FILE_F, FILE_G, FILE_H]
+
+# TODO: inbounds
+function get_file(i)
+    FILES[i]
+end
+
 const RANK_1 = Field("a1") | Field("b1") | Field("c1") | Field("d1") | Field("e1") | Field("f1") | Field("g1") | Field("h1")
 const RANK_2 = Field("a2") | Field("b2") | Field("c2") | Field("d2") | Field("e2") | Field("f2") | Field("g2") | Field("h2")
 const RANK_3 = Field("a3") | Field("b3") | Field("c3") | Field("d3") | Field("e3") | Field("f3") | Field("g3") | Field("h3")

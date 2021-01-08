@@ -154,6 +154,7 @@ function undo_move!(board::Board, white::Bool, move::Move, undo::Undo)
 
 end
 
+const PAWNPUSH = [[(-1, 0)], [(1, 0)]] # black at 1, white at 2
 const PAWNDIAG = [[(-1, 1), (-1, -1)], [(1, 1), (1, -1)]] # black at 1, white at 2
 const DIAG = [(-1,-1), (1,-1), (-1, 1), (1, 1)]
 const CROSS = [(0,1), (0,-1), (1,0), (-1,0)]
@@ -505,6 +506,12 @@ function gen_direction_fields(n::Int, directions::Vector{Tuple{Int,Int}}, max_mu
     return gen_direction_fields(rankfile(n)..., directions, max_multiple)
 end
 
+const WHITE_PAWN_PUSH_EMPTY = @SVector [gen_direction_fields(n, PAWNPUSH[2], 1) for n in 1:64]
+const BLACK_PAWN_PUSH_EMPTY = @SVector [gen_direction_fields(n, PAWNPUSH[1], 1) for n in 1:64]
+
+const WHITE_PAWN_CAP_EMPTY = @SVector [gen_direction_fields(n, PAWNDIAG[2], 1) for n in 1:64]
+const BLACK_PAWN_CAP_EMPTY = @SVector [gen_direction_fields(n, PAWNDIAG[1], 1) for n in 1:64]
+
 const KNIGHT_MOVES_EMPTY = @SVector [gen_direction_fields(n, KNIGHTDIRS, 1) for n in 1:64]
 const BISHOP_MOVES_EMPTY = @SVector [gen_direction_fields(n, DIAG, 8) for n in 1:64]
 const ROOK_MOVES_EMPTY = @SVector [gen_direction_fields(n, CROSS, 8) for n in 1:64]
@@ -512,6 +519,21 @@ const QUEEN_MOVES_EMPTY = @SVector [gen_direction_fields(n, vcat(DIAG,CROSS), 8)
 const KING_MOVES_EMPTY = @SVector [gen_direction_fields(n, vcat(DIAG,CROSS), 1) for n in 1:64]
 
 # TODO: inbounds
+
+function white_pawn_push_empty(number::Int)::Fields
+    WHITE_PAWN_PUSH_EMPTY[number]
+end
+function black_pawn_push_empty(number::Int)::Fields
+    BLACK_PAWN_PUSH_EMPTY[number]
+end
+
+function white_pawn_cap_empty(number::Int)::Fields
+    WHITE_PAWN_CAP_EMPTY[number]
+end
+function black_pawn_cap_empty(number::Int)::Fields
+    BLACK_PAWN_CAP_EMPTY[number]
+end
+
 function knight_move_empty(number::Int)::Fields
     KNIGHT_MOVES_EMPTY[number]
 end
@@ -677,7 +699,7 @@ function get_moves(board::Board, white::Bool)::MoveList
     opponent = white ? board.blacks : board.whites
     occupied = player | opponent
 
-    target = ~player
+    get_pawn_moves!(board.pawns, white, player, opponent, occupied, board.en_passant)
     get_knight_moves!(board.knights, player, movelist)
     get_bishop_moves!(board.bishops, player, occupied, movelist)
     get_rook_moves!(board.rooks, player, occupied, movelist)
@@ -687,6 +709,55 @@ function get_moves(board::Board, white::Bool)::MoveList
     return movelist
 end
 
+function get_pawn_moves!(pawns::Fields, white::Bool, player::Fields, opponent::Fields, occupied::Fields, en_passant::UInt8, movelist::MoveList)
+    for field_number in pawns & player
+        if white
+            moves = white_pawn_push_empty(field_number) & ~occupied
+            if moves & RANK_3 > 0
+                moves |= white_pawn_push_empty(field_number + 8) & ~occupied
+            end
+            caps = white_pawn_cap_empty(field_number)
+            moves |= caps & opponent
+
+            if en_passant > 0 && 33 ≤ field_number && field_number ≤ 40
+                file = get_file(en_passant)
+                moves |= caps & file
+            end
+        else
+            moves = black_pawn_push_empty(field_number) & ~occupied
+            if moves & RANK_6 > 0
+                moves |= black_pawn_push_empty(field_number + 8) & ~occupied
+            end
+
+            caps = black_pawn_cap_empty(field_number)
+            moves |= caps & opponent
+
+            if en_passant > 0 && 17 ≤ field_number && field_number ≤ 24
+                file = get_file(en_passant)
+                moves |= caps & file
+            end
+        end
+
+
+        promote = white ? (moves & RANK_8 > 0) : (moves & RANK_1 > 0)
+
+        # println(tostring(field_number))
+        # print_fields(moves)
+        # println("promote: ", promote)
+
+        for n in moves
+            if !promote
+                push!(movelist, Move(PAWN, field_number, n))
+            else
+                push!(movelist, Move(PAWN, field_number, n, KNIGHT))
+                push!(movelist, Move(PAWN, field_number, n, BISHOP))
+                push!(movelist, Move(PAWN, field_number, n, ROOK))
+                push!(movelist, Move(PAWN, field_number, n, QUEEN))
+            end
+        end
+    end
+end
+
 function get_knight_moves!(knights::Fields, player::Fields, movelist::MoveList)
     for field_number in knights & player
         moves = knight_move_empty(field_number)
@@ -694,7 +765,7 @@ function get_knight_moves!(knights::Fields, player::Fields, movelist::MoveList)
         for n in moves
             push!(movelist, Move(KNIGHT, field_number, n))
         end
-        print_fields(moves)
+        # print_fields(moves)
     end
 end
 
@@ -706,7 +777,7 @@ function get_bishop_moves!(bishops::Fields, player::Fields, occupied::Fields, mo
             moves &= ~shadow(field_number, n) # remove fields behind closest pieces
         end
         moves &= ~player
-        print_fields(moves)
+        # print_fields(moves)
 
         for n in moves
             push!(movelist, Move(BISHOP, field_number, n))
@@ -722,7 +793,7 @@ function get_rook_moves!(rooks::Fields, player::Fields, occupied::Fields, moveli
             moves &= ~shadow(field_number, n) # remove fields behind closest pieces
         end
         moves &= ~player
-        print_fields(moves)
+        # print_fields(moves)
 
         for n in moves
             push!(movelist, Move(ROOK, field_number, n))
@@ -738,7 +809,7 @@ function get_queen_moves!(queens::Fields, player::Fields, occupied::Fields, move
             moves &= ~shadow(field_number, n) # remove fields behind closest pieces
         end
         moves &= ~player
-        print_fields(moves)
+        # print_fields(moves)
 
         for n in moves
             push!(movelist, Move(QUEEN, field_number, n))
@@ -757,3 +828,9 @@ get_moves(StartPosition(), true)
 get_bishop_moves!(board.bishops, board.whites, board.whites | board.blacks, MoveList(200))
 get_rook_moves!(board.rooks, board.whites, board.whites | board.blacks, MoveList(200))
 get_queen_moves!(board.queens, board.whites, board.whites | board.blacks, MoveList(200))
+
+board = Board("2p3p1/2P1P2P/8/Pp6/3rr3/1b1P1p2/PP2P3/8 w - - 0 1")
+
+get_pawn_moves!(board.pawns, true, board.whites, board.blacks, board.whites | board.blacks, 0x2, MoveList(200))
+
+print_fields(get_file(0x2))
