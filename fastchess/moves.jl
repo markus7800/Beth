@@ -716,6 +716,33 @@ function get_pinned(board::Board, player::Fields, opponent::Fields, occupied::Fi
     return pinned
 end
 
+# by opponent
+function is_attacked(board::Board, player::Fields, opponent::Fields, occupied::Fields, field_number::Int)
+    if opponent & board.knights & knight_move_empty(field_number) > 0
+        return true
+    end
+    if opponent & board.pawns & white_pawn_cap_empty(field_number) > 0
+        return true
+    end
+    if opponent & board.kings & king_move_empty(field_number) > 0
+        return true
+    end
+
+    sliders = ((bishop_move_empty(field_number) & bishop_like(board)) |
+        (rook_move_empty(field_number) & rook_like(board))) & opponent
+
+    for s in sliders
+        blockers = fields_between(s, field_number) & occupied
+        # print_fields(blockers)
+        if blockers == 0
+            return true
+        end
+    end
+
+    return false
+end
+
+
 function get_moves(board::Board, white::Bool)::MoveList
     movelist = MoveList(200) # maximum 200 moves
     player = white ? board.whites : board.blacks
@@ -728,6 +755,7 @@ function get_moves(board::Board, white::Bool)::MoveList
     get_bishop_moves!(board, player, occupied, pinned, movelist)
     get_rook_moves!(board, player, occupied, pinned, movelist)
     get_queen_moves!(board, player, occupied, pinned, movelist)
+    get_king_moves!(board, white, player, opponent, occupied, movelist)
 
     return movelist
 end
@@ -907,6 +935,36 @@ function get_queen_moves!(board::Board, player::Fields, occupied::Fields, pinned
     end
 end
 
+function get_king_moves!(board::Board, white::Bool, player::Fields, opponent::Fields, occupied::Fields, movelist::MoveList)
+    king_field = board.kings & player
+    king_field_number = tonumber(king_field)
+    moves = king_move_empty(king_field_number) & ~player
+    for n in moves
+        if !is_attacked(board, player, opponent, occupied, n)
+            push!(movelist, Move(KING, king_field_number, n))
+        end
+    end
+
+    if board.castle > 0
+        if !is_attacked(board, player, opponent, occupied, king_field_number)
+            if (white && (board.castle & WHITE_SHORT_CASTLE > 0)) ||
+                (!white && (board.castle & BLACK_SHORT_CASTLE > 0))
+                if !is_attacked(board, player, opponent, occupied, king_field_number + 1) &&
+                    !is_attacked(board, player, opponent, occupied, king_field_number + 2)
+                    push!(movelist, Move(KING, king_field_number, king_field_number + 2))
+                end
+            end
+            if (white && (board.castle & WHITE_LONG_CASTLE > 0)) ||
+                (!white && (board.castle & BLACK_LONG_CASTLE > 0))
+                if !is_attacked(board, player, opponent, occupied, king_field_number - 1) &&
+                    !is_attacked(board, player, opponent, occupied, king_field_number - 2)
+                    push!(movelist, Move(KING, king_field_number, king_field_number - 2))
+                end
+            end
+        end
+    end
+end
+
 board = Board("2r2bk1/2r2p1p/p2q2p1/P2Pp3/2p1P3/3B1P2/2R1Q1PP/3R2K1 w - - 0 30")
 
 get_moves(board, true)
@@ -935,6 +993,8 @@ set_piece!(board, Field("c3"), true, KNIGHT)
 set_piece!(board, Field("b4"), false, QUEEN)
 set_piece!(board, Field("e5"), false, ROOK)
 set_piece!(board, Field("h4"), false, BISHOP)
+set_piece!(board, Field("h1"), true, ROOK)
+board.castle |= WHITE_SHORT_CASTLE
 
 print_fields(get_pinned(board, board.whites, board.blacks, board.whites | board.blacks))
 
@@ -944,3 +1004,13 @@ get_moves(board, true)
 for m in get_moves(board, true)
     println(m)
 end
+
+is_attacked(board, board.whites, board.blacks, board.whites | board.blacks, tonumber(Field("c3")))
+is_attacked(board, board.whites, board.blacks, board.whites | board.blacks, tonumber(Field("d2")))
+is_attacked(board, board.whites, board.blacks, board.whites | board.blacks, tonumber(Field("e1")))
+
+is_attacked(board, board.blacks, board.whites, board.whites | board.blacks, tonumber(Field("c3")))
+is_attacked(board, board.blacks, board.whites, board.whites | board.blacks, tonumber(Field("b3")))
+
+board = Board("r2qkb1r/1Q3pp1/p2p3p/3P1P2/N2pP3/4n3/PP4PP/1R3RK1 w - - 0 1")
+@btime get_moves(board, true)
