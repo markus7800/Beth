@@ -511,8 +511,21 @@ const ROOK_MOVES_EMPTY = @SVector [gen_direction_fields(n, CROSS, 8) for n in 1:
 const QUEEN_MOVES_EMPTY = @SVector [gen_direction_fields(n, vcat(DIAG,CROSS), 8) for n in 1:64]
 const KING_MOVES_EMPTY = @SVector [gen_direction_fields(n, vcat(DIAG,CROSS), 1) for n in 1:64]
 
+# TODO: inbounds
+function knight_move_empty(number::Int)::Fields
+    KNIGHT_MOVES_EMPTY[number]
+end
+function bishop_move_empty(number::Int)::Fields
+    BISHOP_MOVES_EMPTY[number]
+end
 function rook_move_empty(number::Int)::Fields
     ROOK_MOVES_EMPTY[number]
+end
+function queen_move_empty(number::Int)::Fields
+    QUEEN_MOVES_EMPTY[number]
+end
+function king_move_empty(number::Int)::Fields
+    KING_MOVES_EMPTY[number]
 end
 
 
@@ -665,30 +678,82 @@ function get_moves(board::Board, white::Bool)::MoveList
     occupied = player | opponent
 
     target = ~player
+    get_knight_moves!(board.knights, player, movelist)
+    get_bishop_moves!(board.bishops, player, occupied, movelist)
     get_rook_moves!(board.rooks, player, occupied, movelist)
+    get_queen_moves!(board.queens, player, occupied, movelist)
 
 
     return movelist
 end
 
-function get_rook_moves!(rooks::Fields, player::Fields, occupied::Fields, movelist::MoveList)
-    for rook_field_number in rooks & player
-        rook_moves = rook_move_empty(rook_field_number)
-        occupied_moves = rook_moves & occupied
-        for n in occupied_moves
-            rook_moves &= ~shadow(rook_field_number, n) # remove fields behind closest pieces
+function get_knight_moves!(knights::Fields, player::Fields, movelist::MoveList)
+    for field_number in knights & player
+        moves = knight_move_empty(field_number)
+        moves &= ~player
+        for n in moves
+            push!(movelist, Move(KNIGHT, field_number, n))
         end
-        rook_moves &= ~player
-        print_fields(rook_moves)
+        print_fields(moves)
+    end
+end
 
-        for n in rook_moves
-            push!(movelist, Move(ROOK, rook_field_number, n))
+function get_bishop_moves!(bishops::Fields, player::Fields, occupied::Fields, movelist::MoveList)
+    for field_number in bishops & player
+        moves = bishop_move_empty(field_number)
+        occupied_moves = moves & occupied
+        for n in occupied_moves
+            moves &= ~shadow(field_number, n) # remove fields behind closest pieces
+        end
+        moves &= ~player
+        print_fields(moves)
+
+        for n in moves
+            push!(movelist, Move(BISHOP, field_number, n))
         end
     end
 end
 
-board = Board("7R/5p2/4b1kp/4B1p1/2pP2P1/2P4P/1rr5/4R1K1 w - - 0 1")
+function get_rook_moves!(rooks::Fields, player::Fields, occupied::Fields, movelist::MoveList)
+    for field_number in rooks & player
+        moves = rook_move_empty(field_number)
+        occupied_moves = moves & occupied
+        for n in occupied_moves
+            moves &= ~shadow(field_number, n) # remove fields behind closest pieces
+        end
+        moves &= ~player
+        print_fields(moves)
+
+        for n in moves
+            push!(movelist, Move(ROOK, field_number, n))
+        end
+    end
+end
+
+function get_queen_moves!(queens::Fields, player::Fields, occupied::Fields, movelist::MoveList)
+    for field_number in queens & player
+        moves = queen_move_empty(field_number)
+        occupied_moves = moves & occupied
+        for n in occupied_moves
+            moves &= ~shadow(field_number, n) # remove fields behind closest pieces
+        end
+        moves &= ~player
+        print_fields(moves)
+
+        for n in moves
+            push!(movelist, Move(QUEEN, field_number, n))
+        end
+    end
+end
+
+board = Board("2r2bk1/2r2p1p/p2q2p1/P2Pp3/2p1P3/3B1P2/2R1Q1PP/3R2K1 w - - 0 30")
 
 get_moves(board, true)
 
 tonumber(Field("e1"))
+
+get_moves(StartPosition(), true)
+
+get_bishop_moves!(board.bishops, board.whites, board.whites | board.blacks, MoveList(200))
+get_rook_moves!(board.rooks, board.whites, board.whites | board.blacks, MoveList(200))
+get_queen_moves!(board.queens, board.whites, board.whites | board.blacks, MoveList(200))
