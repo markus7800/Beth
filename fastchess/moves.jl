@@ -1,3 +1,5 @@
+using StaticArrays
+
 struct Move
     from_piece::Piece
     from::Field
@@ -463,7 +465,7 @@ end
 get_moves(StartPosition(), true)
 
 using BenchmarkTools
-@btime perft(StartPosition(), true, 5)
+@btime perft(StartPosition(), true, 5) # 2.428 s (14932604 allocations: 1.32 GiB)
 
 perft(StartPosition(), true, 5)
 

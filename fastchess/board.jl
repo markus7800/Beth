@@ -1,12 +1,32 @@
+const Fields = UInt64
+
+function first(fs::Fields)::Field
+    trailing_zeros(fs)
+end
+
+function removefirst(fs::Fields)::Field
+    fs & (fs - 1)
+end
+
+import Base.iterate
+function Base.iterate(ss::Fields, state = ss)
+    if state == 0
+        nothing
+    else
+        (first(state), removefirst(state))
+    end
+end
+
+
 mutable struct Board
-    pawns::UInt64
-    bishops::UInt64
-    knights::UInt64
-    rooks::UInt64
-    queens::UInt64
-    kings::UInt64
-    whites::UInt64
-    blacks::UInt64
+    pawns::Fields
+    bishops::Fields
+    knights::Fields
+    rooks::Fields
+    queens::Fields
+    kings::Fields
+    whites::Fields
+    blacks::Fields
 
     castle::UInt8
     en_passant::UInt8
@@ -30,7 +50,7 @@ function Board()
     return Board(0,0,0,0,0,0,0,0, 0, 0)
 end
 
-const Field = UInt64
+const Field = UInt64 # where only one bit set
 
 function Field(rank::Int, file::Int)::Field
     f = UInt64(1)
@@ -62,21 +82,25 @@ function log2_64(value::UInt64)
 end
 
 function file(field::Field)::Int
-    log2_64(field) % 8 + 1
+    trailing_zeros(field) % 8 + 1
 end
 
 function rank(field::Field)::Int
-    log2_64(field) ÷ 8 + 1
+    trailing_zeros(field) ÷ 8 + 1
 end
 
 function rankfile(field::Field)::Tuple{Int,Int}
-    l = log2_64(field)
+    l = trailing_zeros(field)
     l ÷ 8 + 1, l % 8 + 1
 end
 
 function tostring(field::Field)
     rank, file = rankfile(field)
     return Char(96+file) * string(rank)
+end
+
+function tonumber(field::Field)
+    trailing_zeros(field)
 end
 
 # rankfile(Field("a8"))
@@ -251,6 +275,22 @@ function is_occupied_by_black(board::Board, fields::UInt64)
     board.blacks & fields > 0
 end
 
+function print_fields(fs::Fields)
+    println("Fields")
+    for rank in 8:-1:1
+        print("$rank ")
+        for file in 1:8
+            s = "⋅"
+            if fs & Field(rank, file) > 0
+                s = "X"
+            end
+
+            print("$s ")
+            end
+        print("\n")
+    end
+    println("  a b c d e f g h")
+end
 
 import Base.show
 function Base.show(io::IO, board::Board)
