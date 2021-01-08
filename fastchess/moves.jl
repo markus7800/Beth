@@ -1,4 +1,5 @@
 using StaticArrays
+include("board.jl")
 
 struct Move
     from_piece::Piece
@@ -10,6 +11,11 @@ end
 include("movelist.jl")
 
 include("FEN.jl")
+
+
+function Move(piece::Piece, from::Field, to::Field)
+    return Move(piece, tonumber(from), tonumber(to), piece)
+end
 
 function Move(piece::Piece, from::Int, to::Int)
     return Move(piece, from, to, piece)
@@ -25,33 +31,38 @@ end
 
 mutable struct Undo
     captured::Piece
-    capture_field::Field
+    capture_field::Field # field number
     castle::UInt8
     did_castle::UInt8
     en_passant::UInt8
 end
 
 function make_move!(board::Board, white::Bool, move::Move)::Undo
+
+    from = tofield(move.from)
+    to = tofield(move.to)
+
     undo = Undo(
-        get_piece(board, move.to), # potential captured piece
-        move.to,
+        get_piece(board, to), # potential captured piece
+        to,
         board.castle,
         0,
         board.en_passant)
 
-    @assert get_piece(board, move.from, white) == move.from_piece (board, move)
-    @assert get_piece(board, move.to, white) == NO_PIECE (board, move)
+
+    @assert get_piece(board, from, white) == move.from_piece (board, move, white)
+    @assert get_piece(board, to, white) == NO_PIECE (board, move, white)
 
     # disable en passant
     board.en_passant = 0
 
     # handle piece movement
-    remove_piece!(board, move.from)
-    remove_piece!(board, move.to)
-    set_piece!(board, move.to, white, move.to_piece) # promotion handled in to_piece
+    remove_piece!(board, from)
+    remove_piece!(board, to)
+    set_piece!(board, to, white, move.to_piece) # promotion handled in to_piece
 
-    r1, f1 = rankfile(move.from)
-    r2, f2 = rankfile(move.to)
+    r1, f1 = rankfile(from)
+    r2, f2 = rankfile(to)
 
     # enable en passant
     if move.from_piece == PAWN && abs(r1 - r2) == 2
@@ -126,9 +137,13 @@ function make_move!(board::Board, white::Bool, move::Move)::Undo
 end
 
 function undo_move!(board::Board, white::Bool, move::Move, undo::Undo)
+
+    from = tofield(move.from)
+    to = tofield(move.to)
+
     # undo piece move
-    remove_piece!(board, move.to) # promotion handled
-    set_piece!(board, move.from, white, move.from_piece)
+    remove_piece!(board, to) # promotion handled
+    set_piece!(board, from, white, move.from_piece)
 
     # undo capture
     if undo.captured != NO_PIECE
@@ -163,324 +178,6 @@ const KNIGHTDIRS = [
         (2,1), (2,-1), (-2,1), (-2,-1)
         ]
 const DIAGCROSS = vcat(DIAG, CROSS)
-
-function get_moves(board::Board, white::Bool)::Vector{Move}
-    moves = Move[]
-
-    king_rank = -10
-    king_file = -10 # move off board for evaluation without kings
-
-    for rank in 1:8, file in 1:8
-        piece = get_piece(board, Field(rank, file), white)
-
-        piece == NO_PIECE && continue
-
-        if piece == PAWN
-            append!(moves, pawn_moves(board, white, rank, file))
-
-        elseif piece == BISHOP
-            append!(moves, direction_moves(board, white, BISHOP, rank, file, DIAG, 8))
-
-        elseif piece == KNIGHT
-            append!(moves, direction_moves(board, white, KNIGHT, rank, file, KNIGHTDIRS, 1))
-
-        elseif piece == ROOK
-            append!(moves, direction_moves(board, white, ROOK, rank, file, CROSS, 8))
-
-        elseif piece == QUEEN
-            append!(moves, direction_moves(board, white, QUEEN, rank, file, DIAGCROSS, 8))
-
-        elseif piece == KING
-            king_rank = rank
-            king_file = file
-            kingmoves = king_moves(board, white, rank, file)
-            append!(moves, kingmoves)
-        end
-    end
-
-    filter!(m -> !is_check(board, white, king_rank, king_file, m), moves)
-
-    return moves
-end
-
-
-function king_moves(board::Board, white::Bool, rank::Int, file::Int)::Vector{Move}
-    kingmoves = direction_moves(board, white, KING, rank, file, DIAGCROSS, 1)
-
-    if !is_attacked(board, white, rank, file)
-        if board.castle & (WHITE_LONG_CASTLE | BLACK_LONG_CASTLE) > 0
-            if !is_occupied(board, Field(rank, 2) | Field(rank, 3) | Field(rank, 4)) && get_piece(board, Field(rank,1), white) == ROOK
-                if !is_attacked(board, white, rank, 3) && !is_attacked(board, white, rank, 4)
-                # castle long
-                push!(kingmoves, Move(KING, Field(rank, file), Field(rank, file-2)))
-                end
-            end
-        end
-        if board.castle & (WHITE_SHORT_CASTLE | BLACK_SHORT_CASTLE) > 0
-            if !is_occupied(board, Field(rank, 6) | Field(rank, 7)) && get_piece(board, Field(rank,8), white) == ROOK
-                if !is_attacked(board, white, rank, 6) && !is_attacked(board, white, rank, 7)
-                # castle long
-                push!(kingmoves, Move(KING, Field(rank, file), Field(rank, file+2)))
-                end
-            end
-        end
-    end
-    return kingmoves
-end
-
-function pawn_moves(board::Board, white::Bool, rank::Int, file::Int)::Vector{Move}
-    moves = Move[]
-
-    # normal moves
-    if white && !is_occupied(board, Field(rank+1, file))
-        push!(moves, Move(PAWN, Field(rank, file), Field(rank+1, file)))
-    elseif !white && !is_occupied(board, Field(rank-1, file))
-        push!(moves, Move(PAWN, Field(rank, file), Field(rank-1, file)))
-    end
-
-    # start moves
-    if white && rank == 2 && !is_occupied(board, Field(rank+1, file) | Field(rank+2, file))
-        push!(moves, Move(PAWN, Field(rank, file), Field(rank+2, file)))
-    elseif !white && rank == 7 && !is_occupied(board, Field(rank-1, file) | Field(rank-2, file))
-        push!(moves, Move(PAWN, Field(rank, file), Field(rank-2, file)))
-    end
-
-    # captures
-    if white && file-1≥1 && is_occupied_by_black(board, Field(rank+1, file-1))
-        push!(moves, Move(PAWN, Field(rank, file), Field(rank+1, file-1)))
-    end
-    if white && file+1≤8 && is_occupied_by_black(board, Field(rank+1, file+1))
-        push!(moves, Move(PAWN, Field(rank, file), Field(rank+1, file+1)))
-    end
-    if !white && file-1≥1 && is_occupied_by_white(board, Field(rank-1, file-1))
-        push!(moves, Move(PAWN, Field(rank, file), Field(rank-1, file-1)))
-    end
-    if !white && file+1≤8 && is_occupied_by_white(board, Field(rank-1, file+1))
-        push!(moves, Move(PAWN, Field(rank, file), Field(rank-1, file+1)))
-    end
-
-    # en passant
-    if white && rank == 5
-        if file+1≤8 && board.en_passant == file + 1
-            push!(moves, Move(PAWN, Field(rank, file), Field(rank+1, file+1)))
-        elseif file-1≥1 && board.en_passant == file - 1
-            push!(moves, Move(PAWN, Field(rank, file), Field(rank+1, file-1)))
-        end
-    elseif !white && rank == 4
-        if file+1≤8 && board.en_passant == file + 1
-            push!(moves, Move(PAWN, Field(rank, file), Field(rank-1, file+1)))
-        elseif file-1≥1 && board.en_passant == file - 1
-            push!(moves, Move(PAWN, Field(rank, file), Field(rank-1, file-1)))
-        end
-    end
-
-    # promotions
-    if (white && rank == 7) || (!white && rank == 2)
-        knight_promo = map(m -> Move(PAWN, m.from, m.to, KNIGHT), moves)
-        bishop_promo = map(m -> Move(PAWN, m.from, m.to, BISHOP), moves)
-        rook_promo = map(m -> Move(PAWN, m.from, m.to, ROOK), moves)
-        queen_promo = map(m -> Move(PAWN, m.from, m.to, QUEEN), moves)
-        moves = vcat(moves, knight_promo, bishop_promo, rook_promo, queen_promo)
-    end
-
-    return moves
-end
-
-function direction_moves(board::Board, white::Bool, piece::Piece, rank::Int, file::Int, directions::Vector{Tuple{Int,Int}}, max_multiple::Int)
-    moves = Move[]
-    for dir in directions
-        for i in 1:max_multiple
-
-            r2, f2 = (rank, file) .+ i .* dir
-
-            if r2 < 1 || r2 > 8 || f2 < 1 || f2 > 8
-                # direction out of bounds
-                break # direction finished
-            end
-
-            to = Field(r2, f2)
-            if is_occupied(board, !white, to)
-                # capture
-                push!(moves, Move(piece, Field(rank, file), to))
-                break # direction finished
-            else
-                if !is_occupied(board, white, to)
-                    # free tile
-                    push!(moves, Move(piece, Field(rank, file), to))
-                else
-                    # direction blocked by own piece
-                    break # direction finished
-                end
-            end
-        end
-    end
-
-    return moves
-end
-
-# checks if king of player is in check after move
-# kingpos is position of king before move
-function is_check(board::Board, white::Bool, king_rank::Int, king_file::Int, move::Move)
-
-    undo = make_move!(board, white, move)
-
-    if move.from_piece == KING
-        # update king position for king move
-        king_rank, king_file = rankfile(move.to)
-    end
-
-    b = is_attacked(board, white, king_rank, king_file)
-
-    undo_move!(board, white, move, undo)
-
-    return b
-end
-
-# checks if field rf (cartesian) is attacked by opponent
-function is_attacked(board::Board, white::Bool, rank::Int, file::Int; verbose=false)
-
-    # check knight moves
-    for dir in KNIGHTDIRS
-        r2, f2 = (rank, file) .+ dir # TODO
-        (r2 < 1 || r2 > 8 || f2 < 1 || f2 > 8) && continue
-
-        if get_piece(board, Field(r2, f2), !white) == KNIGHT # TODO: occupied by piece function
-            verbose && println("Knight check from $(field(r2, f2)) ($r2, $f2).")
-            return true
-        end
-    end
-
-    # check diags
-    for dir in DIAG
-        for i in 1:8
-            r2, f2 = (rank, file) .+ i .* dir # TODO
-
-            if r2 < 1 || r2 > 8 || f2 < 1 || f2 > 8
-                # direction out of bounds
-                break
-            end
-
-            to = Field(r2, f2)
-
-            if is_occupied(board, !white, to)
-                p = get_piece(board, to, !white)
-
-                if i == 1 && p == KING
-                    verbose && println("King diag check from $to ($r2, $f2).")
-                    return true
-                end
-
-                if p == BISHOP || p == QUEEN
-                    verbose && println("Diag check from $to ($r2, $f2).")
-                    return true
-                else
-                    # direction blocked by opponent piece
-                    break
-                end
-            elseif is_occupied(board, white, to)
-                # direction blocked by own piece
-                break
-            end
-        end
-    end
-
-    # check crosses
-    for dir in CROSS
-        for i in 1:8
-            r2, f2 = (rank, file) .+ i .* dir # TODO
-
-            if r2 < 1 || r2 > 8 || f2 < 1 || f2 > 8
-                # direction out of bounds
-                break
-            end
-
-            to = Field(r2, f2)
-
-            if is_occupied(board, !white, to)
-                p = get_piece(board, to, !white)
-
-                if i == 1 && p == KING
-                    verbose && println("King diag check from $to ($r2, $f2).")
-                    return true
-                end
-
-                if p == ROOK || p == QUEEN
-                    verbose && println("Diag check from $to ($r2, $f2).")
-                    return true
-                else
-                    # direction blocked by opponent piece
-                    break
-                end
-            elseif is_occupied(board, white, to)
-                # direction blocked by own piece
-                break
-            end
-        end
-    end
-
-    # check pawn
-    dir = white ? 1 : -1
-    if rank+dir ≥ 1 && rank+dir ≤ 8
-        if file-1 ≥ 1 && get_piece(board, Field(rank+dir, file-1), !white) == PAWN
-            verbose && println("Pawn check from $((rank+dir, file-1)).")
-            return true
-        elseif file+1 ≤ 8 && get_piece(board, Field(rank+dir, file+1), !white) == PAWN
-            verbose && println("Pawn check from $((rank+dir, file+1)).")
-            return true
-        end
-    end
-
-    return false
-end
-
-
-function perft(board::Board, white::Bool, depth::Int)
-    _board = deepcopy(board)
-    ms = get_moves(board, white)
-    @assert _board == board (white, _board, board)
-
-    if depth == 1
-        return length(ms)
-    else
-        nodes = 0
-        for m in ms
-            undo = make_move!(board, white, m)
-            nodes += perft(board, !white, depth-1)
-            undo_move!(board, white, m, undo)
-        end
-        return nodes
-    end
-end
-
-function divide(board::Board, white::Bool, depth::Int)
-    println("Divide")
-    ms = get_moves(board, white)
-    sort!(ms, lt=(x,y)->field(x[2]) < field(y[2]))
-    nodes = 0
-    for m in ms
-        undo = make_move!(board, white, m)
-        nodes += perft(board, !white, depth-1)
-        undo_move!(board, white, m, undo)
-        println("$m $nodes")
-    end
-    return nodes
-end
-
-
-get_moves(StartPosition(), true)
-
-using BenchmarkTools
-@btime perft(StartPosition(), true, 5) # 2.428 s (14932604 allocations: 1.32 GiB)
-
-perft(StartPosition(), true, 5)
-
-board = StartPosition()
-make_move!(board, true, Move(PAWN, Field("e2"), Field("e4")))
-move =Move(QUEEN, Field("d1"), Field("g4"))
-undo = make_move!(board, true, move)
-
-undo_move!(board, true, move, undo)
-
 
 function gen_direction_fields(rank::Int, file::Int, directions::Vector{Tuple{Int,Int}}, max_multiple::Int)::Fields
     fields = Fields(0)
@@ -518,36 +215,34 @@ const ROOK_MOVES_EMPTY = @SVector [gen_direction_fields(n, CROSS, 8) for n in 1:
 const QUEEN_MOVES_EMPTY = @SVector [gen_direction_fields(n, vcat(DIAG,CROSS), 8) for n in 1:64]
 const KING_MOVES_EMPTY = @SVector [gen_direction_fields(n, vcat(DIAG,CROSS), 1) for n in 1:64]
 
-# TODO: inbounds
-
 function white_pawn_push_empty(number::Int)::Fields
-    WHITE_PAWN_PUSH_EMPTY[number]
+    @inbounds WHITE_PAWN_PUSH_EMPTY[number]
 end
 function black_pawn_push_empty(number::Int)::Fields
-    BLACK_PAWN_PUSH_EMPTY[number]
+    @inbounds BLACK_PAWN_PUSH_EMPTY[number]
 end
 
 function white_pawn_cap_empty(number::Int)::Fields
-    WHITE_PAWN_CAP_EMPTY[number]
+    @inbounds WHITE_PAWN_CAP_EMPTY[number]
 end
 function black_pawn_cap_empty(number::Int)::Fields
-    BLACK_PAWN_CAP_EMPTY[number]
+    @inbounds BLACK_PAWN_CAP_EMPTY[number]
 end
 
 function knight_move_empty(number::Int)::Fields
-    KNIGHT_MOVES_EMPTY[number]
+    @inbounds KNIGHT_MOVES_EMPTY[number]
 end
 function bishop_move_empty(number::Int)::Fields
-    BISHOP_MOVES_EMPTY[number]
+    @inbounds BISHOP_MOVES_EMPTY[number]
 end
 function rook_move_empty(number::Int)::Fields
-    ROOK_MOVES_EMPTY[number]
+    @inbounds ROOK_MOVES_EMPTY[number]
 end
 function queen_move_empty(number::Int)::Fields
-    QUEEN_MOVES_EMPTY[number]
+    @inbounds QUEEN_MOVES_EMPTY[number]
 end
 function king_move_empty(number::Int)::Fields
-    KING_MOVES_EMPTY[number]
+    @inbounds KING_MOVES_EMPTY[number]
 end
 
 
@@ -611,7 +306,7 @@ print_fields(gen_fields_between(tonumber(Field("f3")), tonumber(Field("b7"))))
 const FIELDS_BETWEEN = [gen_fields_between(n1, n2) for n1 in 1:64, n2 in 1:64]
 
 function fields_between(n1::Int, n2::Int)::Fields
-    FIELDS_BETWEEN[n1, n2]
+    @inbounds FIELDS_BETWEEN[n1, n2]
 end
 
 
@@ -693,7 +388,7 @@ print_fields(gen_shadow(tonumber(Field("d7")),tonumber(Field("e3"))))
 const SHADOW = [gen_shadow(n1, n2) for n1 in 1:64, n2 in 1:64]
 
 function shadow(n1::Int, n2::Int)::Fields
-    SHADOW[n1, n2]
+    @inbounds SHADOW[n1, n2]
 end
 
 function get_pinned(board::Board, player::Fields, opponent::Fields, occupied::Fields)
@@ -717,11 +412,14 @@ function get_pinned(board::Board, player::Fields, opponent::Fields, occupied::Fi
 end
 
 # by opponent
-function is_attacked(board::Board, player::Fields, opponent::Fields, occupied::Fields, field_number::Int)
+function is_attacked(board::Board, white::Bool, player::Fields, opponent::Fields, occupied::Fields, field_number::Int)
     if opponent & board.knights & knight_move_empty(field_number) > 0
         return true
     end
-    if opponent & board.pawns & white_pawn_cap_empty(field_number) > 0
+    if white && (opponent & board.pawns & white_pawn_cap_empty(field_number) > 0)
+        return true
+    end
+    if !white && (opponent & board.pawns & black_pawn_cap_empty(field_number) > 0)
         return true
     end
     if opponent & board.kings & king_move_empty(field_number) > 0
@@ -742,9 +440,22 @@ function is_attacked(board::Board, player::Fields, opponent::Fields, occupied::F
     return false
 end
 
+# is king of player in check ?
+function is_in_check(board::Board, white::Bool, player::Fields, opponent::Fields, occupied::Fields)
+    king_field_number = tonumber(board.kings & player)
+    is_attacked(board, white, player, opponent, occupied, king_field_number)
+end
 
-function get_moves(board::Board, white::Bool)::MoveList
-    movelist = MoveList(200) # maximum 200 moves
+function is_in_check(board::Board, white::Bool)
+    player = white ? board.whites : board.blacks
+    opponent = white ? board.blacks : board.whites
+    occupied = player | opponent
+
+    king_field_number = tonumber(board.kings & player)
+    is_attacked(board, white, player, opponent, occupied, king_field_number)
+end
+
+function get_moves!(board::Board, white::Bool, movelist)::MoveList
     player = white ? board.whites : board.blacks
     opponent = white ? board.blacks : board.whites
     occupied = player | opponent
@@ -757,7 +468,29 @@ function get_moves(board::Board, white::Bool)::MoveList
     get_queen_moves!(board, player, occupied, pinned, movelist)
     get_king_moves!(board, white, player, opponent, occupied, movelist)
 
+    if is_in_check(board, white, player, opponent, occupied)
+        movelist = get_evasions(board, white, movelist)
+    end
+
     return movelist
+end
+
+function get_moves(board::Board, white::Bool)
+    movelist = MoveList(200) # maximum 200 moves
+    get_moves!(board, white, movelist)
+    return movelist
+end
+
+function get_evasions(board::Board, white::Bool, movelist::MoveList)::MoveList
+    evasions = MoveList(50)
+    for move in movelist
+        undo = make_move!(board, white, move)
+        if !is_in_check(board, white)
+            push!(evasions, move)
+        end
+        undo_move!(board, white, move, undo)
+    end
+    return evasions
 end
 
 function get_pawn_moves!(board::Board, white::Bool, player::Fields, opponent::Fields, occupied::Fields, pinned::Fields, movelist::MoveList)
@@ -771,20 +504,20 @@ function get_pawn_moves!(board::Board, white::Bool, player::Fields, opponent::Fi
             moves |= caps & opponent
 
             if board.en_passant > 0 && 33 ≤ field_number && field_number ≤ 40 # check rank
-                file = get_file(en_passant)
+                file = get_file(board.en_passant)
                 moves |= caps & file
             end
         else
             moves = black_pawn_push_empty(field_number) & ~occupied
             if moves & RANK_6 > 0
-                moves |= black_pawn_push_empty(field_number + 8) & ~occupied
+                moves |= black_pawn_push_empty(field_number - 8) & ~occupied
             end
 
             caps = black_pawn_cap_empty(field_number)
             moves |= caps & opponent
 
             if board.en_passant > 0 && 17 ≤ field_number && field_number ≤ 24 # check rank
-                file = get_file(en_passant)
+                file = get_file(board.en_passant)
                 moves |= caps & file
             end
         end
@@ -794,7 +527,7 @@ function get_pawn_moves!(board::Board, white::Bool, player::Fields, opponent::Fi
 
         # println(tostring(field_number))
         # print_fields(moves)
-        # println("promote: ", promote)king_field_number = tonumber(board.kings & player)
+        # println("promote: ", promote)
 
         if pinned & tofield(field_number) > 0
             king_field_number = tonumber(board.kings & player)
@@ -914,17 +647,14 @@ function get_queen_moves!(board::Board, player::Fields, occupied::Fields, pinned
 
         if pinned & tofield(field_number) > 0
             king_field_number = tonumber(board.kings & player)
+            field = tofield(field_number)
             for n in moves
-                king_field_number = tonumber(board.kings & player)
-                field = tofield(field_number)
-                for n in moves
-                    n_field = tofield(n)
-                    # dont leave pin
-                    if fields_between(field_number, king_field_number) & n_field > 0 || # retreat
-                        fields_between(king_field_number, n) & field > 0 # advance
+                n_field = tofield(n)
+                # dont leave pin
+                if fields_between(field_number, king_field_number) & n_field > 0 || # retreat
+                    fields_between(king_field_number, n) & field > 0 # advance
 
-                        push!(movelist, Move(QUEEN, field_number, n))
-                    end
+                    push!(movelist, Move(QUEEN, field_number, n))
                 end
             end
         else
@@ -940,24 +670,29 @@ function get_king_moves!(board::Board, white::Bool, player::Fields, opponent::Fi
     king_field_number = tonumber(king_field)
     moves = king_move_empty(king_field_number) & ~player
     for n in moves
-        if !is_attacked(board, player, opponent, occupied, n)
+        if !is_attacked(board, white, player, opponent, occupied, n)
             push!(movelist, Move(KING, king_field_number, n))
         end
     end
 
     if board.castle > 0
-        if !is_attacked(board, player, opponent, occupied, king_field_number)
+        if !is_attacked(board, white, player, opponent, occupied, king_field_number)
             if (white && (board.castle & WHITE_SHORT_CASTLE > 0)) ||
                 (!white && (board.castle & BLACK_SHORT_CASTLE > 0))
-                if !is_attacked(board, player, opponent, occupied, king_field_number + 1) &&
-                    !is_attacked(board, player, opponent, occupied, king_field_number + 2)
+                if (king_field << 1) & occupied == 0 &&
+                    (king_field << 2) & occupied == 0 &&
+                    !is_attacked(board, white, player, opponent, occupied, king_field_number + 1) &&
+                    !is_attacked(board, white, player, opponent, occupied, king_field_number + 2)
                     push!(movelist, Move(KING, king_field_number, king_field_number + 2))
                 end
             end
             if (white && (board.castle & WHITE_LONG_CASTLE > 0)) ||
                 (!white && (board.castle & BLACK_LONG_CASTLE > 0))
-                if !is_attacked(board, player, opponent, occupied, king_field_number - 1) &&
-                    !is_attacked(board, player, opponent, occupied, king_field_number - 2)
+                if (king_field >> 1) & occupied == 0 &&
+                    (king_field >> 2) & occupied == 0 &&
+                    (king_field >> 3) & occupied == 0 &&
+                    !is_attacked(board, white, player, opponent, occupied, king_field_number - 1) &&
+                    !is_attacked(board, white, player, opponent, occupied, king_field_number - 2)
                     push!(movelist, Move(KING, king_field_number, king_field_number - 2))
                 end
             end
@@ -1014,3 +749,137 @@ is_attacked(board, board.blacks, board.whites, board.whites | board.blacks, tonu
 
 board = Board("r2qkb1r/1Q3pp1/p2p3p/3P1P2/N2pP3/4n3/PP4PP/1R3RK1 w - - 0 1")
 @btime get_moves(board, true)
+
+
+
+for m in get_moves(StartPosition(), true)
+    println(m)
+end
+
+
+board = StartPosition()
+make_move!(board, true, Move(PAWN, Field("e2"), Field("e4")))
+move = Move(QUEEN, Field("d1"), Field("g4"))
+undo = make_move!(board, true, move)
+
+undo_move!(board, true, move, undo)
+
+
+import Chess
+
+b = Chess.startboard()
+@btime Chess.moves($b)
+
+@btime get_moves($StartPosition(), $true)
+
+
+""
+function check_consistency(board::Board, white::Bool, depth::Int)
+    fen = FEN(board, white)
+    board2 = Chess.fromfen(fen)
+
+
+    _b = deepcopy(board)
+    _b2 = deepcopy(board2)
+
+
+    f1 = FEN(board, white)
+    f2 = Chess.fen(board2) * " 0 1"
+    if f1 != f2
+        print_board(board)
+        println()
+        println(f1)
+        println(board2)
+        @assert false
+    end
+    ms = []
+    try
+        ms = get_moves(board, white)
+    catch e
+        @info "Error generating moves: " f1
+        rethrow(e)
+    end
+
+    ms2 = Chess.moves(board2)
+    for m2 in ms2
+        m_string = Chess.tostring(m2)
+        f = filter(m->m.from==tonumber(Field(m_string[1:2])) && m.to==tonumber(Field(m_string[3:4])), ms)
+        if length(f) != 1
+            for m in ms
+                println(m)
+            end
+            for m in ms2
+                println(m)
+            end
+            display(board)
+            display(board.en_passant)
+            display(board.castle)
+            @info "$m2 $white"
+            @info f1
+            @info f2
+            @assert false
+        end
+    end
+
+    if length(ms) != length(ms2)
+        for m in ms
+            println(m)
+        end
+        for m in ms2
+            println(m)
+        end
+        display(board)
+        @info f1
+        @info f2
+        @assert false
+    end
+
+    if depth == 1
+        return length(ms)
+    else
+        nodes = 0
+        for m in ms
+            m2 = ms2[findfirst(m2 -> Chess.tostring(m2) == tostring(m.from)*tostring(m.to), ms2)]
+
+            undo = make_move!(board, white, m)
+            board2 = Chess.domove(_b2, m2)
+
+            if FEN(board, !white) != Chess.fen(board2) * " 0 1"
+                @info(FEN(board, !white))
+                @info(Chess.fen(board2) * " 0 1")
+                print_board(_b)
+                print_board(board)
+                println("\n$m")
+                println(board.en_passant)
+                println(board2)
+
+                @info(FEN(_b, white))
+                @info(Chess.fen(_b2) * " 0 1")
+                @assert false
+            end
+
+
+            nodes += check_consistency(board, !white, depth-1)
+
+            undo_move!(board, white, m, undo)
+            @assert _b == board _b m
+        end
+        return nodes
+    end
+end
+
+check_consistency(StartPosition(), true, 5)
+
+FEN(StartPosition(), true)
+
+board = Board("rnbqkbnr/ppp1pppp/8/3p4/Q7/2P5/PP1PPPPP/RNB1KBNR b KQkq - 0 1")
+
+pinned = get_pinned(board, board.whites, board.blacks, board.whites | board.blacks)
+ml = MoveList(100)
+get_pawn_moves!(board, true, board.whites, board.blacks, board.whites | board.blacks, pinned, ml)
+
+for m in ml
+    println(m)
+end
+
+get_moves(board, true)

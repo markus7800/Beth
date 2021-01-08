@@ -120,7 +120,7 @@ function tofield(number::Int)::Field
     UInt64(1) << (number - 1)
 end
 
-function rankfile(number::Int)
+function rankfile(number::Int)::Tuple{Int,Int}
     (number-1) ÷ 8 + 1, (number-1) % 8 + 1
 end
 
@@ -151,9 +151,8 @@ const FILE_H = Field("h1") | Field("h2") | Field("h3") | Field("h4") | Field("h5
 
 const FILES = [FILE_A, FILE_B, FILE_C, FILE_D, FILE_E, FILE_F, FILE_G, FILE_H]
 
-# TODO: inbounds
 function get_file(i)
-    FILES[i]
+    @inbounds FILES[i]
 end
 
 const RANK_1 = Field("a1") | Field("b1") | Field("c1") | Field("d1") | Field("e1") | Field("f1") | Field("g1") | Field("h1")

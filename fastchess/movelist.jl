@@ -47,3 +47,7 @@ function push!(list::MoveList, m::Move)
     list.count += 1
     list.moves[list.count] = m
 end
+
+function recycle!(list::MoveList)
+    list.count = 0
+end
