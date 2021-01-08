@@ -19,6 +19,9 @@ function Base.iterate(ss::Fields, state = ss)
     end
 end
 
+function is_singleton(fields::Fields)::Bool
+    fields != 0 && removefirst(fields) == 0
+end
 
 mutable struct Board
     pawns::Fields
@@ -32,6 +35,14 @@ mutable struct Board
 
     castle::UInt8
     en_passant::UInt8
+end
+
+function rook_like(board::Board)
+    board.rooks | board.queens
+end
+
+function bishop_like(board::Board)
+    board.bishops | board.queens
 end
 
 import Base.==

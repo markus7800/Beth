@@ -552,37 +552,37 @@ end
 
 
 # diags and crosses only
-# gets fields between and inclusive (r1,f1) (r2,f2)
-function gen_fields_between(r1::Int, f1::Int, r2::Int, f2::Int)::Fields
+function gen_fields_between(r1::Int, f1::Int, r2::Int, f2::Int, exc1=true, exc2=true)::Fields
     fields = Fields(0)
 
     if r1 > r2
         t = r2; r2 = r1; r1 = t;
+        t = exc1; exc1 = exc2; exc2 = t;
         t = f2; f2 = f1; f1 = t;
     end
 
 
     if f1 == f2
-        for r in r1:r2
+        for r in r1+exc1:r2-exc2
             fields |= Field(r, f1)
         end
     elseif r1 == r2
         if f1 < f2
-            for f in f1:f2
+            for f in f1+exc1:f2-exc2
                 fields |= Field(r1, f)
             end
         else
-            for f in f2:f1
+            for f in f2+exc2:f1-exc1
                 fields |= Field(r1, f)
             end
         end
     elseif abs(f2 - f1) == abs(r2 - r1)
         if f1 < f2
-            for i in 0:(f2-f1)
+            for i in exc1:(f2-f1)-exc2
                 fields |= Field(r1+i, f1+i)
             end
         else
-            for i in 0:(f1-f2)
+            for i in exc2:(f1-f2)-exc1
                 fields |= Field(r1+i, f1-i)
             end
         end
@@ -607,6 +607,7 @@ print_fields(gen_fields_between(tonumber(Field("b7")), tonumber(Field("f3"))))
 print_fields(gen_fields_between(tonumber(Field("f3")), tonumber(Field("b7"))))
 
 
+# exclusive input fields
 const FIELDS_BETWEEN = [gen_fields_between(n1, n2) for n1 in 1:64, n2 in 1:64]
 
 function fields_between(n1::Int, n2::Int)::Fields
@@ -624,15 +625,16 @@ function gen_shadow(r1::Int, f1::Int, r2::Int, f2::Int)::Fields
 
     if f1 == f2
         if r1 < r2
-            fields |= gen_fields_between(r2, f2, 8, f2)
+            fields |= gen_fields_between(r2, f2, 8, f2, false, false)
+
         else
-            fields |= gen_fields_between(r2, f2, 1, f2)
+            fields |= gen_fields_between(r2, f2, 1, f2, false, false)
         end
     elseif r1 == r2
         if f1 < f2
-            fields |= gen_fields_between(r2, f2, r2, 8)
+            fields |= gen_fields_between(r2, f2, r2, 8, false, false)
         else
-            fields |= gen_fields_between(r2, f2, r2, 1)
+            fields |= gen_fields_between(r2, f2, r2, 1, false, false)
         end
     elseif abs(f2 - f1) == abs(r2 - r1)
         Δ = abs(f2 - f1)
@@ -641,27 +643,28 @@ function gen_shadow(r1::Int, f1::Int, r2::Int, f2::Int)::Fields
             if r1 < r2
                 # field 2 is to the topright of field 1
                 Δ = min(8 - r2, 8 - f2) # minimal distance to right or top border
-                fields |= gen_fields_between(r2, f2, r2 + Δ, f2 + Δ)
+                fields |= gen_fields_between(r2, f2, r2 + Δ, f2 + Δ, false, false)
 
             else
                 # field 2 is to the bottomright of field 1
                 Δ = min(r2 - 1, 8 - f2) # minimal distance to right or bottom border
-                fields |= gen_fields_between(r2, f2, r2 - Δ, f2 + Δ)
+                fields |= gen_fields_between(r2, f2, r2 - Δ, f2 + Δ, false, false)
             end
         else
             if r1 < r2
                 # field 2 is to the topleft of field 1
                 Δ = min(8 - r2, f2 - 1) # minimal distance to top or left border
-                fields |= gen_fields_between(r2, f2, r2 + Δ, f2 - Δ)
+                fields |= gen_fields_between(r2, f2, r2 + Δ, f2 - Δ, false, false)
             else
                 # field 2 is to the bottomleft of field 1
                 Δ = min(r2 - 1, f2 - 1) # minimal distance to bottom or keft border
-                fields |= gen_fields_between(r2, f2, r2 - Δ, f2 - Δ)
+                fields |= gen_fields_between(r2, f2, r2 - Δ, f2 - Δ, false, false)
             end
         end
     end
 
-    fields &= ~Field(r2,f2)
+    fields &= ~Field(r2, f2)
+
     return fields
 end
 
@@ -693,6 +696,26 @@ function shadow(n1::Int, n2::Int)::Fields
     SHADOW[n1, n2]
 end
 
+function get_pinned(board::Board, player::Fields, opponent::Fields, occupied::Fields)
+    king_field = board.kings & player
+    king_field_number = tonumber(king_field)
+
+    attackers = ((bishop_move_empty(king_field_number) & bishop_like(board)) |
+        (rook_move_empty(king_field_number) & rook_like(board))) & opponent
+
+    pinned = Fields(0)
+
+    for a in attackers
+        blockers = fields_between(a, king_field_number) & occupied
+        print_fields(blockers)
+        if is_singleton(blockers)
+            pinned |= blockers & player
+        end
+    end
+
+    return pinned
+end
+
 function get_moves(board::Board, white::Bool)::MoveList
     movelist = MoveList(200) # maximum 200 moves
     player = white ? board.whites : board.blacks
@@ -704,7 +727,6 @@ function get_moves(board::Board, white::Bool)::MoveList
     get_bishop_moves!(board.bishops, player, occupied, movelist)
     get_rook_moves!(board.rooks, player, occupied, movelist)
     get_queen_moves!(board.queens, player, occupied, movelist)
-
 
     return movelist
 end
@@ -834,3 +856,16 @@ board = Board("2p3p1/2P1P2P/8/Pp6/3rr3/1b1P1p2/PP2P3/8 w - - 0 1")
 get_pawn_moves!(board.pawns, true, board.whites, board.blacks, board.whites | board.blacks, 0x2, MoveList(200))
 
 print_fields(get_file(0x2))
+
+
+board = Board()
+set_piece!(board, Field("e1"), true, KING)
+set_piece!(board, Field("e2"), true, PAWN)
+set_piece!(board, Field("f2"), true, BISHOP)
+set_piece!(board, Field("d2"), true, QUEEN)
+set_piece!(board, Field("c3"), true, KNIGHT)
+set_piece!(board, Field("b4"), false, QUEEN)
+set_piece!(board, Field("e5"), false, ROOK)
+set_piece!(board, Field("h4"), false, BISHOP)
+
+print_fields(get_pinned(board, board.whites, board.blacks, board.whites | board.blacks))
