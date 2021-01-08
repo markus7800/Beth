@@ -347,4 +347,29 @@ function Base.show(io::IO, board::Board)
         print(io,"\n")
     end
     println(io,"  a b c d e f g h")
+
+    if board.castle > 0
+        third_group = ""
+        if board.castle & WHITE_SHORT_CASTLE > 0
+            third_group *= "K"
+        end
+        if board.castle & WHITE_LONG_CASTLE > 0
+            third_group *= "Q"
+        end
+
+        if board.castle & BLACK_SHORT_CASTLE > 0
+            third_group *= "k"
+        end
+        if board.castle & BLACK_LONG_CASTLE > 0
+            third_group *= "q"
+        end
+        print(io, " $third_group ")
+    else
+        print(io, " - ")
+    end
+    if board.en_passant > 0
+        print(io, "$(Char(96 + board.en_passant))")
+    else
+        print(io, "-")
+    end
 end

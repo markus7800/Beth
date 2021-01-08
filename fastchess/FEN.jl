@@ -49,7 +49,7 @@ function Board(FEN::String)
     # group 4: en passant right
     if groups[4] != "-"
         rank, file = rankfile(Field(string(groups[4])))
-        board.en_passant[file] = 1
+        board.en_passant = file
     end
 
     return board

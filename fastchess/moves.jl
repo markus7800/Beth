@@ -117,13 +117,13 @@ function make_move!(board::Board, white::Bool, move::Move)::Undo
 
     if undo.captured == ROOK
         # no castling for opponent if player captures his rook
-        if white && r2 == 1
+        if !white && r2 == 1
             if f2 == 1
                 board.castle &= ~WHITE_LONG_CASTLE
             elseif f2 == 8
                 board.castle &= ~WHITE_SHORT_CASTLE
             end
-        elseif !white && r2 == 8
+        elseif white && r2 == 8
             if f2 == 1
                 board.castle &= ~BLACK_LONG_CASTLE
             elseif f2 == 8
@@ -429,7 +429,10 @@ function is_attacked(board::Board, white::Bool, player::Fields, opponent::Fields
     sliders = ((bishop_move_empty(field_number) & bishop_like(board)) |
         (rook_move_empty(field_number) & rook_like(board))) & opponent
 
+    # print_fields(sliders)
+
     for s in sliders
+        # println(tostring(s))
         blockers = fields_between(s, field_number) & occupied
         # print_fields(blockers)
         if blockers == 0
@@ -455,7 +458,7 @@ function is_in_check(board::Board, white::Bool)
     is_attacked(board, white, player, opponent, occupied, king_field_number)
 end
 
-function get_moves!(board::Board, white::Bool, movelist)::MoveList
+function get_moves!(board::Board, white::Bool, movelist)
     player = white ? board.whites : board.blacks
     opponent = white ? board.blacks : board.whites
     occupied = player | opponent
@@ -469,10 +472,8 @@ function get_moves!(board::Board, white::Bool, movelist)::MoveList
     get_king_moves!(board, white, player, opponent, occupied, movelist)
 
     if is_in_check(board, white, player, opponent, occupied)
-        movelist = get_evasions(board, white, movelist)
+        filter_evasions!(board, white, movelist)
     end
-
-    return movelist
 end
 
 function get_moves(board::Board, white::Bool)
@@ -481,16 +482,19 @@ function get_moves(board::Board, white::Bool)
     return movelist
 end
 
-function get_evasions(board::Board, white::Bool, movelist::MoveList)::MoveList
-    evasions = MoveList(50)
-    for move in movelist
+function filter_evasions!(board::Board, white::Bool, movelist::MoveList)
+    n_moves = length(movelist)
+    count = 0
+    for i in 1:n_moves
+        move = movelist[i]
         undo = make_move!(board, white, move)
         if !is_in_check(board, white)
-            push!(evasions, move)
+            count += 1
+            movelist.moves[count] = move
         end
         undo_move!(board, white, move, undo)
     end
-    return evasions
+    movelist.count = count
 end
 
 function get_pawn_moves!(board::Board, white::Bool, player::Fields, opponent::Fields, occupied::Fields, pinned::Fields, movelist::MoveList)
@@ -516,7 +520,7 @@ function get_pawn_moves!(board::Board, white::Bool, player::Fields, opponent::Fi
             caps = black_pawn_cap_empty(field_number)
             moves |= caps & opponent
 
-            if board.en_passant > 0 && 17 ≤ field_number && field_number ≤ 24 # check rank
+            if board.en_passant > 0 && 25 ≤ field_number && field_number ≤ 32 # check rank
                 file = get_file(board.en_passant)
                 moves |= caps & file
             end
@@ -734,9 +738,10 @@ board.castle |= WHITE_SHORT_CASTLE
 print_fields(get_pinned(board, board.whites, board.blacks, board.whites | board.blacks))
 
 using BenchmarkTools
-get_moves(board, true)
+board = Board("rnbqkbnr/1ppppppp/8/8/1pP5/P7/3PPPPP/RNBQKBNR b KQkq c3 0 1")
+get_moves(board, false)
 
-for m in get_moves(board, true)
+for m in get_moves(board, false)
     println(m)
 end
 
@@ -794,7 +799,9 @@ function check_consistency(board::Board, white::Bool, depth::Int)
     end
     ms = []
     try
+        _board = deepcopy(board)
         ms = get_moves(board, white)
+        @assert board == _board (_board, board)
     catch e
         @info "Error generating moves: " f1
         rethrow(e)
@@ -847,8 +854,8 @@ function check_consistency(board::Board, white::Bool, depth::Int)
             if FEN(board, !white) != Chess.fen(board2) * " 0 1"
                 @info(FEN(board, !white))
                 @info(Chess.fen(board2) * " 0 1")
-                print_board(_b)
-                print_board(board)
+                display(_b)
+                display(board)
                 println("\n$m")
                 println(board.en_passant)
                 println(board2)
@@ -868,7 +875,7 @@ function check_consistency(board::Board, white::Bool, depth::Int)
     end
 end
 
-check_consistency(StartPosition(), true, 5)
+check_consistency(StartPosition(), true, 6)
 
 FEN(StartPosition(), true)
 
