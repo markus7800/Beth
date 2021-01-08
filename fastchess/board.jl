@@ -8,17 +8,26 @@ mutable struct Board
     whites::UInt64
     blacks::UInt64
 
-    white_castle_q::Bool
-    white_castle_k::Bool
+    castle::UInt8
+    en_passant::UInt8
+end
 
-    black_castle_q::Bool
-    black_castle_k::Bool
-
-    en_passant::UInt64
+import Base.==
+function ==(left::Board, right::Board)
+    return left.pawns == right.pawns &&
+        left.bishops == right.bishops &&
+        left.knights == right.knights &&
+        left.rooks == right.rooks &&
+        left.queens == right.queens &&
+        left.kings == right.kings &&
+        left.whites == right.whites &&
+        left.blacks == right.blacks &&
+        left.castle == right.castle &&
+        left.en_passant == right.en_passant
 end
 
 function Board()
-    return Board(0,0,0,0,0,0,0,0, 0,0, 0,0, 0)
+    return Board(0,0,0,0,0,0,0,0, 0, 0)
 end
 
 const Field = UInt64
@@ -36,6 +45,48 @@ function Field(sn::String)::Field
     r = Int(sn[2]) - 48 # = 1, ..., 8
     return Field(r, f)
 end
+
+const tab64 = Int[0, 58, 1, 59, 47, 53, 2, 60, 39, 48, 27, 54, 33, 42, 3, 61,
+    51, 37, 40, 49, 18, 28, 20, 55, 30, 34, 11, 43, 14, 22, 4, 62,
+    57, 46, 52, 38, 26, 32, 41, 50, 36, 17, 19, 29, 10, 13, 21, 56,
+    45, 25, 31, 35, 16, 9, 12, 44, 24, 15, 8, 23, 7, 6, 5, 63 ]
+
+function log2_64(value::UInt64)
+    value |= value >> 1
+    value |= value >> 2
+    value |= value >> 4
+    value |= value >> 8
+    value |= value >> 16
+    value |= value >> 32
+    return tab64[((value * 0x03f6eaf2cd271461) >> 58)+1]
+end
+
+function file(field::Field)::Int
+    log2_64(field) % 8 + 1
+end
+
+function rank(field::Field)::Int
+    log2_64(field) ÷ 8 + 1
+end
+
+function rankfile(field::Field)::Tuple{Int,Int}
+    l = log2_64(field)
+    l ÷ 8 + 1, l % 8 + 1
+end
+
+function tostring(field::Field)
+    rank, file = rankfile(field)
+    return Char(96+file) * string(rank)
+end
+
+# rankfile(Field("a8"))
+# rankfile(Field("b7"))
+# rankfile(Field("c6"))
+# rankfile(Field("d5"))
+# rankfile(Field("e4"))
+# rankfile(Field("f3"))
+# rankfile(Field("g2"))
+# rankfile(Field("h1"))
 
 
 const FILE_A = Field("a1") | Field("a2") | Field("a3") | Field("a4") | Field("a5") | Field("a6") | Field("a7") | Field("a8")
@@ -56,6 +107,10 @@ const RANK_6 = Field("a6") | Field("b6") | Field("c6") | Field("d6") | Field("e6
 const RANK_7 = Field("a7") | Field("b7") | Field("c7") | Field("d7") | Field("e7") | Field("f7") | Field("g7") | Field("h7")
 const RANK_8 = Field("a8") | Field("b8") | Field("c8") | Field("d8") | Field("e8") | Field("f8") | Field("g8") | Field("h8")
 
+const WHITE_SHORT_CASTLE = 0x1
+const WHITE_LONG_CASTLE = 0x2
+const BLACK_SHORT_CASTLE = 0x4
+const BLACK_LONG_CASTLE = 0x8
 
 function StartPosition()
     board = Board()
@@ -70,11 +125,7 @@ function StartPosition()
     board.whites = RANK_1 | RANK_2
     board.blacks = RANK_7 | RANK_8
 
-    board.white_castle_q = true
-    board.white_castle_k = true
-
-    board.black_castle_q = true
-    board.black_castle_k = true
+    board.castle = WHITE_SHORT_CASTLE | WHITE_LONG_CASTLE | BLACK_SHORT_CASTLE | BLACK_LONG_CASTLE
 
     board.en_passant = 0
 
@@ -98,16 +149,22 @@ const PIECE_SYMBOLS = ['P', 'B', 'N', 'R', 'Q', 'K']
 function get_piece(board::Board, field::Field)::Piece
     if board.pawns & field > 0
         return PAWN
+
     elseif board.bishops & field > 0
         return BISHOP
+
     elseif board.knights & field > 0
         return KNIGHT
+
     elseif board.rooks & field > 0
         return ROOK
+
     elseif board.queens & field > 0
         return QUEEN
+
     elseif board.kings & field > 0
         return KING
+
     else
         return NO_PIECE
     end
@@ -144,14 +201,19 @@ function set_piece!(board::Board, field::Field, white::Bool, piece::Piece)
 
     if piece == PAWN
         board.pawns |= field
+
     elseif piece == BISHOP
         board.bishops |= field
+
     elseif piece == KNIGHT
         board.knights |= field
+
     elseif piece == ROOK
         board.rooks |= field
+
     elseif piece == QUEEN
         board.queens |= field
+
     elseif piece == KING
         board.kings |= field
     end
@@ -167,6 +229,26 @@ function remove_piece!(board::Board, field::Field)
     board.rooks &= ~field
     board.queens &= ~field
     board.kings &= ~field
+end
+
+function is_occupied(board::Board, fields::UInt64)
+    (board.whites | board.blacks) & fields > 0
+end
+
+function is_occupied(board::Board, by::Bool, fields::UInt64)
+    if by
+        return is_occupied_by_white(board, fields)
+    else
+        return is_occupied_by_black(board, fields)
+    end
+end
+
+function is_occupied_by_white(board::Board, fields::UInt64)
+    board.whites & fields > 0
+end
+
+function is_occupied_by_black(board::Board, fields::UInt64)
+    board.blacks & fields > 0
 end
 
 
