@@ -2,12 +2,16 @@ using StaticArrays
 
 struct Move
     from_piece::Piece
-    from::Field
-    to::Field
+    from::Int # field number
+    to::Int # field number
     to_piece::Piece # promotion
 end
 
-function Move(piece::Piece, from::Field, to::Field)
+include("movelist.jl")
+
+include("FEN.jl")
+
+function Move(piece::Piece, from::Int, to::Int)
     return Move(piece, from, to, piece)
 end
 
@@ -498,7 +502,7 @@ function gen_direction_fields(rank::Int, file::Int, directions::Vector{Tuple{Int
 end
 
 function gen_direction_fields(n::Int, directions::Vector{Tuple{Int,Int}}, max_multiple::Int)::Fields
-    return gen_direction_fields(tocartesian(n)..., directions, max_multiple)
+    return gen_direction_fields(rankfile(n)..., directions, max_multiple)
 end
 
 const KNIGHT_MOVES_EMPTY = @SVector [gen_direction_fields(n, KNIGHTDIRS, 1) for n in 1:64]
@@ -507,7 +511,7 @@ const ROOK_MOVES_EMPTY = @SVector [gen_direction_fields(n, CROSS, 8) for n in 1:
 const QUEEN_MOVES_EMPTY = @SVector [gen_direction_fields(n, vcat(DIAG,CROSS), 8) for n in 1:64]
 const KING_MOVES_EMPTY = @SVector [gen_direction_fields(n, vcat(DIAG,CROSS), 1) for n in 1:64]
 
-function rook_move_empty(number::UInt)::Fields
+function rook_move_empty(number::Int)::Fields
     ROOK_MOVES_EMPTY[number]
 end
 
@@ -554,7 +558,7 @@ function gen_fields_between(r1::Int, f1::Int, r2::Int, f2::Int)::Fields
 end
 
 function gen_fields_between(n1::Int, n2::Int)::Fields
-    return gen_fields_between(tocartesian(n1)..., tocartesian(n2)...)
+    return gen_fields_between(rankfile(n1)..., rankfile(n2)...)
 end
 
 print_fields(gen_fields_between(tonumber(Field("a1")), tonumber(Field("g7"))))
@@ -570,7 +574,7 @@ print_fields(gen_fields_between(tonumber(Field("f3")), tonumber(Field("b7"))))
 
 const FIELDS_BETWEEN = [gen_fields_between(n1, n2) for n1 in 1:64, n2 in 1:64]
 
-function fields_between(n1::UInt, n2::UInt)::Fields
+function fields_between(n1::Int, n2::Int)::Fields
     FIELDS_BETWEEN[n1, n2]
 end
 
@@ -627,7 +631,7 @@ function gen_shadow(r1::Int, f1::Int, r2::Int, f2::Int)::Fields
 end
 
 function gen_shadow(n1::Int, n2::Int)::Fields
-    return gen_shadow(tocartesian(n1)..., tocartesian(n2)...)
+    return gen_shadow(rankfile(n1)..., rankfile(n2)...)
 end
 
 print_fields(gen_shadow(tonumber(Field("c2")),tonumber(Field("d3"))))
@@ -650,29 +654,37 @@ print_fields(gen_shadow(tonumber(Field("d7")),tonumber(Field("e3"))))
 
 const SHADOW = [gen_shadow(n1, n2) for n1 in 1:64, n2 in 1:64]
 
-function shadow(n1::UInt, n2::UInt)::Fields
+function shadow(n1::Int, n2::Int)::Fields
     SHADOW[n1, n2]
 end
 
-function get_moves(board::Board, white::Bool)::Vector{Move}
-    moves = Move[]
+function get_moves(board::Board, white::Bool)::MoveList
+    movelist = MoveList(200) # maximum 200 moves
     player = white ? board.whites : board.blacks
     opponent = white ? board.blacks : board.whites
+    occupied = player | opponent
 
     target = ~player
+    get_rook_moves!(board.rooks, player, occupied, movelist)
 
-    for rook_field_number in board.rooks & player
+
+    return movelist
+end
+
+function get_rook_moves!(rooks::Fields, player::Fields, occupied::Fields, movelist::MoveList)
+    for rook_field_number in rooks & player
         rook_moves = rook_move_empty(rook_field_number)
-        occupied = rook_moves & (player | opponent)
-        for n in occupied
-            rook_moves &= ~shadow(rook_field_number, n)
+        occupied_moves = rook_moves & occupied
+        for n in occupied_moves
+            rook_moves &= ~shadow(rook_field_number, n) # remove fields behind closest pieces
         end
         rook_moves &= ~player
-
         print_fields(rook_moves)
-    end
 
-    return moves
+        for n in rook_moves
+            push!(movelist, Move(ROOK, rook_field_number, n))
+        end
+    end
 end
 
 board = Board("7R/5p2/4b1kp/4B1p1/2pP2P1/2P4P/1rr5/4R1K1 w - - 0 1")

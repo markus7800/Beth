@@ -1,11 +1,12 @@
 
 const Fields = UInt64
 
-function first(fs::Fields)::Field
+function first(fs::Fields)::Int
+    # trailing_zeros is Int for UInt64
     trailing_zeros(fs) + 1
 end
 
-function removefirst(fs::Fields)::Field
+function removefirst(fs::Fields)::Fields
     fs & (fs - 1)
 end
 
@@ -104,9 +105,15 @@ function tonumber(field::Field)
     trailing_zeros(field) + 1
 end # ∈ [1,64]
 
-function tocartesian(number::Int)
+function rankfile(number::Int)
     (number-1) ÷ 8 + 1, (number-1) % 8 + 1
 end
+
+function tostring(number::Int)
+    rank, file = rankfile(number)
+    return Char(96+file) * string(rank)
+end
+
 
 # rankfile(Field("a8"))
 # rankfile(Field("b7"))
