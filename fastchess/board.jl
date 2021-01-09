@@ -182,3 +182,32 @@ end
 function is_occupied_by_black(board::Board, fields::UInt64)
     board.blacks & fields > 0
 end
+
+
+function n_pawns(board::Board, white::Bool)
+    white ? count_ones(board.pawns & board.whites) : count_ones(board.pawns & board.blacks)
+end
+
+function n_knights(board::Board, white::Bool)
+    white ? count_ones(board.knights & board.whites) : count_ones(board.knights & board.blacks)
+end
+
+function n_bishops(board::Board, white::Bool)
+    white ? count_ones(board.bishops & board.whites) : count_ones(board.bishops & board.blacks)
+end
+
+function n_rooks(board::Board, white::Bool)
+    white ? count_ones(board.rooks & board.whites) : count_ones(board.rooks & board.blacks)
+end
+
+function n_queens(board::Board, white::Bool)
+    white ? count_ones(board.queens & board.whites) : count_ones(board.queens & board.blacks)
+end
+
+function n_pieces(board::Board, white::Bool)
+    white ? count_ones(board.whites)-1 : count_ones(board.blacks)-1
+end
+
+function count_pieces(fields::Fields)
+    return count_ones(fields)
+end

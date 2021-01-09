@@ -6,6 +6,7 @@ struct Move
     to_piece::Piece # promotion
 end
 
+const EMPTY_MOVE = Move(0x0, 0, 0, 0x0)
 
 function Move(piece::Piece, from::Field, to::Field)
     return Move(piece, tonumber(from), tonumber(to), piece)
@@ -15,7 +16,20 @@ function Move(piece::Piece, from::Int, to::Int)
     return Move(piece, from, to, piece)
 end
 
+import Base.==
+function ==(left::Move, right::Move)
+    return left.from_piece == right.from_piece &&
+        left.from == right.from &&
+        left.to == right.to &&
+        left.to_piece == right.to_piece
+end
+
 function Base.show(io::IO, move::Move)
+    if move == EMPTY_MOVE
+        print(io, "Empty Move")
+        return
+    end
+
     if move.from_piece == move.to_piece
         print(io, "$(PIECE_SYMBOLS[move.from_piece]): $(tostring(move.from))-$(tostring(move.to))")
     else

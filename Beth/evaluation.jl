@@ -158,12 +158,6 @@ function beth_eval(board::Board, white::Bool; check_value=0., no_moves=false)
 
     development_score = white_development_score - black_development_score
 
-    # @info("piece_score: $piece_score, $white_piece_score, $black_piece_score") # 39 at beginning
-    # @info("check_score: $check_score") # ∈ ±{1, 1000}
-    # @info("pawn_score: $pawn_score, $white_pawn_score, $black_pawn_score") # ∈ [-16, 16] each ∈ [-8, 8] all isolated to all passers
-    # @info("center_score: $center_score, $white_center_score, $black_center_score") # ∈ [-8, 8] each ∈ [-4,4]
-    # @info("development_score: $development_score, $white_development_score, $black_development_score") # ∈ [-12, 12] each ∈ [-6,6]
-
     white_king_score = 0.
     black_king_score = 0.
 
@@ -176,9 +170,9 @@ function beth_eval(board::Board, white::Bool; check_value=0., no_moves=false)
         elseif f ≥ 7 && r < 8
             white_king_score += sum(min.(1, sum(board[r+1:min(8,r+2), 6:8, PAWN] .& board[r+1:r+2, 6:8, WHITE], dims=1)))
         end
-        if r < 8
-            white_king_score -= !all(board[r+1, f, [WHITE,PAWN]])
-        end
+        # if r < 8
+        #     white_king_score -= !all(board[r+1, f, [WHITE,PAWN]])
+        # end
 
         r, f = black_king_pos
         if f ≤ 3 && r > 1
@@ -186,9 +180,9 @@ function beth_eval(board::Board, white::Bool; check_value=0., no_moves=false)
         elseif f ≥ 7 && r > 1
             black_king_score += sum(min.(1, sum(board[max(1,r-2):r-1, 6:8, PAWN] .& board[max(1,r-2):r-1, 6:8, BLACK], dims=1)))
         end
-        if r > 1
-            black_king_score -= !all(board[r-1, f, [BLACK,PAWN]])
-        end
+        # if r > 1
+        #     black_king_score -= !all(board[r-1, f, [BLACK,PAWN]])
+        # end
     end
 
     king_score = white_king_score - black_king_score # ∈ [-3,3]
@@ -202,6 +196,14 @@ function beth_eval(board::Board, white::Bool; check_value=0., no_moves=false)
     end
 
     pawn_adv_score = white_pawn_adv_score - black_pawn_adv_score
+
+    # @info("piece_score: $piece_score, $white_piece_score, $black_piece_score") # 39 at beginning
+    # @info("check_score: $check_score") # ∈ ±{1, 1000}
+    # @info("pawn_score: $pawn_score, $white_pawn_score, $black_pawn_score") # ∈ [-16, 16] each ∈ [-8, 8] all isolated to all passers
+    # @info("center_score: $center_score, $white_center_score, $black_center_score") # ∈ [-8, 8] each ∈ [-4,4]
+    # @info("king_score: $development_score, $white_king_score, $black_king_score")
+    # @info("pawn_adv_score: $pawn_adv_score, $white_pawn_adv_score, $black_pawn_adv_score")
+    # @info("development_score: $development_score, $white_development_score, $black_development_score") # ∈ [-12, 12] each ∈ [-6,6]
 
     score = piece_score +
         1 * check_score +
