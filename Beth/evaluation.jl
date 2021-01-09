@@ -176,15 +176,19 @@ function beth_eval(board::Board, white::Bool; check_value=0., no_moves=false)
         elseif f ≥ 7 && r < 8
             white_king_score += sum(min.(1, sum(board[r+1:min(8,r+2), 6:8, PAWN] .& board[r+1:r+2, 6:8, WHITE], dims=1)))
         end
-        white_king_score -= !all(board[r+1, f, [WHITE,PAWN]])
+        if r < 8
+            white_king_score -= !all(board[r+1, f, [WHITE,PAWN]])
+        end
 
         r, f = black_king_pos
         if f ≤ 3 && r > 1
-            black_king_score += sum(min.(1, sum(board[max(1,r-2):r-1, 1:3, PAWN] .& board[r-2:r-1, 1:3, BLACK], dims=1)))
+            black_king_score += sum(min.(1, sum(board[max(1,r-2):r-1, 1:3, PAWN] .& board[max(1,r-2):r-1, 1:3, BLACK], dims=1)))
         elseif f ≥ 7 && r > 1
-            black_king_score += sum(min.(1, sum(board[max(1,r-2):r-1, 6:8, PAWN] .& board[r-2:r-1, 6:8, BLACK], dims=1)))
+            black_king_score += sum(min.(1, sum(board[max(1,r-2):r-1, 6:8, PAWN] .& board[max(1,r-2):r-1, 6:8, BLACK], dims=1)))
         end
-        black_king_score -= !all(board[r-1, f, [BLACK,PAWN]])
+        if r > 1
+            black_king_score -= !all(board[r-1, f, [BLACK,PAWN]])
+        end
     end
 
     king_score = white_king_score - black_king_score # ∈ [-3,3]

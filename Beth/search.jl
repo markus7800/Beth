@@ -648,3 +648,36 @@ get(beth.tb_3_men_mates, key_white, NaN)
 
 get(beth.tb_3_men_desperate_positions, key_black, NaN)
 get(beth.tb_3_men_mates, key_black, NaN)
+
+
+beth = Beth(value_heuristic=beth_eval, rank_heuristic=beth_rank_moves,
+    search_algorithm=BethMTDF, search_args=Dict("do_quiesce"=>true, "depth"=>6))
+
+board = Board(false, false)
+board.position[cartesian("h8")..., [BLACK, ROOK]] .= 1
+board.position[cartesian("h5")..., [BLACK, KING]] .= 1
+board.position[cartesian("h4")..., [WHITE, PAWN]] .= 1
+board.position[cartesian("h1")..., [WHITE, KING]] .= 1
+board.position[cartesian("f6")..., [WHITE, QUEEN]] .= 1
+board.position[cartesian("f3")..., [BLACK,KNIGHT]] .= 1
+board.position[cartesian("e6")..., [WHITE, BISHOP]] .= 1
+
+print_board(board)
+
+beth(board, true)
+
+
+board = Board(false, false)
+board.position[cartesian("h5")..., [BLACK, BISHOP]] .= 1
+board.position[cartesian("a1")..., [BLACK, KING]] .= 1
+board.position[cartesian("a2")..., [BLACK, PAWN]] .= 1
+board.position[cartesian("c1")..., [WHITE, KING]] .= 1
+board.position[cartesian("f1")..., [WHITE, KNIGHT]] .= 1
+board.position[cartesian("g4")..., [WHITE, KNIGHT]] .= 1
+
+
+print_board(board)
+
+beth(board, true)
+
+play_game(board, true, white_player=beth, black_player=user_input)
