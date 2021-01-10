@@ -161,7 +161,7 @@ function beth_eval(board::Board, white::Bool; check_value=0., no_moves=false)
     white_king_score = 0.
     black_king_score = 0.
 
-    if piece_count - sum(white_pawn_score) - sum(black_pawn_struct) > 4
+    if piece_count - sum(white_pawn_struct) - sum(black_pawn_struct) > 4
         # score doubled pawns as 1
         # penalize no pawn in front of king
         r, f = white_king_pos
@@ -190,7 +190,7 @@ function beth_eval(board::Board, white::Bool; check_value=0., no_moves=false)
     white_pawn_adv_score = 0.
     black_pawn_adv_score = 0.
 
-    if piece_count - sum(white_pawn_score) - sum(black_pawn_struct) ≤ 4
+    if piece_count - sum(white_pawn_struct) - sum(black_pawn_struct) ≤ 4
         white_pawn_adv_score = white_most_adv_pawn - 4 # ∈ [-2, 4]
         black_pawn_adv_score = 8-black_pawn_adv_score+1 - 4 # ∈ [-2, 4]
     end

@@ -61,7 +61,25 @@ function (beth::Beth)(board::Board, white::Bool)
     return move
 end
 
-#
-# function restore_board_position(beth::Beth, node::ABNode)
-#     restore_board_position(beth.board, beth.white, beth._board, node)
-# end
+
+include("../puzzles/puzzle.jl")
+include("../puzzles/puzzle_rush_20_12_13.jl")
+include("../puzzles/puzzle_rush_20_12_30.jl")
+include("../puzzles/puzzle_rush_20_12_31.jl")
+
+
+println("13=========")
+for (i, pz) in enumerate(rush_20_12_13)
+    println(pz.board)
+    println("$i: ", evaluation(pz.board, pz.white_to_move))
+end
+println("30=========")
+for (i, pz) in enumerate(rush_20_12_30)
+    println(pz.board)
+    println("$i: ", evaluation(pz.board, pz.white_to_move))
+end
+println("31==========")
+for (i, pz) in enumerate(rush_20_12_31)
+    println(pz.board)
+    println("$i: ", evaluation(pz.board, pz.white_to_move))
+end

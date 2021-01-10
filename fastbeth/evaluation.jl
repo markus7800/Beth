@@ -270,13 +270,13 @@ function evaluation(board::Board, white::Bool; check_value::Int=0, no_moves::Boo
     pawn_adv_score = white_pawn_adv_score - black_pawn_adv_score
 
 
-    # @info("piece_score: $piece_score, $white_piece_score, $black_piece_score") # 39 at beginning
-    # @info("check_score: $check_score") # ∈ ±{1, 1000}
-    # @info("pawn_score: $pawn_score, $white_pawn_score, $black_pawn_score") # ∈ [-16, 16] each ∈ [-8, 8] all isolated to all passers
-    # @info("center_score: $center_score, $white_center_score, $black_center_score") # ∈ [-8, 8] each ∈ [-4,4]
-    # @info("development_score: $development_score, $white_development_score, $black_development_score") # ∈ [-12, 12] each ∈ [-6,6]
-    # @info("king_score: $development_score, $white_king_score, $black_king_score")
-    # @info("pawn_adv_score: $pawn_adv_score, $white_pawn_adv_score, $black_pawn_adv_score")
+    @info("piece_score: $piece_score, $white_piece_score, $black_piece_score") # 39 at beginning
+    @info("check_score: $check_score") # ∈ ±{1, 1000}
+    @info("pawn_score: $pawn_score, $white_pawn_score, $black_pawn_score") # ∈ [-16, 16] each ∈ [-8, 8] all isolated to all passers
+    @info("center_score: $center_score, $white_center_score, $black_center_score") # ∈ [-8, 8] each ∈ [-4,4]
+    @info("development_score: $development_score, $white_development_score, $black_development_score") # ∈ [-12, 12] each ∈ [-6,6]
+    @info("king_score: $development_score, $white_king_score, $black_king_score")
+    @info("pawn_adv_score: $pawn_adv_score, $white_pawn_adv_score, $black_pawn_adv_score")
 
 
     score = 100 * piece_score +
