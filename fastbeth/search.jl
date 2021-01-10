@@ -388,40 +388,51 @@ function IterativeMTDF(beth::Beth; board=beth.board, white=beth.white)
     beth.n_quiesce_nodes = 0
     beth.max_quiesce_depth = 0
 
+    Δt = get(beth.search_args, "time", Inf)
+    t1 = time() + Δt
+
     min_depth = get(beth.search_args, "min_depth", 2)
     max_depth = beth.search_args["max_depth"]
 
     do_quiesce = get(beth.search_args, "do_quiesce", false)
     quiesce_depth = get(beth.search_args, "quiesce_depth", 20)
 
-    verbose = get(beth.search_args, "verbose", false)
+    verbose = get(beth.search_args, "verbose", 0)
 
     guesses = Int[0]
     root = ABNode() # reuse
+    reached_depth = 0
 
     v,t, = @timed for depth in min_depth:1:max_depth
+        reached_depth = depth
         guess = guesses[end]
-        if verbose
+        if verbose ≥ 2
             @info @sprintf "Depth: %d, guess: %.2f" depth guess/100
         end
 
-        value, best_move = MTDF(beth, depth=depth, do_quiesce=do_quiesce, quiesce_depth=quiesce_depth, verbose=verbose,
+        value, best_move = MTDF(beth, depth=depth, do_quiesce=do_quiesce, quiesce_depth=quiesce_depth, verbose=verbose ≥ 3,
             guess=guess, root=root, iter_id=depth)
 
         push!(guesses, value)
+
+        abs(value) == MAX_VALUE && break # stop early for mates
+
+        time() > t1 && break
     end
 
-    if verbose
+    if verbose ≥ 1
         @info(@sprintf "%d nodes explored in %.4f seconds (%.2f/s)." beth.n_explored_nodes t (beth.n_explored_nodes/t) )
         if do_quiesce
             q_perc = beth.n_quiesce_nodes/beth.n_explored_nodes*100
             @info(@sprintf "%d quiesce nodes (%.2f%%), %d/%d depth reached" beth.n_quiesce_nodes q_perc beth.max_quiesce_depth quiesce_depth)
         end
         @info(@sprintf "number of tree nodes: %d (%.2f MB)" count_nodes(root) Base.summarysize(root) / 10^6)
+        @info("Reached depth: $reached_depth")
     end
 
     return guesses[end], root.children[root.best_child_index].move
 end
+
 
 
 board = Board("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1")
@@ -482,7 +493,23 @@ beth = Beth(
         "max_depth" => 6,
         "do_quiesce" => true,
         "quiesce_depth" => 50,
-        "verbose" => true
+        "verbose" => 2
     ))
 
 @time beth(pz.board, pz.white_to_move)
+
+beth = Beth(
+    value_heuristic=evaluation,
+    rank_heuristic=rank_moves_by_eval,
+    search_algorithm=IterativeMTDF,
+    search_args=Dict(
+        "max_depth" => 20,
+        "do_quiesce" => true,
+        "quiesce_depth" => 50,
+        "verbose" => 1,
+        "time" => 1
+    ))
+
+@time beth(pz.board, pz.white_to_move)
+
+puzzle_rush(rush_20_12_31, beth, print_solution=true)

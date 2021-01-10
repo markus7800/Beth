@@ -1,0 +1,1689 @@
+[ Info: Heuristics: evaluation, rank_moves_by_eval
+[ Info: Search: IterativeMTDF
+[ Info: Args: Dict{String,Integer}("quiesce_depth" => 50,"time" => 1,"max_depth" => 20,"verbose" => 1,"do_quiesce" => true)
+[ Info: Puzzle 1:
+Chess Board
+1 • • • • • • R K
+2 • • P • • P • •
+3 • Q • • • • • P
+4 P • • • • • • P
+5 P N • • P P Q •
+6 • P • P • • • •
+7 • • • N • • • •
+8 • K • • • • R •
+  h g f e d c b a
+[ Info: 114537 nodes explored in 1.0763 seconds (106419.47/s).
+[ Info: 82497 quiesce nodes (72.03%), 11/50 depth reached
+[ Info: number of tree nodes: 16644 (14.51 MB)
+[ Info: Reached depth: 8
+Computer says: Q: b5-b1 valued with -1000.00.
+[ Info: Move was correct!
+Chess Board
+8 ⋅ r ⋅ ⋅ ⋅ ⋅ k ⋅
+7 ⋅ ⋅ ⋅ ⋅ n ⋅ ⋅ ⋅
+6 ⋅ ⋅ ⋅ ⋅ p ⋅ P ⋅
+5 ⋅ ⋅ p p ⋅ ⋅ N p
+4 p ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ P
+3 P ⋅ ⋅ ⋅ ⋅ ⋅ Q ⋅
+2 ⋅ ⋅ P ⋅ ⋅ P ⋅ ⋅
+1 K q ⋅ ⋅ ⋅ ⋅ ⋅ ⋅
+  a b c d e f g h
+ - -
+
+[ Info: Puzzle solved! (Difficulty: 173)
+[ Info: Spent 1.92s.
+================================================================================
+
+
+[ Info: Puzzle 2:
+Chess Board
+1 • K • • • • • •
+2 • P P • • • • •
+3 • • • • R • P •
+4 • • P • P • • •
+5 • • R • P • • •
+6 • P • N • • • •
+7 P • • • • • R P
+8 • K • N • R • •
+  h g f e d c b a
+[ Info: 640477 nodes explored in 1.2891 seconds (496834.78/s).
+[ Info: 377501 quiesce nodes (58.94%), 8/50 depth reached
+[ Info: number of tree nodes: 136100 (65.32 MB)
+[ Info: Reached depth: 18
+Computer says: R: d3-d1 valued with -1000.00.
+[ Info: Move was correct!
+[ Info: Computer says Kh2!
+Chess Board
+1 • • • • R • • •
+2 K P P • • • • •
+3 • • • • • • P •
+4 • • P • P • • •
+5 • • R • P • • •
+6 • P • N • • • •
+7 P • • • • • R P
+8 • K • N • R • •
+  h g f e d c b a
+[ Info: 1692607 nodes explored in 1.7095 seconds (990093.16/s).
+[ Info: 1058100 quiesce nodes (62.51%), 8/50 depth reached
+[ Info: number of tree nodes: 457617 (93.71 MB)
+[ Info: Reached depth: 19
+Computer says: R: f5-h5 valued with -1000.00.
+[ Info: Move was correct!
+Chess Board
+8 ⋅ ⋅ R ⋅ n ⋅ k ⋅
+7 p R ⋅ ⋅ ⋅ ⋅ ⋅ p
+6 ⋅ ⋅ ⋅ ⋅ N ⋅ p ⋅
+5 ⋅ ⋅ ⋅ p ⋅ ⋅ ⋅ r
+4 ⋅ ⋅ ⋅ P ⋅ p ⋅ ⋅
+3 ⋅ P ⋅ ⋅ ⋅ ⋅ ⋅ ⋅
+2 ⋅ ⋅ ⋅ ⋅ ⋅ P P K
+1 ⋅ ⋅ ⋅ r ⋅ ⋅ ⋅ ⋅
+  a b c d e f g h
+ - -
+
+[ Info: Puzzle solved! (Difficulty: 170)
+[ Info: Spent 7.61s.
+================================================================================
+
+
+[ Info: Puzzle 3:
+Chess Board
+1 • K • • • • • •
+2 P N P • • • • P
+3 B P R • • • P •
+4 • • • P • • • •
+5 • • • P • • • •
+6 • • • • • • • P
+7 P • P • • • P •
+8 • • K • • R • •
+  h g f e d c b a
+[ Info: 1663775 nodes explored in 1.5068 seconds (1104143.64/s).
+[ Info: 976243 quiesce nodes (58.68%), 8/50 depth reached
+[ Info: number of tree nodes: 598370 (103.61 MB)
+[ Info: Reached depth: 9
+Computer says: R: c8-c1 valued with -1000.00.
+[ Info: Move was correct!
+[ Info: Computer says Ne1!
+Chess Board
+1 • K • N • R • •
+2 P • P • • • • P
+3 B P R • • • P •
+4 • • • P • • • •
+5 • • • P • • • •
+6 • • • • • • • P
+7 P • P • • • P •
+8 • • K • • • • •
+  h g f e d c b a
+[ Info: 1800445 nodes explored in 1.5539 seconds (1158641.70/s).
+[ Info: 1142570 quiesce nodes (63.46%), 9/50 depth reached
+[ Info: number of tree nodes: 571875 (95.99 MB)
+[ Info: Reached depth: 9
+Computer says: R: c1-e1 valued with -1000.00.
+[ Info: Move was correct!
+Chess Board
+8 ⋅ ⋅ ⋅ ⋅ ⋅ k ⋅ ⋅
+7 ⋅ p ⋅ ⋅ ⋅ p ⋅ p
+6 p ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅
+5 ⋅ ⋅ ⋅ ⋅ p ⋅ ⋅ ⋅
+4 ⋅ ⋅ ⋅ ⋅ P ⋅ ⋅ ⋅
+3 ⋅ P ⋅ ⋅ ⋅ R P b
+2 P ⋅ ⋅ ⋅ ⋅ P ⋅ P
+1 ⋅ ⋅ ⋅ ⋅ r ⋅ K ⋅
+  a b c d e f g h
+ - -
+
+[ Info: Puzzle solved! (Difficulty: 254)
+[ Info: Spent 11.23s.
+================================================================================
+
+
+[ Info: Puzzle 4:
+Chess Board
+8 • • R • R • K •
+7 P P Q • • P • P
+6 • • • • • • P B
+5 • B P P B B • •
+4 Q • • • • • • •
+3 P • P • • • • •
+2 • • • • • P P P
+1 R • • • • R K •
+  a b c d e f g h
+[ Info: 1864425 nodes explored in 2.6041 seconds (715967.25/s).
+[ Info: 1857126 quiesce nodes (99.61%), 21/50 depth reached
+[ Info: number of tree nodes: 5790 (2.04 MB)
+[ Info: Reached depth: 5
+Computer says: B: b5-e8 valued with 2.20.
+[ Info: Move was correct!
+Chess Board
+8 ⋅ ⋅ r ⋅ B ⋅ k ⋅
+7 p p q ⋅ ⋅ p ⋅ p
+6 ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ p B
+5 ⋅ ⋅ P p b b ⋅ ⋅
+4 Q ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅
+3 P ⋅ P ⋅ ⋅ ⋅ ⋅ ⋅
+2 ⋅ ⋅ ⋅ ⋅ ⋅ P P P
+1 R ⋅ ⋅ ⋅ ⋅ R K ⋅
+  a b c d e f g h
+ - -
+
+[ Info: Puzzle solved! (Difficulty: 325)
+[ Info: Spent 2.66s.
+================================================================================
+
+
+[ Info: Puzzle 5:
+Chess Board
+1 • K • • R • • R
+2 P P P • R • P P
+3 • • • P • • • •
+4 • • • • • • • •
+5 • • • • • • • •
+6 • • • • • P • •
+7 P P • • • • Q P
+8 K • Q • • • • •
+  h g f e d c b a
+[ Info: 595813 nodes explored in 1.3483 seconds (441904.24/s).
+[ Info: 331504 quiesce nodes (55.64%), 10/50 depth reached
+[ Info: number of tree nodes: 144881 (95.44 MB)
+[ Info: Reached depth: 10
+Computer says: Q: f8-f2 valued with -1000.00.
+[ Info: Move was correct!
+[ Info: Computer says Kh1!
+Chess Board
+1 K • • • R • • R
+2 P P Q • R • P P
+3 • • • P • • • •
+4 • • • • • • • •
+5 • • • • • • • •
+6 • • • • • P • •
+7 P P • • • • Q P
+8 K • • • • • • •
+  h g f e d c b a
+[ Info: 461314 nodes explored in 1.1799 seconds (390970.64/s).
+[ Info: 252630 quiesce nodes (54.76%), 8/50 depth reached
+[ Info: number of tree nodes: 117020 (69.10 MB)
+[ Info: Reached depth: 10
+Computer says: Q: f2-g2 valued with -1000.00.
+[ Info: Move was correct!
+Chess Board
+8 ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ k
+7 p Q ⋅ ⋅ ⋅ ⋅ p p
+6 ⋅ ⋅ p ⋅ ⋅ ⋅ ⋅ ⋅
+5 ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅
+4 ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅
+3 ⋅ ⋅ ⋅ ⋅ P ⋅ ⋅ ⋅
+2 P P ⋅ r ⋅ ⋅ q P
+1 R ⋅ ⋅ R ⋅ ⋅ ⋅ K
+  a b c d e f g h
+ - -
+
+[ Info: Puzzle solved! (Difficulty: 399)
+[ Info: Spent 4.39s.
+================================================================================
+
+
+[ Info: Puzzle 6:
+Chess Board
+1 • K • R • • • R
+2 • P P • • • • Q
+3 P • • • • • • •
+4 • • • • • • Q •
+5 • • • N • • • •
+6 P • B • • • • •
+7 • P P • • • • •
+8 • K R • • • • R
+  h g f e d c b a
+[ Info: 462424 nodes explored in 1.5690 seconds (294730.37/s).
+[ Info: 357209 quiesce nodes (77.25%), 11/50 depth reached
+[ Info: number of tree nodes: 78332 (34.37 MB)
+[ Info: Reached depth: 7
+Computer says: Q: a2-a1 valued with -4.60.
+[ Info: Move was correct!
+[ Info: Computer says Ra1!
+Chess Board
+1 • K • • • • • R
+2 • P P • • • • •
+3 P • • • • • • •
+4 • • • • • • Q •
+5 • • • N • • • •
+6 P • B • • • • •
+7 • P P • • • • •
+8 • K R • • • • R
+  h g f e d c b a
+[ Info: 1392726 nodes explored in 2.8271 seconds (492635.89/s).
+[ Info: 804086 quiesce nodes (57.73%), 9/50 depth reached
+[ Info: number of tree nodes: 410784 (177.78 MB)
+[ Info: Reached depth: 10
+Computer says: R: a8-a1 valued with -4.50.
+[ Info: Move was correct!
+[ Info: Computer says Kh2!
+Chess Board
+1 • • • • • • • R
+2 K P P • • • • •
+3 P • • • • • • •
+4 • • • • • • Q •
+5 • • • N • • • •
+6 P • B • • • • •
+7 • P P • • • • •
+8 • K R • • • • •
+  h g f e d c b a
+[ Info: 793220 nodes explored in 1.4777 seconds (536782.69/s).
+[ Info: 473289 quiesce nodes (59.67%), 9/50 depth reached
+[ Info: number of tree nodes: 219482 (96.39 MB)
+[ Info: Reached depth: 8
+Computer says: B: f6-e5 valued with -4.50.
+[ Info: Move was correct!
+Chess Board
+8 ⋅ ⋅ ⋅ ⋅ ⋅ r k ⋅
+7 ⋅ ⋅ ⋅ ⋅ ⋅ p p ⋅
+6 ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ p
+5 ⋅ ⋅ ⋅ ⋅ b ⋅ ⋅ ⋅
+4 ⋅ Q ⋅ ⋅ ⋅ ⋅ ⋅ ⋅
+3 ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ P
+2 ⋅ ⋅ ⋅ ⋅ ⋅ P P K
+1 r ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅
+  a b c d e f g h
+ - -
+
+[ Info: Puzzle solved! (Difficulty: 429)
+[ Info: Spent 10.87s.
+================================================================================
+
+
+[ Info: Puzzle 7:
+Chess Board
+1 • K • • Q B N R
+2 • P P • • P P P
+3 B • N • • • • •
+4 • • • R P B • •
+5 • • • • • • • •
+6 • Q • • P • • •
+7 P P P P • P P P
+8 R • B K • • N R
+  h g f e d c b a
+[ Info: 2271466 nodes explored in 3.3326 seconds (681583.46/s).
+[ Info: 2231060 quiesce nodes (98.22%), 24/50 depth reached
+[ Info: number of tree nodes: 33203 (8.53 MB)
+[ Info: Reached depth: 7
+Computer says: Q: g6-g2 valued with -1000.00.
+[ Info: Move was correct!
+Chess Board
+8 r n ⋅ ⋅ k b ⋅ r
+7 p p p ⋅ p p p p
+6 ⋅ ⋅ ⋅ p ⋅ ⋅ ⋅ ⋅
+5 ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅
+4 ⋅ ⋅ B P R ⋅ ⋅ ⋅
+3 ⋅ ⋅ ⋅ ⋅ ⋅ N ⋅ b
+2 P P P ⋅ ⋅ P q ⋅
+1 R N B Q ⋅ ⋅ K ⋅
+  a b c d e f g h
+ kq -
+
+[ Info: Puzzle solved! (Difficulty: 487)
+[ Info: Spent 3.47s.
+================================================================================
+
+
+[ Info: Puzzle 8:
+Chess Board
+1 • K • • Q • • •
+2 • • P • • • • •
+3 • • • • • • • •
+4 • P • • • • P •
+5 • • • • • • K •
+6 • • • • • • • •
+7 • • • • • • • •
+8 • • • • • • • •
+  h g f e d c b a
+[ Info: 1297506 nodes explored in 1.9341 seconds (670849.64/s).
+[ Info: 584960 quiesce nodes (45.08%), 2/50 depth reached
+[ Info: number of tree nodes: 520209 (133.71 MB)
+[ Info: Reached depth: 13
+Computer says: P: f2-f1 Q valued with -8.10.
+[ Info: Move was correct!
+[ Info: Computer says Qf1!
+Chess Board
+1 • K Q • • • • •
+2 • • • • • • • •
+3 • • • • • • • •
+4 • P • • • • P •
+5 • • • • • • K •
+6 • • • • • • • •
+7 • • • • • • • •
+8 • • • • • • • •
+  h g f e d c b a
+[ Info: 741728 nodes explored in 1.2734 seconds (582487.23/s).
+[ Info: 314255 quiesce nodes (42.37%), 2/50 depth reached
+[ Info: number of tree nodes: 314651 (92.31 MB)
+[ Info: Reached depth: 12
+Computer says: K: g1-f1 valued with -12.00.
+[ Info: Move was correct!
+[ Info: Computer says Ka6!
+Chess Board
+1 • • K • • • • •
+2 • • • • • • • •
+3 • • • • • • • •
+4 • P • • • • P •
+5 • • • • • • • •
+6 • • • • • • • K
+7 • • • • • • • •
+8 • • • • • • • •
+  h g f e d c b a
+[ Info: 836739 nodes explored in 2.1740 seconds (384881.17/s).
+[ Info: 337579 quiesce nodes (40.34%), 2/50 depth reached
+[ Info: number of tree nodes: 265904 (148.58 MB)
+[ Info: Reached depth: 12
+Computer says: P: g4-g3 valued with -12.00.
+[ Info: Move was correct!
+[ Info: Computer says b5!
+Chess Board
+1 • • K • • • • •
+2 • • • • • • • •
+3 • P • • • • • •
+4 • • • • • • • •
+5 • • • • • • P •
+6 • • • • • • • K
+7 • • • • • • • •
+8 • • • • • • • •
+  h g f e d c b a
+[ Info: 835143 nodes explored in 1.0508 seconds (794804.29/s).
+[ Info: 385918 quiesce nodes (46.21%), 2/50 depth reached
+[ Info: number of tree nodes: 319448 (80.10 MB)
+[ Info: Reached depth: 11
+Computer says: P: g3-g2 valued with -8.10.
+[ Info: Move was correct!
+[ Info: Computer says b6!
+Chess Board
+1 • • K • • • • •
+2 • P • • • • • •
+3 • • • • • • • •
+4 • • • • • • • •
+5 • • • • • • • •
+6 • • • • • • P K
+7 • • • • • • • •
+8 • • • • • • • •
+  h g f e d c b a
+[ Info: 1360274 nodes explored in 3.3207 seconds (409629.37/s).
+[ Info: 578317 quiesce nodes (42.51%), 2/50 depth reached
+[ Info: number of tree nodes: 591703 (234.28 MB)
+[ Info: Reached depth: 10
+Computer says: P: g2-g1 Q valued with -14.00.
+[ Info: Move was correct!
+Chess Board
+8 ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅
+7 ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅
+6 K P ⋅ ⋅ ⋅ ⋅ ⋅ ⋅
+5 ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅
+4 ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅
+3 ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅
+2 ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅
+1 ⋅ ⋅ ⋅ ⋅ ⋅ k q ⋅
+  a b c d e f g h
+ - -
+
+[ Info: Puzzle solved! (Difficulty: 544)
+[ Info: Spent 30.22s.
+================================================================================
+
+
+[ Info: Puzzle 9:
+Chess Board
+1 • K • R • • • R
+2 • P • • • B B •
+3 P • Q • • N P P
+4 • • P • • • • •
+5 N • • P P • • •
+6 • P • • • N P B
+7 P • P • • R • P
+8 • K • R Q • • •
+  h g f e d c b a
+[ Info: 1525981 nodes explored in 1.9763 seconds (772147.03/s).
+[ Info: 1525438 quiesce nodes (99.96%), 23/50 depth reached
+[ Info: number of tree nodes: 174 (0.10 MB)
+[ Info: Reached depth: 2
+Computer says: N: c6-d4 valued with -1.50.
+[ Info: Move was correct!
+[ Info: Computer says Qf2!
+Chess Board
+1 • K • R • • • R
+2 • P Q • • B B •
+3 P • • • • N P P
+4 • • P • N • • •
+5 N • • P P • • •
+6 • P • • • • P B
+7 P • P • • R • P
+8 • K • R Q • • •
+  h g f e d c b a
+[ Info: 775856 nodes explored in 1.0959 seconds (707984.50/s).
+[ Info: 775685 quiesce nodes (99.98%), 23/50 depth reached
+[ Info: number of tree nodes: 159 (0.10 MB)
+[ Info: Reached depth: 2
+Computer says: N: d4-c2 valued with -1.50.
+[ Info: Move was correct!
+[ Info: Computer says Qc2!
+Chess Board
+1 • K • R • • • R
+2 • P • • • Q B •
+3 P • • • • N P P
+4 • • P • • • • •
+5 N • • P P • • •
+6 • P • • • • P B
+7 P • P • • R • P
+8 • K • R Q • • •
+  h g f e d c b a
+[ Info: 1870596 nodes explored in 2.5078 seconds (745915.25/s).
+[ Info: 1867982 quiesce nodes (99.86%), 22/50 depth reached
+[ Info: number of tree nodes: 2279 (0.65 MB)
+[ Info: Reached depth: 3
+Computer says: N: h5-f4 valued with -1.50.
+[ Info: Puzzle failed! (Difficulty: 580)
+Puzzle
+Chess Board
+1 • K • R • • • R
+2 • P • • • B B •
+3 P • Q • • N P P
+4 • • P • • • • •
+5 N • • P P • • •
+6 • P • • • N P B
+7 P • P • • R • P
+8 • K • R Q • • •
+  h g f e d c b a
+Difficulty:
+580
+Solution:
+1:      Nd4
+2: Qf2, Nc2
+4: Qc2, d4
+[ Info: Spent 5.62s.
+================================================================================
+
+
+[ Info: Puzzle 10:
+Chess Board
+8 • • • • • • K •
+7 P P P • • P P P
+6 N • • P • • • •
+5 • • • • • • Q •
+4 • • B N • • • •
+3 • • P • R • • •
+2 Q P • • • P P P
+1 • • B • • • K •
+  a b c d e f g h
+[ Info: 829574 nodes explored in 1.5449 seconds (536974.08/s).
+[ Info: 636258 quiesce nodes (76.70%), 12/50 depth reached
+[ Info: number of tree nodes: 144345 (40.26 MB)
+[ Info: Reached depth: 9
+Computer says: Q: g5-d8 valued with 1000.00.
+[ Info: Move was correct!
+[ Info: Computer says Re8!
+Chess Board
+8 • • • Q R • K •
+7 P P P • • P P P
+6 N • • P • • • •
+5 • • • • • • • •
+4 • • B N • • • •
+3 • • P • • • • •
+2 Q P • • • P P P
+1 • • B • • • K •
+  a b c d e f g h
+[ Info: 223005 nodes explored in 1.7575 seconds (126888.86/s).
+[ Info: 124464 quiesce nodes (55.81%), 9/50 depth reached
+[ Info: number of tree nodes: 51168 (47.40 MB)
+[ Info: Reached depth: 8
+Computer says: Q: d8-e8 valued with 1000.00.
+[ Info: Move was correct!
+Chess Board
+8 ⋅ ⋅ ⋅ ⋅ Q ⋅ k ⋅
+7 p p p ⋅ ⋅ p p p
+6 n ⋅ ⋅ p ⋅ ⋅ ⋅ ⋅
+5 ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅
+4 ⋅ ⋅ b N ⋅ ⋅ ⋅ ⋅
+3 ⋅ ⋅ P ⋅ ⋅ ⋅ ⋅ ⋅
+2 q P ⋅ ⋅ ⋅ P P P
+1 ⋅ ⋅ B ⋅ ⋅ ⋅ K ⋅
+  a b c d e f g h
+ - -
+
+[ Info: Puzzle solved! (Difficulty: 615)
+[ Info: Spent 4.30s.
+================================================================================
+
+
+[ Info: Puzzle 11:
+Chess Board
+8 R N B Q K • N R
+7 P P • • B • • P
+6 • • P • P • P •
+5 • • • P P P • Q
+4 • • • P • P • N
+3 • • • • • • • •
+2 P P P • • • P P
+1 R N B • K B • R
+  a b c d e f g h
+[ Info: 1617960 nodes explored in 1.8196 seconds (889207.85/s).
+[ Info: 1512309 quiesce nodes (93.47%), 28/50 depth reached
+[ Info: number of tree nodes: 87314 (20.73 MB)
+[ Info: Reached depth: 7
+Computer says: N: h4-g6 valued with 3.20.
+[ Info: Move was correct!
+[ Info: Computer says hg6!
+Chess Board
+8 R N B Q K • N R
+7 P P • • B • • •
+6 • • P • P • P •
+5 • • • P P P • Q
+4 • • • P • P • •
+3 • • • • • • • •
+2 P P P • • • P P
+1 R N B • K B • R
+  a b c d e f g h
+[ Info: 2655478 nodes explored in 2.4775 seconds (1071844.94/s).
+[ Info: 2517184 quiesce nodes (94.79%), 26/50 depth reached
+[ Info: number of tree nodes: 116984 (30.98 MB)
+[ Info: Reached depth: 7
+Computer says: Q: h5-h8 valued with 3.30.
+[ Info: Move was correct!
+Chess Board
+8 r n b q k ⋅ n Q
+7 p p ⋅ ⋅ b ⋅ ⋅ ⋅
+6 ⋅ ⋅ p ⋅ p ⋅ p ⋅
+5 ⋅ ⋅ ⋅ p P p ⋅ ⋅
+4 ⋅ ⋅ ⋅ P ⋅ P ⋅ ⋅
+3 ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅
+2 P P P ⋅ ⋅ ⋅ P P
+1 R N B ⋅ K B ⋅ R
+  a b c d e f g h
+ KQq -
+
+[ Info: Puzzle solved! (Difficulty: 653)
+[ Info: Spent 5.19s.
+================================================================================
+
+
+[ Info: Puzzle 12:
+Chess Board
+8 • R • • • R • K
+7 • • • • N • P P
+6 P • • Q P • B •
+5 • • • • P • • •
+4 • Q • • • • • •
+3 • • • • • • P •
+2 P P • • • • • P
+1 • • R • • R K •
+  a b c d e f g h
+[ Info: 580406 nodes explored in 2.0405 seconds (284437.32/s).
+[ Info: 465415 quiesce nodes (80.19%), 13/50 depth reached
+[ Info: number of tree nodes: 83340 (43.37 MB)
+[ Info: Reached depth: 8
+Computer says: R: f1-f8 valued with 7.50.
+[ Info: Move was correct!
+[ Info: Computer says Rf8!
+Chess Board
+8 • • • • • R • K
+7 • • • • N • P P
+6 P • • Q P • B •
+5 • • • • P • • •
+4 • Q • • • • • •
+3 • • • • • • P •
+2 P P • • • • • P
+1 • • R • • • K •
+  a b c d e f g h
+[ Info: 794495 nodes explored in 1.6259 seconds (488635.17/s).
+[ Info: 624852 quiesce nodes (78.65%), 13/50 depth reached
+[ Info: number of tree nodes: 143549 (44.26 MB)
+[ Info: Reached depth: 7
+Computer says: Q: d6-b4 valued with 7.40.
+[ Info: Move was correct!
+Chess Board
+8 ⋅ ⋅ ⋅ ⋅ ⋅ r ⋅ k
+7 ⋅ ⋅ ⋅ ⋅ n ⋅ p p
+6 p ⋅ ⋅ ⋅ P ⋅ b ⋅
+5 ⋅ ⋅ ⋅ ⋅ P ⋅ ⋅ ⋅
+4 ⋅ Q ⋅ ⋅ ⋅ ⋅ ⋅ ⋅
+3 ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ P ⋅
+2 P P ⋅ ⋅ ⋅ ⋅ ⋅ P
+1 ⋅ ⋅ R ⋅ ⋅ ⋅ K ⋅
+  a b c d e f g h
+ - -
+
+[ Info: Puzzle solved! (Difficulty: 730)
+[ Info: Spent 4.75s.
+================================================================================
+
+
+[ Info: Puzzle 13:
+Chess Board
+1 • K • • • • • •
+2 P P P • R P • •
+3 • • • B N • • •
+4 • • • P • • • •
+5 • • • P • • Q •
+6 P • P N P • • •
+7 K P • B • Q • •
+8 • • R • • • • •
+  h g f e d c b a
+[ Info: 945937 nodes explored in 1.1603 seconds (815272.63/s).
+[ Info: 939004 quiesce nodes (99.27%), 18/50 depth reached
+[ Info: number of tree nodes: 5646 (2.83 MB)
+[ Info: Reached depth: 4
+Computer says: R: f8-b8 valued with -2.50.
+[ Info: Move was correct!
+[ Info: Computer says Qd5!
+Chess Board
+1 • K • • • • • •
+2 P P P • R P • •
+3 • • • B N • • •
+4 • • • P • • • •
+5 • • • P Q • • •
+6 P • P N P • • •
+7 K P • B • Q • •
+8 • • • • • • R •
+  h g f e d c b a
+[ Info: 2407434 nodes explored in 2.5723 seconds (935903.84/s).
+[ Info: 2380914 quiesce nodes (98.90%), 16/50 depth reached
+[ Info: number of tree nodes: 21849 (5.70 MB)
+[ Info: Reached depth: 5
+Computer says: R: b8-b1 valued with -2.70.
+[ Info: Move was correct!
+Chess Board
+8 ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅
+7 ⋅ ⋅ q ⋅ b ⋅ p k
+6 ⋅ ⋅ ⋅ p n p ⋅ p
+5 ⋅ ⋅ ⋅ Q p ⋅ ⋅ ⋅
+4 ⋅ ⋅ ⋅ ⋅ P ⋅ ⋅ ⋅
+3 ⋅ ⋅ ⋅ N B ⋅ ⋅ ⋅
+2 ⋅ ⋅ P R ⋅ P P P
+1 ⋅ r ⋅ ⋅ ⋅ ⋅ K ⋅
+  a b c d e f g h
+ - -
+
+[ Info: Puzzle solved! (Difficulty: 788)
+[ Info: Spent 3.87s.
+================================================================================
+
+
+[ Info: Puzzle 14:
+Chess Board
+8 R • • • • • K •
+7 P P • • • P P •
+6 • • • • R • • •
+5 • P • • N • Q P
+4 • • P R B • • N
+3 P • • • P • • •
+2 • • • Q B P P P
+1 R • • • • • • K
+  a b c d e f g h
+[ Info: 1458500 nodes explored in 1.9193 seconds (759916.89/s).
+[ Info: 1453471 quiesce nodes (99.66%), 20/50 depth reached
+[ Info: number of tree nodes: 4143 (1.37 MB)
+[ Info: Reached depth: 4
+Computer says: R: d4-e4 valued with 5.60.
+[ Info: Move was correct!
+Chess Board
+8 r ⋅ ⋅ ⋅ ⋅ ⋅ k ⋅
+7 p p ⋅ ⋅ ⋅ p p ⋅
+6 ⋅ ⋅ ⋅ ⋅ r ⋅ ⋅ ⋅
+5 ⋅ P ⋅ ⋅ n ⋅ q p
+4 ⋅ ⋅ P ⋅ R ⋅ ⋅ N
+3 P ⋅ ⋅ ⋅ P ⋅ ⋅ ⋅
+2 ⋅ ⋅ ⋅ Q B P P P
+1 R ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ K
+  a b c d e f g h
+ - -
+
+[ Info: Puzzle solved! (Difficulty: 850)
+[ Info: Spent 1.96s.
+================================================================================
+
+
+[ Info: Puzzle 15:
+Chess Board
+1 • K • • R • • •
+2 P P • Q • • • •
+3 • • P • B • • •
+4 • • • P • R • •
+5 • • • P P • • P
+6 • P • • Q • • P
+7 P • P • • R • •
+8 • K B • • R • •
+  h g f e d c b a
+[ Info: 639098 nodes explored in 1.8446 seconds (346464.27/s).
+[ Info: 581998 quiesce nodes (91.07%), 17/50 depth reached
+[ Info: number of tree nodes: 36387 (27.79 MB)
+[ Info: Reached depth: 6
+Computer says: R: c7-c4 valued with -1.50.
+[ Info: Move was correct!
+[ Info: Computer says Bc4!
+Chess Board
+1 • K • • R • • •
+2 P P • Q • • • •
+3 • • P • • • • •
+4 • • • P • B • •
+5 • • • P P • • P
+6 • P • • Q • • P
+7 P • P • • • • •
+8 • K B • • R • •
+  h g f e d c b a
+[ Info: 665003 nodes explored in 2.1624 seconds (307537.14/s).
+[ Info: 564485 quiesce nodes (84.88%), 13/50 depth reached
+[ Info: number of tree nodes: 67425 (44.74 MB)
+[ Info: Reached depth: 6
+Computer says: Q: d6-c5 valued with -1.80.
+[ Info: Move was correct!
+[ Info: Computer says Kf1!
+Chess Board
+1 • • K • R • • •
+2 P P • Q • • • •
+3 • • P • • • • •
+4 • • • P • B • •
+5 • • • P P Q • P
+6 • P • • • • • P
+7 P • P • • • • •
+8 • K B • • R • •
+  h g f e d c b a
+[ Info: 649327 nodes explored in 1.8874 seconds (344027.42/s).
+[ Info: 536786 quiesce nodes (82.67%), 14/50 depth reached
+[ Info: number of tree nodes: 78716 (49.86 MB)
+[ Info: Reached depth: 6
+Computer says: Q: c5-c4 valued with -2.10.
+[ Info: Move was correct!
+Chess Board
+8 ⋅ ⋅ r ⋅ ⋅ b k ⋅
+7 ⋅ ⋅ ⋅ ⋅ ⋅ p ⋅ p
+6 p ⋅ ⋅ ⋅ ⋅ ⋅ p ⋅
+5 P ⋅ ⋅ P p ⋅ ⋅ ⋅
+4 ⋅ ⋅ q ⋅ P ⋅ ⋅ ⋅
+3 ⋅ ⋅ ⋅ ⋅ ⋅ P ⋅ ⋅
+2 ⋅ ⋅ ⋅ ⋅ Q ⋅ P P
+1 ⋅ ⋅ ⋅ R ⋅ K ⋅ ⋅
+  a b c d e f g h
+ - -
+
+[ Info: Puzzle solved! (Difficulty: 853)
+[ Info: Spent 6.92s.
+================================================================================
+
+
+[ Info: Puzzle 16:
+Chess Board
+8 • • • • • • • •
+7 P • • • • • • •
+6 • • • • • • • •
+5 • • • • • • P P
+4 • • • • • • Q K
+3 P B • • • • • •
+2 • P P • • • B P
+1 • K Q • • • • •
+  a b c d e f g h
+[ Info: 1192340 nodes explored in 1.5446 seconds (771953.62/s).
+[ Info: 791818 quiesce nodes (66.41%), 9/50 depth reached
+[ Info: number of tree nodes: 288760 (79.33 MB)
+[ Info: Reached depth: 9
+Computer says: Q: c1-e1 valued with 8.60.
+[ Info: Move was correct!
+[ Info: Computer says Kh3!
+Chess Board
+8 • • • • • • • •
+7 P • • • • • • •
+6 • • • • • • • •
+5 • • • • • • P P
+4 • • • • • • Q •
+3 P B • • • • • K
+2 • P P • • • B P
+1 • K • • Q • • •
+  a b c d e f g h
+[ Info: 622916 nodes explored in 1.5638 seconds (398323.41/s).
+[ Info: 369658 quiesce nodes (59.34%), 8/50 depth reached
+[ Info: number of tree nodes: 185853 (98.21 MB)
+[ Info: Reached depth: 8
+Computer says: B: b3-e6 valued with 9.00.
+[ Info: Move was correct!
+[ Info: Computer says Kh2!
+Chess Board
+8 • • • • • • • •
+7 P • • • • • • •
+6 • • • • B • • •
+5 • • • • • • P P
+4 • • • • • • Q •
+3 P • • • • • • •
+2 • P P • • • B K
+1 • K • • Q • • •
+  a b c d e f g h
+[ Info: 551583 nodes explored in 1.0514 seconds (524638.51/s).
+[ Info: 313848 quiesce nodes (56.90%), 6/50 depth reached
+[ Info: number of tree nodes: 175441 (62.48 MB)
+[ Info: Reached depth: 8
+Computer says: B: e6-g4 valued with 7.60.
+[ Info: Move was correct!
+Chess Board
+8 ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅
+7 p ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅
+6 ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅
+5 ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ p p
+4 ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ B ⋅
+3 P ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅
+2 ⋅ P P ⋅ ⋅ ⋅ b k
+1 ⋅ K ⋅ ⋅ Q ⋅ ⋅ ⋅
+  a b c d e f g h
+ - -
+
+[ Info: Puzzle solved! (Difficulty: 914)
+[ Info: Spent 8.61s.
+================================================================================
+
+
+[ Info: Puzzle 17:
+Chess Board
+1 K • • R • R • •
+2 P P P Q • • P P
+3 • • • • B • • •
+4 • • • • • • • •
+5 • • • P N • • •
+6 • • • P • • Q P
+7 P P P • • • P •
+8 • K • • R • R •
+  h g f e d c b a
+[ Info: 2824087 nodes explored in 3.6878 seconds (765797.18/s).
+[ Info: 2795715 quiesce nodes (99.00%), 20/50 depth reached
+[ Info: number of tree nodes: 21079 (10.52 MB)
+[ Info: Reached depth: 5
+Computer says: N: d5-f4 valued with -0.20.
+[ Info: Move was correct!
+[ Info: Computer says Bh7!
+Chess Board
+1 K • • R • R • •
+2 P P P Q • • P P
+3 • • • • • • • •
+4 • • N • • • • •
+5 • • • P • • • •
+6 • • • P • • Q P
+7 B P P • • • P •
+8 • K • • R • R •
+  h g f e d c b a
+[ Info: 1120593 nodes explored in 1.6769 seconds (668261.56/s).
+[ Info: 1085774 quiesce nodes (96.89%), 17/50 depth reached
+[ Info: number of tree nodes: 25504 (10.70 MB)
+[ Info: Reached depth: 6
+Computer says: K: g8-h7 valued with -1.10.
+[ Info: Move was correct!
+[ Info: Computer says Qe4!
+Chess Board
+1 K • • R • R • •
+2 P P P • • • P P
+3 • • • • • • • •
+4 • • N Q • • • •
+5 • • • P • • • •
+6 • • • P • • Q P
+7 K P P • • • P •
+8 • • • • R • R •
+  h g f e d c b a
+[ Info: 2185593 nodes explored in 3.1769 seconds (687974.43/s).
+[ Info: 2105664 quiesce nodes (96.34%), 18/50 depth reached
+[ Info: number of tree nodes: 65182 (18.39 MB)
+[ Info: Reached depth: 6
+Computer says: N: f4-g6 valued with -1.60.
+[ Info: Move was correct!
+Chess Board
+8 ⋅ r ⋅ r ⋅ ⋅ ⋅ ⋅
+7 ⋅ p ⋅ ⋅ ⋅ p p k
+6 p q ⋅ ⋅ p ⋅ n ⋅
+5 ⋅ ⋅ ⋅ ⋅ P ⋅ ⋅ ⋅
+4 ⋅ ⋅ ⋅ ⋅ Q ⋅ ⋅ ⋅
+3 ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅
+2 P P ⋅ ⋅ ⋅ P P P
+1 ⋅ ⋅ R ⋅ R ⋅ ⋅ K
+  a b c d e f g h
+ - -
+
+[ Info: Puzzle solved! (Difficulty: 983)
+[ Info: Spent 8.95s.
+================================================================================
+
+
+[ Info: Puzzle 18:
+Chess Board
+8 R • B • • R K •
+7 P P • • • P • P
+6 • Q P • P B P •
+5 • • • P P • • •
+4 • • • P • • • •
+3 • • P B • • • P
+2 P P • Q • • P •
+1 • • • • • R K •
+  a b c d e f g h
+[ Info: 856613 nodes explored in 1.1518 seconds (743704.18/s).
+[ Info: 854248 quiesce nodes (99.72%), 20/50 depth reached
+[ Info: number of tree nodes: 1699 (0.34 MB)
+[ Info: Reached depth: 3
+Computer says: R: f1-f6 valued with -6.20.
+[ Info: Puzzle failed! (Difficulty: 1033)
+Puzzle
+Chess Board
+8 R • B • • R K •
+7 P P • • • P • P
+6 • Q P • P B P •
+5 • • • P P • • •
+4 • • • P • • • •
+3 • • P B • • • P
+2 P P • Q • • P •
+1 • • • • • R K •
+  a b c d e f g h
+Difficulty:
+1033
+Solution:
+1: ef6, Qd8
+3: Qh6, Qf6
+5: Rf6
+[ Info: Spent 1.18s.
+================================================================================
+
+
+[ Info: Puzzle 19:
+Chess Board
+1 • K R • R • • •
+2 P P P • Q P • P
+3 • • • • • • P •
+4 • • • Q • • • •
+5 • • • • • • • •
+6 • • • • • • • •
+7 P P P • • P • P
+8 • K R R • • • •
+  h g f e d c b a
+[ Info: 668791 nodes explored in 1.4651 seconds (456491.70/s).
+[ Info: 503543 quiesce nodes (75.29%), 14/50 depth reached
+[ Info: number of tree nodes: 130416 (45.70 MB)
+[ Info: Reached depth: 7
+Computer says: Q: d2-d1 valued with -3.60.
+[ Info: Move was correct!
+[ Info: Computer says Qe8!
+Chess Board
+1 • K R • Q • • •
+2 P P P • • P • P
+3 • • • • • • P •
+4 • • • • • • • •
+5 • • • • • • • •
+6 • • • • • • • •
+7 P P P • • P • P
+8 • K R Q • • • •
+  h g f e d c b a
+[ Info: 4063351 nodes explored in 4.3033 seconds (944239.04/s).
+[ Info: 3085550 quiesce nodes (75.94%), 13/50 depth reached
+[ Info: number of tree nodes: 881094 (214.40 MB)
+[ Info: Reached depth: 9
+Computer says: Q: d1-f1 valued with -5.30.
+[ Info: Move was correct!
+[ Info: Computer says Kf1!
+Chess Board
+1 • • K • • • • •
+2 P P P • • P • P
+3 • • • • • • P •
+4 • • • • • • • •
+5 • • • • • • • •
+6 • • • • • • • •
+7 P P P • • P • P
+8 • K R Q • • • •
+  h g f e d c b a
+[ Info: 1588497 nodes explored in 2.6935 seconds (589746.73/s).
+[ Info: 780127 quiesce nodes (49.11%), 7/50 depth reached
+[ Info: number of tree nodes: 756463 (236.14 MB)
+[ Info: Reached depth: 8
+Computer says: R: f8-e8 valued with -12.00.
+[ Info: Move was correct!
+Chess Board
+8 ⋅ ⋅ ⋅ ⋅ r ⋅ k ⋅
+7 p ⋅ p ⋅ ⋅ p p p
+6 ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅
+5 ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅
+4 ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅
+3 ⋅ P ⋅ ⋅ ⋅ ⋅ ⋅ ⋅
+2 P ⋅ P ⋅ ⋅ P P P
+1 ⋅ ⋅ ⋅ ⋅ ⋅ K ⋅ ⋅
+  a b c d e f g h
+ - -
+
+[ Info: Puzzle solved! (Difficulty: 1064)
+[ Info: Spent 28.73s.
+================================================================================
+
+
+[ Info: Puzzle 20:
+Chess Board
+8 • • • • • • R •
+7 P P K • • • P •
+6 • • • • • B • P
+5 • • • • P • • •
+4 • P Q • N • • •
+3 P • • • • • • •
+2 • • • • • P P P
+1 • • B • • • K •
+  a b c d e f g h
+[ Info: 1033164 nodes explored in 1.9814 seconds (521422.11/s).
+[ Info: 677830 quiesce nodes (65.61%), 12/50 depth reached
+[ Info: number of tree nodes: 229513 (91.43 MB)
+[ Info: Reached depth: 9
+Computer says: R: g8-c8 valued with 2.20.
+[ Info: Move was correct!
+[ Info: Computer says Kc8!
+Chess Board
+8 • • K • • • • •
+7 P P • • • • P •
+6 • • • • • B • P
+5 • • • • P • • •
+4 • P Q • N • • •
+3 P • • • • • • •
+2 • • • • • P P P
+1 • • B • • • K •
+  a b c d e f g h
+[ Info: 3043225 nodes explored in 3.8587 seconds (788659.88/s).
+[ Info: 2109852 quiesce nodes (69.33%), 11/50 depth reached
+[ Info: number of tree nodes: 692482 (225.98 MB)
+[ Info: Reached depth: 10
+Computer says: N: e4-d6 valued with 2.40.
+[ Info: Move was correct!
+[ Info: Computer says Kd7!
+Chess Board
+8 • • • • • • • •
+7 P P • K • • P •
+6 • • • N • B • P
+5 • • • • P • • •
+4 • P Q • • • • •
+3 P • • • • • • •
+2 • • • • • P P P
+1 • • B • • • K •
+  a b c d e f g h
+[ Info: 2189878 nodes explored in 2.4299 seconds (901214.52/s).
+[ Info: 1507505 quiesce nodes (68.84%), 10/50 depth reached
+[ Info: number of tree nodes: 546944 (139.58 MB)
+[ Info: Reached depth: 9
+Computer says: N: d6-c4 valued with 2.30.
+[ Info: Move was correct!
+Chess Board
+8 ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅
+7 p p ⋅ k ⋅ ⋅ p ⋅
+6 ⋅ ⋅ ⋅ ⋅ ⋅ b ⋅ p
+5 ⋅ ⋅ ⋅ ⋅ p ⋅ ⋅ ⋅
+4 ⋅ P N ⋅ ⋅ ⋅ ⋅ ⋅
+3 P ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅
+2 ⋅ ⋅ ⋅ ⋅ ⋅ P P P
+1 ⋅ ⋅ B ⋅ ⋅ ⋅ K ⋅
+  a b c d e f g h
+ - -
+
+[ Info: Puzzle solved! (Difficulty: 1141)
+[ Info: Spent 23.26s.
+================================================================================
+
+
+[ Info: Puzzle 21:
+Chess Board
+1 • • K • R • • •
+2 • • P • • P B P
+3 • N • Q • • P •
+4 • • N N • • P •
+5 • • • P • • • •
+6 P P • Q • • • •
+7 • K P • • • • P
+8 R • • • • R B •
+  h g f e d c b a
+[ Info: 838471 nodes explored in 1.3588 seconds (617066.92/s).
+[ Info: 829587 quiesce nodes (98.94%), 18/50 depth reached
+[ Info: number of tree nodes: 5647 (3.70 MB)
+[ Info: Reached depth: 6
+Computer says: Q: e6-h3 valued with -3.00.
+[ Info: Move was correct!
+[ Info: Computer says Ke1!
+Chess Board
+1 • • • K R • • •
+2 • • P • • P B P
+3 Q N • Q • • P •
+4 • • N N • • P •
+5 • • • P • • • •
+6 P P • • • • • •
+7 • K P • • • • P
+8 R • • • • R B •
+  h g f e d c b a
+[ Info: 1287370 nodes explored in 1.5262 seconds (843530.19/s).
+[ Info: 1261413 quiesce nodes (97.98%), 18/50 depth reached
+[ Info: number of tree nodes: 18129 (7.87 MB)
+[ Info: Reached depth: 7
+Computer says: N: f4-g2 valued with -3.00.
+[ Info: Move was correct!
+[ Info: Computer says Kd2!
+Chess Board
+1 • • • • R • • •
+2 • N P • K P B P
+3 Q N • Q • • P •
+4 • • • N • • P •
+5 • • • P • • • •
+6 P P • • • • • •
+7 • K P • • • • P
+8 R • • • • R B •
+  h g f e d c b a
+[ Info: 757528 nodes explored in 1.0967 seconds (690737.60/s).
+[ Info: 718761 quiesce nodes (94.88%), 17/50 depth reached
+[ Info: number of tree nodes: 26781 (11.85 MB)
+[ Info: Reached depth: 7
+Computer says: N: g2-e3 valued with -2.80.
+[ Info: Move was correct!
+Chess Board
+8 ⋅ b r ⋅ ⋅ ⋅ ⋅ R
+7 p ⋅ ⋅ ⋅ ⋅ p k ⋅
+6 ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ p p
+5 ⋅ ⋅ ⋅ ⋅ p ⋅ ⋅ ⋅
+4 ⋅ p ⋅ ⋅ N ⋅ ⋅ ⋅
+3 ⋅ P ⋅ ⋅ n ⋅ N q
+2 P B P K ⋅ P ⋅ ⋅
+1 ⋅ ⋅ ⋅ R ⋅ ⋅ ⋅ ⋅
+  a b c d e f g h
+ - -
+
+[ Info: Puzzle solved! (Difficulty: 1157)
+[ Info: Spent 4.24s.
+================================================================================
+
+
+[ Info: Puzzle 22:
+Chess Board
+1 K • • • • • • •
+2 • • • Q • • • •
+3 R B • • • • Q P
+4 • • P • • • • •
+5 • • P • • • • •
+6 • R B R • • • P
+7 P • • P • • P •
+8 K • • R • • • •
+  h g f e d c b a
+[ Info: 724157 nodes explored in 1.0316 seconds (702006.49/s).
+[ Info: 714632 quiesce nodes (98.68%), 14/50 depth reached
+[ Info: number of tree nodes: 5880 (2.93 MB)
+[ Info: Reached depth: 4
+Computer says: R: g6-g3 valued with -2.60.
+[ Info: Move was correct!
+[ Info: Computer says Rg3!
+Chess Board
+1 K • • • • • • •
+2 • • • Q • • • •
+3 • R • • • • Q P
+4 • • P • • • • •
+5 • • P • • • • •
+6 • • B R • • • P
+7 P • • P • • P •
+8 K • • R • • • •
+  h g f e d c b a
+[ Info: 1229541 nodes explored in 1.5630 seconds (786673.94/s).
+[ Info: 1094321 quiesce nodes (89.00%), 11/50 depth reached
+[ Info: number of tree nodes: 108369 (29.86 MB)
+[ Info: Reached depth: 7
+Computer says: Q: b3-g3 valued with -5.70.
+[ Info: Move was correct!
+[ Info: Computer says Rf6!
+Chess Board
+1 K • • • • • • •
+2 • • • Q • • • •
+3 • Q • • • • • P
+4 • • P • • • • •
+5 • • P • • • • •
+6 • • R • • • • P
+7 P • • P • • P •
+8 K • • R • • • •
+  h g f e d c b a
+[ Info: 922943 nodes explored in 1.3471 seconds (685113.18/s).
+[ Info: 686033 quiesce nodes (74.33%), 10/50 depth reached
+[ Info: number of tree nodes: 191596 (59.74 MB)
+[ Info: Reached depth: 9
+Computer says: Q: g3-h4 valued with -7.80.
+[ Info: Move was correct!
+[ Info: Computer says Kg1!
+Chess Board
+1 • K • • • • • •
+2 • • • Q • • • •
+3 • • • • • • • P
+4 Q • P • • • • •
+5 • • P • • • • •
+6 • • R • • • • P
+7 P • • P • • P •
+8 K • • R • • • •
+  h g f e d c b a
+[ Info: 2312343 nodes explored in 3.6106 seconds (640433.63/s).
+[ Info: 1663550 quiesce nodes (71.94%), 9/50 depth reached
+[ Info: number of tree nodes: 564005 (175.56 MB)
+[ Info: Reached depth: 9
+Computer says: Q: h4-f6 valued with -7.90.
+[ Info: Move was correct!
+Chess Board
+8 ⋅ ⋅ ⋅ ⋅ r ⋅ ⋅ k
+7 ⋅ p ⋅ ⋅ P ⋅ ⋅ p
+6 p ⋅ ⋅ ⋅ ⋅ q ⋅ ⋅
+5 ⋅ ⋅ ⋅ ⋅ ⋅ p ⋅ ⋅
+4 ⋅ ⋅ ⋅ ⋅ ⋅ P ⋅ ⋅
+3 P ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅
+2 ⋅ ⋅ ⋅ ⋅ Q ⋅ ⋅ ⋅
+1 ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ K ⋅
+  a b c d e f g h
+ - -
+
+[ Info: Puzzle solved! (Difficulty: 1222)
+[ Info: Spent 13.05s.
+================================================================================
+
+
+[ Info: Puzzle 23:
+Chess Board
+1 • K R • • • • •
+2 • • • • • R R •
+3 P • • • • P • •
+4 • P • • P P • •
+5 • P • B • • • •
+6 P K • B • • • •
+7 • • P • • • • •
+8 R • • • • • • •
+  h g f e d c b a
+[ Info: 935603 nodes explored in 2.2559 seconds (414739.49/s).
+[ Info: 733082 quiesce nodes (78.35%), 11/50 depth reached
+[ Info: number of tree nodes: 147716 (54.60 MB)
+[ Info: Reached depth: 9
+Computer says: R: c2-g2 valued with 0.70.
+[ Info: Move was correct!
+[ Info: Computer says Kh1!
+Chess Board
+1 K • R • • • • •
+2 • R • • • • R •
+3 P • • • • P • •
+4 • P • • P P • •
+5 • P • B • • • •
+6 P K • B • • • •
+7 • • P • • • • •
+8 R • • • • • • •
+  h g f e d c b a
+[ Info: 571729 nodes explored in 1.2401 seconds (461038.58/s).
+[ Info: 474660 quiesce nodes (83.02%), 11/50 depth reached
+[ Info: number of tree nodes: 75410 (26.91 MB)
+[ Info: Reached depth: 7
+Computer says: P: f7-f5 valued with 0.70.
+[ Info: Puzzle failed! (Difficulty: 1290)
+Puzzle
+Chess Board
+1 • K R • • • • •
+2 • • • • • R R •
+3 P • • • • P • •
+4 • P • • P P • •
+5 • P • B • • • •
+6 P K • B • • • •
+7 • • P • • • • •
+8 R • • • • • • •
+  h g f e d c b a
+Difficulty:
+1290
+Solution:
+1:      Rg2
+2: Kh1, Rh2
+4: Bh2, Bd5
+6: Rf3, Bf3
+[ Info: Spent 4.88s.
+================================================================================
+
+
+[ Info: Puzzle 24:
+Chess Board
+1 R • B K • B • R
+2 P P P • • P • P
+3 • • • Q • • • •
+4 • • • • • • • •
+5 • • • • N • • •
+6 • • • • • N • •
+7 P P P • P P P P
+8 R • • K Q B • R
+  h g f e d c b a
+[ Info: 1856579 nodes explored in 2.9846 seconds (622055.01/s).
+[ Info: 1590591 quiesce nodes (85.67%), 19/50 depth reached
+[ Info: number of tree nodes: 201294 (71.19 MB)
+[ Info: Reached depth: 9
+Computer says: N: d5-e3 valued with -5.40.
+[ Info: Move was correct!
+[ Info: Computer says Nd8!
+Chess Board
+1 R • B K • B • R
+2 P P P • • P • P
+3 • • • N • • • •
+4 • • • • • • • •
+5 • • • • • • • •
+6 • • • • • • • •
+7 P P P • P P P P
+8 R • • K N B • R
+  h g f e d c b a
+[ Info: 1774791 nodes explored in 3.4934 seconds (508039.20/s).
+[ Info: 1477955 quiesce nodes (83.27%), 19/50 depth reached
+[ Info: number of tree nodes: 184774 (128.36 MB)
+[ Info: Reached depth: 8
+Computer says: N: e3-c2 valued with -5.40.
+[ Info: Move was correct!
+[ Info: Computer says Kd2!
+Chess Board
+1 R • B • • B • R
+2 P P P • K N • P
+3 • • • • • • • •
+4 • • • • • • • •
+5 • • • • • • • •
+6 • • • • • • • •
+7 P P P • P P P P
+8 R • • K N B • R
+  h g f e d c b a
+[ Info: 546942 nodes explored in 1.0532 seconds (519325.58/s).
+[ Info: 416430 quiesce nodes (76.14%), 17/50 depth reached
+[ Info: number of tree nodes: 95595 (32.59 MB)
+[ Info: Reached depth: 7
+Computer says: N: c2-a1 valued with -5.40.
+[ Info: Move was correct!
+Chess Board
+8 r ⋅ b N k ⋅ ⋅ r
+7 p p p p ⋅ p p p
+6 ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅
+5 ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅
+4 ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅
+3 ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅
+2 P ⋅ ⋅ K ⋅ P P P
+1 n ⋅ B ⋅ ⋅ B ⋅ R
+  a b c d e f g h
+ kq -
+
+[ Info: Puzzle solved! (Difficulty: 1324)
+[ Info: Spent 10.51s.
+================================================================================
+
+
+[ Info: Puzzle 25:
+Chess Board
+1 • • • • R • • •
+2 • • • • • • • •
+3 • • • • • • • •
+4 • • • • • • P •
+5 • P • • • • • •
+6 K • • • B K • •
+7 • • • • • • • •
+8 • • • • • • • •
+  h g f e d c b a
+[ Info: 507156 nodes explored in 1.2592 seconds (402768.79/s).
+[ Info: 238835 quiesce nodes (47.09%), 4/50 depth reached
+[ Info: number of tree nodes: 196658 (73.87 MB)
+[ Info: Reached depth: 8
+Computer says: K: h6-g6 valued with -2.30.
+[ Info: Puzzle failed! (Difficulty: 1352)
+Puzzle
+Chess Board
+1 • • • • R • • •
+2 • • • • • • • •
+3 • • • • • • • •
+4 • • • • • • P •
+5 • P • • • • • •
+6 K • • • B K • •
+7 • • • • • • • •
+8 • • • • • • • •
+  h g f e d c b a
+Difficulty:
+1352
+Solution:
+1:      Rd6
+2: Kd6, g4
+4: b5, g3
+6: b6, g2
+8: b7, g1Q
+10: b8Q, Qg3
+12: Kc6, Qb8
+[ Info: Spent 2.50s.
+================================================================================
+
+
+[ Info: Puzzle 26:
+Chess Board
+1 • • R • • • • •
+2 P • • • • • • •
+3 • • • • • K • P
+4 • • • P • • • •
+5 • K • • R • • P
+6 • • • • B • • •
+7 • • • • • • • •
+8 R • • • • • • •
+  h g f e d c b a
+[ Info: 654793 nodes explored in 1.1115 seconds (589126.24/s).
+[ Info: 395654 quiesce nodes (60.42%), 7/50 depth reached
+[ Info: number of tree nodes: 173618 (60.76 MB)
+[ Info: Reached depth: 10
+Computer says: B: d6-e5 valued with -3.10.
+[ Info: Move was correct!
+[ Info: Computer says Kc4!
+Chess Board
+1 • • R • • • • •
+2 P • • • • • • •
+3 • • • • • • • P
+4 • • • P • K • •
+5 • K • B R • • P
+6 • • • • • • • •
+7 • • • • • • • •
+8 R • • • • • • •
+  h g f e d c b a
+[ Info: 786989 nodes explored in 1.3096 seconds (600955.46/s).
+[ Info: 450224 quiesce nodes (57.21%), 7/50 depth reached
+[ Info: number of tree nodes: 238779 (77.68 MB)
+[ Info: Reached depth: 10
+Computer says: R: d5-d4 valued with -3.10.
+[ Info: Move was correct!
+[ Info: Computer says Kc5!
+Chess Board
+1 • • R • • • • •
+2 P • • • • • • •
+3 • • • • • • • P
+4 • • • P R • • •
+5 • K • B • K • P
+6 • • • • • • • •
+7 • • • • • • • •
+8 R • • • • • • •
+  h g f e d c b a
+[ Info: 1477143 nodes explored in 2.0236 seconds (729949.47/s).
+[ Info: 910577 quiesce nodes (61.64%), 7/50 depth reached
+[ Info: number of tree nodes: 450937 (123.01 MB)
+[ Info: Reached depth: 9
+Computer says: B: e5-h8 valued with -3.90.
+[ Info: Move was correct!
+Chess Board
+8 ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ b
+7 ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅
+6 ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅
+5 p ⋅ K ⋅ ⋅ ⋅ k ⋅
+4 ⋅ ⋅ ⋅ r p ⋅ ⋅ ⋅
+3 P ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅
+2 ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ P
+1 ⋅ ⋅ ⋅ ⋅ ⋅ R ⋅ ⋅
+  a b c d e f g h
+ - -
+
+[ Info: Puzzle solved! (Difficulty: 1433)
+[ Info: Spent 10.58s.
+================================================================================
+
+
+[ Info: Puzzle 27:
+Chess Board
+8 • • • • • R K •
+7 • • • • • P • P
+6 P • • • • • P •
+5 • P • Q • • • •
+4 • • • • • B • N
+3 Q • • P • P • •
+2 P P R • • • P P
+1 • R • • R • K •
+  a b c d e f g h
+[ Info: 2213038 nodes explored in 2.7992 seconds (790593.45/s).
+[ Info: 2195018 quiesce nodes (99.19%), 18/50 depth reached
+[ Info: number of tree nodes: 13979 (6.77 MB)
+[ Info: Reached depth: 5
+Computer says: R: e1-e4 valued with -0.30.
+[ Info: Puzzle failed! (Difficulty: 1474)
+Puzzle
+Chess Board
+8 • • • • • R K •
+7 • • • • • P • P
+6 P • • • • • P •
+5 • P • Q • • • •
+4 • • • • • B • N
+3 Q • • P • P • •
+2 P P R • • • P P
+1 • R • • R • K •
+  a b c d e f g h
+Difficulty:
+1474
+Solution:
+1: Qf8, Kf8
+3: Bh6, Kg8
+5: Re8
+[ Info: Spent 2.86s.
+================================================================================
+
+
+[ Info: Puzzle 28:
+Chess Board
+1 • K R • • • • •
+2 • P P • • • • R
+3 P • • B • • • •
+4 • • • P • • R •
+5 Q N P • P • Q •
+6 • • • • P • • •
+7 P B • • • • P •
+8 • K • • • • • •
+  h g f e d c b a
+[ Info: 635765 nodes explored in 1.1921 seconds (533321.40/s).
+[ Info: 580128 quiesce nodes (91.25%), 15/50 depth reached
+[ Info: number of tree nodes: 37093 (17.63 MB)
+[ Info: Reached depth: 9
+Computer says: Q: b5-f1 valued with -7.30.
+[ Info: Move was correct!
+[ Info: Computer says Kh2!
+Chess Board
+1 • • Q • • • • •
+2 K P P • • • • R
+3 P • • B • • • •
+4 • • • P • • R •
+5 Q N P • P • • •
+6 • • • • P • • •
+7 P B • • • • P •
+8 • K • • • • • •
+  h g f e d c b a
+[ Info: 1129235 nodes explored in 1.5812 seconds (714157.49/s).
+[ Info: 982334 quiesce nodes (86.99%), 14/50 depth reached
+[ Info: number of tree nodes: 119517 (29.08 MB)
+[ Info: Reached depth: 9
+Computer says: B: g7-e5 valued with -17.00.
+[ Info: Move was correct!
+[ Info: Computer says g3!
+Chess Board
+1 • • Q • • • • •
+2 K • P • • • • R
+3 P P • B • • • •
+4 • • • P • • R •
+5 Q N P B P • • •
+6 • • • • P • • •
+7 P • • • • • P •
+8 • K • • • • • •
+  h g f e d c b a
+[ Info: 1065196 nodes explored in 1.4936 seconds (713188.63/s).
+[ Info: 946741 quiesce nodes (88.88%), 14/50 depth reached
+[ Info: number of tree nodes: 84316 (22.55 MB)
+[ Info: Reached depth: 9
+Computer says: R: a2-f2 valued with -1000.00.
+[ Info: Move was correct!
+[ Info: Computer says Bf2!
+Chess Board
+1 • • Q • • • • •
+2 K • B • • • • •
+3 P P • • • • • •
+4 • • • P • • R •
+5 Q N P B P • • •
+6 • • • • P • • •
+7 P • • • • • P •
+8 • K • • • • • •
+  h g f e d c b a
+[ Info: 793787 nodes explored in 1.4593 seconds (543938.10/s).
+[ Info: 601674 quiesce nodes (75.80%), 12/50 depth reached
+[ Info: number of tree nodes: 109632 (64.80 MB)
+[ Info: Reached depth: 10
+Computer says: Q: f1-f2 valued with -1000.00.
+[ Info: Move was correct!
+[ Info: Computer says Kh1!
+Chess Board
+1 K • • • • • • •
+2 • • Q • • • • •
+3 P P • • • • • •
+4 • • • P • • R •
+5 Q N P B P • • •
+6 • • • • P • • •
+7 P • • • • • P •
+8 • K • • • • • •
+  h g f e d c b a
+[ Info: 589409 nodes explored in 1.5621 seconds (377309.80/s).
+[ Info: 455636 quiesce nodes (77.30%), 10/50 depth reached
+[ Info: number of tree nodes: 81008 (47.89 MB)
+[ Info: Reached depth: 8
+Computer says: R: b4-b1 valued with -1000.00.
+[ Info: Move was correct!
+[ Info: Computer says Qd1!
+Chess Board
+1 K • • • Q • R •
+2 • • Q • • • • •
+3 P P • • • • • •
+4 • • • P • • • •
+5 • N P B P • • •
+6 • • • • P • • •
+7 P • • • • • P •
+8 • K • • • • • •
+  h g f e d c b a
+[ Info: 1929810 nodes explored in 1.6926 seconds (1140167.62/s).
+[ Info: 1517360 quiesce nodes (78.63%), 10/50 depth reached
+[ Info: number of tree nodes: 316142 (74.00 MB)
+[ Info: Reached depth: 7
+Computer says: R: b1-d1 valued with -1000.00.
+[ Info: Move was correct!
+Chess Board
+8 ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ k ⋅
+7 ⋅ p ⋅ ⋅ ⋅ ⋅ ⋅ p
+6 ⋅ ⋅ ⋅ p ⋅ ⋅ ⋅ ⋅
+5 ⋅ ⋅ ⋅ P b p N ⋅
+4 ⋅ ⋅ ⋅ ⋅ p ⋅ ⋅ ⋅
+3 ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ P P
+2 ⋅ ⋅ ⋅ ⋅ ⋅ q ⋅ ⋅
+1 ⋅ ⋅ ⋅ r ⋅ ⋅ ⋅ K
+  a b c d e f g h
+ - -
+
+[ Info: Puzzle solved! (Difficulty: 1514)
+[ Info: Spent 14.17s.
+================================================================================
+
+
+Puzzle 1 (Difficulty 173):  Solved in 1.92s
+Puzzle 2 (Difficulty 170):  Solved in 7.61s
+Puzzle 3 (Difficulty 254):  Solved in 11.23s
+Puzzle 4 (Difficulty 325):  Solved in 2.66s
+Puzzle 5 (Difficulty 399):  Solved in 4.39s
+Puzzle 6 (Difficulty 429):  Solved in 10.87s
+Puzzle 7 (Difficulty 487):  Solved in 3.47s
+Puzzle 8 (Difficulty 544):  Solved in 30.22s
+Puzzle 9 (Difficulty 580):  Failed in 5.62s
+Puzzle 10 (Difficulty 615): Solved in 4.30s
+Puzzle 11 (Difficulty 653): Solved in 5.19s
+Puzzle 12 (Difficulty 730): Solved in 4.75s
+Puzzle 13 (Difficulty 788): Solved in 3.87s
+Puzzle 14 (Difficulty 850): Solved in 1.96s
+Puzzle 15 (Difficulty 853): Solved in 6.92s
+Puzzle 16 (Difficulty 914): Solved in 8.61s
+Puzzle 17 (Difficulty 983): Solved in 8.95s
+Puzzle 18 (Difficulty 1033):    Failed in 1.18s
+Puzzle 19 (Difficulty 1064):    Solved in 28.73s
+Puzzle 20 (Difficulty 1141):    Solved in 23.26s
+Puzzle 21 (Difficulty 1157):    Solved in 4.24s
+Puzzle 22 (Difficulty 1222):    Solved in 13.05s
+Puzzle 23 (Difficulty 1290):    Failed in 4.88s
+Puzzle 24 (Difficulty 1324):    Solved in 10.51s
+Puzzle 25 (Difficulty 1352):    Failed in 2.50s
+Puzzle 26 (Difficulty 1433):    Solved in 10.58s
+Puzzle 27 (Difficulty 1474):    Failed in 2.86s
+Puzzle 28 (Difficulty 1514):    Solved in 14.17s
+[ Info: Solved 23 out of 28.
