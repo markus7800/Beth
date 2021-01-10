@@ -114,7 +114,7 @@ function first_lt(x, y)
     return x[1] < y[1]
 end
 
-# TODO: alpha beta with only best move stored and fast rank moves 
+# TODO: alpha beta with only best move stored and fast rank moves
 function AlphaBeta(beth::Beth, node::ABNode, depth::Int, ply::Int, α::Int, β::Int, white::Bool,
     use_stored_values=false, store_values=false, do_quiesce=false, quiesce_depth::Int=20,
     quiesce_lists::Vector{MoveList}=[MoveList(200) for _ in 1:quiesce_depth+1], iter_id::Int=0)::Int
@@ -315,6 +315,62 @@ function AlphaBeta_search(beth::Beth; board=beth.board, white=beth.white)
     return v, root.children[root.best_child_index].move
 end
 
+function MTDF(beth::Beth; board=beth.board, white=beth.white,
+    guess::Int=0, root=ABNode(), iter_id=0)
+
+    beth.board = deepcopy(board)
+    beth._board = deepcopy(board)
+    beth.white = white
+    beth.n_leafes = 0
+    beth.n_explored_nodes = 0
+    beth.n_quiesce_nodes = 0
+    beth.max_quiesce_depth = 0
+
+    use_stored_values = true
+    store_values = true
+    ply = 0
+
+    depth = beth.search_args["depth"]
+    do_quiesce = get(beth.search_args, "do_quiesce", false)
+    quiesce_depth = get(beth.search_args, "quiesce_depth", 20)
+    quiese_lists = [MoveList(200) for _ in 1:quiesce_depth+1]
+
+    verbose = get(beth.search_args, "verbose", false)
+
+    value = guess
+    upper = MAX_VALUE
+    lower = MIN_VALUE
+    _,t = @timed while true
+        β = value == lower ? value + 1 : value
+        value = AlphaBeta(beth, root, depth, ply, β-1, β, white,
+            use_stored_values, store_values, do_quiesce, quiesce_depth, quiese_lists, iter_id)
+
+        if value < β
+            upper = value
+        else
+            lower = value
+        end
+        if verbose
+            best_move = root.children[root.best_child_index].move
+            @info(@sprintf "\tmove: %s, value: %.2f, alpha: %.2f, beta: %.2f, lower: %.2f, upper: %.2f" best_move value/100 β-1/100 β/100 lower/100 upper/100)
+        end
+
+        if lower ≥ upper
+            break
+        end
+    end
+
+    if verbose
+        @info(@sprintf "%d nodes explored in %.4f seconds (%.2f/s)." beth.n_explored_nodes t (beth.n_explored_nodes/t) )
+        if do_quiesce
+            q_perc = beth.n_quiesce_nodes/beth.n_explored_nodes*100
+            @info(@sprintf "%d quiesce nodes (%.2f%%), %d/%d depth reached" beth.n_quiesce_nodes q_perc beth.max_quiesce_depth quiesce_depth)
+        end
+        @info(@sprintf "number of tree nodes: %d (%.2f MB)" count_nodes(root) Base.summarysize(root) / 10^6)
+    end
+
+    return value, root.children[root.best_child_index].move
+end
 
 
 board = Board("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1")
@@ -322,8 +378,8 @@ board = Board("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 
 # board = Board("6k1/1p4bp/3p4/1q1P1pN1/1r2p3/4B2P/r4PP1/3Q1RK1 w - - 0 1")
 # board = Board("r2qkbnr/ppp2ppp/2n1p1b1/3p4/4PP2/3P1N2/PPPN2PP/R1BQKB1R w KQkq - 0 1")
 
+
 beth = Beth(
-    board=board, white=true,
     value_heuristic=evaluation,
     rank_heuristic=rank_moves_by_eval,
     search_algorithm=AlphaBeta_search,
@@ -338,10 +394,31 @@ beth = Beth(
 @time beth(board, true)
 
 
+pz = rush_20_12_13[9]
+print_puzzle(pz)
 
-@time quiesce_nomem(beth, MIN_VALUE, MAX_VALUE, true)
+beth = Beth(
+    value_heuristic=evaluation,
+    rank_heuristic=rank_moves_by_eval,
+    search_algorithm=AlphaBeta_search,
+    search_args=Dict(
+        "depth" => 6,
+        "do_quiesce" => true,
+        "quiesce_depth" => 50,
+        "verbose" => true
+    ))
 
-beth._board = deepcopy(board)
-v,t, = @timed quiesce(beth, 100, 0, MIN_VALUE, MAX_VALUE, true)
+@time beth(pz.board, pz.white_to_move)
 
-beth.max_quiesce_depth
+beth = Beth(
+    value_heuristic=evaluation,
+    rank_heuristic=rank_moves_by_eval,
+    search_algorithm=MTDF,
+    search_args=Dict(
+        "depth" => 6,
+        "do_quiesce" => true,
+        "quiesce_depth" => 50,
+        "verbose" => true
+    ))
+
+@time beth(pz.board, pz.white_to_move)
