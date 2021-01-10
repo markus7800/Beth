@@ -681,3 +681,104 @@ print_board(board)
 beth(board, true)
 
 play_game(board, true, white_player=beth, black_player=user_input)
+
+
+# alpha beta search with only capture move and no caching and unlimited depth
+function quiesce(beth::Beth, node::ABNode, α::Float64, β::Float64, white::Bool)
+    beth.n_explored_nodes += 1
+
+    # if beth.n_explored_nodes > 100
+    #     return 0
+    # end
+
+
+    _white, = restore_board_position(beth, node)
+    @assert _white == white
+
+    ms = get_moves(beth._board, white)
+    capture_moves = get_capture_moves(beth._board, white, ms)
+    sort!(capture_moves, rev=white)
+    # println(beth.n_explored_nodes, ": ", capture_moves)
+
+    # TODO
+    # board_value, is_3_men = tb_3_men_lookup(beth.tb_3_men_mates, beth.tb_3_men_desperate_positions, beth._board, white)
+    # if !is_3_men
+    #     board_value = beth.value_heuristic(beth._board, white)
+    # end
+    board_value = beth.value_heuristic(beth._board, white)
+
+
+    if length(capture_moves) == 0
+        beth.n_leafes += 1
+        node.value = board_value
+        return board_value
+    else
+        if white
+            value = -Inf
+            for (prescore, m) in capture_moves
+                child = ABNode(move=m, parent=node, value=prescore, visits=0)
+                push!(node.children, child)
+                value = max(value, quiesce(beth, child, α, β, !white))
+
+                α = max(α, value)
+                # α ≥ β && break # β cutoff
+            end
+            # if you dont take max here only the board values where the player
+            # are forced to make all capture moves are taken into account
+            final_value = max(value, board_value)
+            node.value = final_value
+            return final_value
+        else
+            value = Inf
+            for (prescore, m) in capture_moves
+                child = ABNode(move=m, parent=node, value=prescore, visits=0)
+                push!(node.children, child)
+                value = min(value, quiesce(beth, child, α, β, !white))
+
+                β = min(β, value)
+                # β ≤ α && break # α cutoff
+            end
+            # if you dont take min here only the board values where the player
+            # are forced to make all capture moves are taken into account
+            final_value = min(value, board_value)
+            node.value = final_value
+            return final_value
+        end
+    end
+end
+
+function perft_capture(board::Board, white::Bool, depth::Int)
+    ms = get_moves(board, white)
+    ms = get_capture_moves(board, white, ms)
+    if depth == 1
+        return length(ms)
+    else
+        nodes = 0
+        for (i, m) in ms
+            a, b, c = move!(board, white, m[1], m[2], m[3])
+            nodes += perft_capture(board, !white, depth-1) + 1
+            undo!(board, white, m[1], m[2], m[3], a, b, c)
+        end
+        return nodes
+    end
+end
+
+board = Board("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1")
+
+board = Board("6k1/1p4bp/3p4/1q1P1pN1/1r2p3/4B2P/r4PP1/3Q1RK1 w - - 0 1")
+
+board = Board("r2qkbnr/ppp2ppp/2n1p1b1/3p4/4PP2/3P1N2/PPPN2PP/R1BQKB1R w KQkq - 0 1")
+
+
+beth = Beth(board=board, value_heuristic=beth_eval, rank_heuristic=beth_rank_moves,
+    search_algorithm=BethMTDF, search_args=Dict("do_quiesce"=>true, "depth"=>6))
+
+
+# 0.7
+quiesce(beth, ABNode(), -Inf, Inf, true)
+
+# 276723
+beth.n_leafes
+
+# 944421
+beth.n_explored_nodes

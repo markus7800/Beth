@@ -21,10 +21,15 @@ end
 # alpha beta search with only capture move and no caching and unlimited depth
 function quiesce(beth::Beth, α::Int, β::Int, white::Bool)::Int
     beth.n_explored_nodes += 1
+    # if beth.n_explored_nodes > 100
+    #     return 0
+    # end
 
     ms = get_moves(beth._board, white)
     capture_moves = get_capture_moves(beth._board, white, ms)
     sort!(capture_moves, rev=white, lt=first_lt)
+    # println(beth.n_explored_nodes, ": ", capture_moves)
+
 
     # board_value, is_3_men = tb_3_men_lookup(beth.tb_3_men_mates, beth.tb_3_men_desperate_positions, beth._board, white)
     # if !is_3_men
@@ -43,12 +48,11 @@ function quiesce(beth::Beth, α::Int, β::Int, white::Bool)::Int
                 value = max(value, quiesce(beth, α, β, !white))
                 undo_move!(beth._board, white, m, undo)
                 α = max(α, value)
-                α ≥ β && break # β cutoff
+                # α ≥ β && break # β cutoff
             end
             # if you dont take max here only the board values where the player
             # are forced to make all capture moves are taken into account
             final_value = max(value, board_value)
-            node.value = final_value
             return final_value
         else
             value = MAX_VALUE
@@ -57,7 +61,7 @@ function quiesce(beth::Beth, α::Int, β::Int, white::Bool)::Int
                 value = min(value, quiesce(beth, α, β, !white))
                 undo_move!(beth._board, white, m, undo)
                 β = min(β, value)
-                β ≤ α && break # α cutoff
+                # β ≤ α && break # α cutoff
             end
             # if you dont take min here only the board values where the player
             # are forced to make all capture moves are taken into account
@@ -67,163 +71,81 @@ function quiesce(beth::Beth, α::Int, β::Int, white::Bool)::Int
     end
 end
 
-function BethSearch(beth::Beth, node::ABNode, depth::Int, α::Float64, β::Float64, white::Bool,
-    use_stored_values=true, store_values=true, do_quiesce=false, iter_id::Int=0)
-
-    beth.n_explored_nodes += 1
-    _α = α # store
-    _β = β # store
-
-    # look up only if node was stored in this iteration of BethSearch
-    # used for multiple null window searches
-    # but not used in iterative deepening
-    if use_stored_values && node.flag != NOT_STORED && node.stored_at_iteration == iter_id
-        value = node.value
-        if node.flag == EXACT
-            return value
-        elseif node.flag == LOWER
-            α = max(α, value)
-        elseif node.flag == UPPER
-            β = min(β, value)
-        end
-
-        if α ≥ β
-            return value
-        end
-    end
-
-    # restore board position, playing all moves that lead node
-    # this is faster than copying the board
-    _white, = restore_board_position(beth, node)
-    @assert _white == white
-
-    if depth == 0
-        value = 0.
-        # cannot retrieve since dependent on α, β which are changing by the input
-        if do_quiesce
-            value = quiesce(beth, node, α, β, white)
-            prune!(node)
-        else
-            value = beth.value_heuristic(beth._board, white)
-        end
-
-        beth.n_leafes += 1
-        node.value = value
-        # leaf nodes are in general not terminal
-        # and not expanded but can be stored
+function perft_capture(board::Board, white::Bool, depth::Int)
+    ms = get_moves(board, white)
+    ms = get_capture_moves(board, white, ms)
+    #println(ms)
+    if depth == 1
+        return length(ms)
     else
-
-        # terminal explored node, retrieve regardless of iteration id
-        if node.is_expanded && length(node.children) == 0 && length(node.ranked_moves) == 0
-            return node.value
+        nodes = 0
+        for (i, m) in ms
+            undo = make_move!(board, white, m)
+            nodes += perft_capture(board, !white, depth-1) + 1
+            undo_move!(board, white, m, undo)
         end
-
-        best_value = white ? -Inf : Inf
-        value = white ? -Inf : Inf
-
-        # successor moves were not generated yet
-        if !node.is_expanded
-            ms = get_moves(beth._board, white)
-            if length(ms) == 0 # terminal unexplored node
-                beth.n_leafes += 1
-                value = beth.value_heuristic(beth._board, white, no_moves=true)
-                node.value = value
-                node.ranked_moves = []
-            else
-                ranked_moves = beth.rank_heuristic(beth._board, white, ms)
-                sort!(ranked_moves, rev=white) # try to choose best moves first
-                node.ranked_moves = ranked_moves
-            end
-            node.is_expanded = true
-        end
-
-        n_children = length(node.children)
-        i = 0
-        while true
-            if i == 0
-                # try previous best move first
-                if node.best_child_index > 0
-                    child = node.children[node.best_child_index]
-                    m = child.move
-                else
-                    i += 1
-                    continue
-                end
-                i += 1
-                continue
-            elseif i ≤ n_children
-                # first process all exiting children
-                # these were previously the best moves if node was explored
-                # children are in correct prevalue order
-                child = node.children[i]
-                m = child.move
-            else
-                # existing children exhausted
-                # create new nodes if unexplored ranked moves are available
-                length(node.ranked_moves) == 0 && break
-
-                prescore, m = popfirst!(node.ranked_moves)
-                child = ABNode(move=m, parent=node, value=0., visits=0)
-
-                push!(node.children, child)
-            end
-
-            if white
-                # maximise for white
-                value = max(value, BethSearch(beth, child, depth-1, α, β, !white, use_stored_values, store_values, do_quiesce, iter_id))
-
-                # keep track of best move
-                if value > best_value
-                    best_value = value
-                    if i != 0
-                        node.best_child_index = i
-                    end # otherwise: current child is previous best move
-                end
-
-                α = max(α, value)
-                α ≥ β && break # β cutoff
-            else
-                # minimise for black
-                value = min(value, BethSearch(beth, child, depth-1, α, β, !white, use_stored_values, store_values, do_quiesce, iter_id))
-
-                # keep track of best move
-                if value < best_value
-                    best_value = value
-                    if i != 0
-                        node.best_child_index = i
-                    end # otherwise: current child is previous best move
-                end
-
-                β = min(β, value)
-                β ≤ α && break # α cutoff
-            end
-
-            i += 1
-        end
-        node.value = value
+        return nodes
     end
-
-    if store_values
-        # keep track of "deepening iteration" for reuse in null window search in MTDF
-        node.stored_at_iteration = iter_id
-        if node.value ≤ _α
-            # Fail low result implies an upper bound
-            node.flag = UPPER
-        elseif _β ≤ node.value
-            # Fail high result implies a lower bound
-            node.flag = LOWER
-        else
-            # Found an accurate minimax value - will not occur if called with null window
-            node.flag = EXACT
-        end
-    end
-
-    return node.value
 end
 
+
 board = Board("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1")
+
+board = Board("6k1/1p4bp/3p4/1q1P1pN1/1r2p3/4B2P/r4PP1/3Q1RK1 w - - 0 1")
+
+board = Board("r2qkbnr/ppp2ppp/2n1p1b1/3p4/4PP2/3P1N2/PPPN2PP/R1BQKB1R w KQkq - 0 1")
 
 beth = Beth(board=board, white=true, search_algorithm=()->nothing,
     value_heuristic=evaluation, rank_heuristic=rank_moves_by_eval)
 
 quiesce(beth, MIN_VALUE, MAX_VALUE, true)
+
+beth.n_leafes
+
+beth.n_explored_nodes
+
+
+perft_capture(board, true, 5)
+
+perft(board, true, 5)
+
+import Chess
+function my_perftinternal_cap(b::Chess.Board, depth::Int, ply::Int)
+    _movelist = Chess.moves(b)
+    occ = Chess.occupiedsquares(b)
+
+    movelist = []
+    for m in _movelist
+        if Chess.to(m) in occ
+            push!(movelist, m)
+        end
+    end
+
+    # println(movelist)
+
+    if depth == 1
+        return length(movelist)
+    else
+        result = 0
+        for m ∈ movelist
+            u = Chess.domove!(b, m)
+            result += my_perftinternal_cap(b, depth - 1, ply + 1) + 1
+            Chess.undomove!(b, u)
+        end
+        result
+    end
+end
+
+function my_perft_cap(b::Chess.Board, depth::Int)::Int
+    if depth == 0
+        1
+    else
+        my_perftinternal_cap(b, depth, 0)
+    end
+end
+
+cboard = Chess.fromfen("r2qkbnr/ppp2ppp/2n1p1b1/3p4/4PP2/3P1N2/PPPN2PP/R1BQKB1R w KQkq - 0 1")
+
+my_perft_cap(cboard, 1000)
+
+perft_capture(board, true, 1000)

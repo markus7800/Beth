@@ -118,9 +118,9 @@ function evaluation(board::Board, white::Bool; check_value::Int=0, no_moves::Boo
 
     if no_moves
         if white_in_check
-            return -MIN_VALUE # checkmate
+            return -100_000 # checkmate
         elseif black_in_check
-            return MAX_VALUE # checkmate
+            return 100_000 # checkmate
         else
             return 0 # stalemate
         end

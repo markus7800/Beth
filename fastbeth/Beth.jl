@@ -46,7 +46,7 @@ mutable struct Beth
     end
 end
 
-
-function restore_board_position(beth::Beth, node::ABNode)
-    restore_board_position(beth.board, beth.white, beth._board, node)
-end
+#
+# function restore_board_position(beth::Beth, node::ABNode)
+#     restore_board_position(beth.board, beth.white, beth._board, node)
+# end
