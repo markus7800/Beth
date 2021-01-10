@@ -1,5 +1,10 @@
 using Printf
 
+const NOT_STORED = 0x0
+const EXACT = 0x1
+const UPPER = 0x2
+const LOWER = 0x3
+
 mutable struct ABNode
     move::Move
     best_child_index::Int
@@ -8,12 +13,11 @@ mutable struct ABNode
     ranked_moves::Vector{Tuple{Int, Move}}
     value::Int
     flag::UInt8
-    visits::UInt
     stored_at_iteration::Int
     is_expanded::Bool
 
-    function ABNode(;move=EMPTY_MOVE, best_move=EMPTY_MOVE, parent=nothing, children=Node[],
-        value::Int=0, visits::Int=0, flag::UInt8=NOT_STORED)
+    function ABNode(;move=EMPTY_MOVE, best_move=EMPTY_MOVE, parent=nothing, children=ABNode[],
+        value::Int=0, flag::UInt8=NOT_STORED)
 
         this = new()
 
@@ -22,7 +26,6 @@ mutable struct ABNode
         this.best_child_index = 0
         this.children = children
         this.value = value
-        this.visits = visits
         this.flag = flag
         this.stored_at_iteration = 0
         this.is_expanded = false
@@ -68,34 +71,36 @@ function get_parents(node::ABNode, parents=ABNode[])
     end
 end
 
-function restore_board_position(board::Board, white::Bool, _board::Board, node::ABNode)
-    # restore root board position
-    _board.position .= board.position
-    _board.can_castle .= board.can_castle
-    _board.can_en_passant .= board.can_en_passant
-    _white = white
-    depth = 0
-
-    # update board to current position
-    if node.move != (0x00, 0x00, 0x00)
-        parents = get_parents(node)
-        for p in parents
-            if p.move != (0x00, 0x00, 0x00)
-                move!(_board, _white, p.move[1], p.move[2], p.move[3])
-                _white = !_white
-            end
-        end
-        move!(_board, _white, node.move[1], node.move[2], node.move[3])
-        _white = !_white
-        depth = length(parents) - 1
+function count_nodes(node::ABNode)
+    if length(node.children) == 0
+        # leaf
+        return 1
+    else
+        return sum(count_nodes(c) for c in node.children) + 1
     end
-
-    return _white, depth
 end
 
-function prune!(node::ABNode)
-    for child in node.children
-        child.parent = nothing
-    end
-    node.children = []
-end
+# function restore_board_position(board::Board, white::Bool, _board::Board, node::ABNode)
+#     # restore root board position
+#     _board.position .= board.position
+#     _board.can_castle .= board.can_castle
+#     _board.can_en_passant .= board.can_en_passant
+#     _white = white
+#     depth = 0
+#
+#     # update board to current position
+#     if node.move != EMPTY_MOVE
+#         parents = get_parents(node)
+#         for p in parents
+#             if p.move != EMPTY_MOVE
+#                 make_move!(_board, _white, p.move)
+#                 _white = !_white
+#             end
+#         end
+#         make_move!(_board, _white, node.move)
+#         _white = !_white
+#         depth = length(parents) - 1
+#     end
+#
+#     return _white, depth
+# end

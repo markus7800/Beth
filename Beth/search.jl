@@ -19,7 +19,7 @@ mutable struct ABNode
     stored_at_iteration::Int
     is_expanded::Bool
 
-    function ABNode(;move=EMPTY_MOVE, best_move=EMPTY_MOVE, parent=nothing, children=Node[], value=0., visits=0, flag=NOT_STORED)
+    function ABNode(;move=EMPTY_MOVE, best_move=EMPTY_MOVE, parent=nothing, children=ABNode[], value=0., visits=0, flag=NOT_STORED)
         this = new()
 
         this.parent = parent

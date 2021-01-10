@@ -290,6 +290,7 @@ function evaluation(board::Board, white::Bool; check_value::Int=0, no_moves::Boo
     return score
 end
 
+# TODO: guestimate value change
 function rank_moves_by_eval(board::Board, white::Bool, ms::MoveList)::Vector{Tuple{Int,Move}}
     ranked_moves = Vector{Tuple{Int,Move}}(undef, length(ms))
 
@@ -297,12 +298,12 @@ function rank_moves_by_eval(board::Board, white::Bool, ms::MoveList)::Vector{Tup
     opponent = 7 + white
 
     pawn_endgame = n_pieces(board, !white) == 0 && n_pawns(board, white) > 0
-    check_value = pawn_endgame ? 0. : 30.
+    check_value = pawn_endgame ? 0 : 30
 
-    for (i,m) in enumertae(ms)
+    for (i,m) in enumerate(ms)
         undo = make_move!(board, white, m)
         v = evaluation(board, !white, check_value=check_value)
-        if pawn_endgame && p == PAWN
+        if pawn_endgame && m.from_piece == PAWN
             v += white ? 3 : -1
         end
         ranked_moves[i] = (v, m)

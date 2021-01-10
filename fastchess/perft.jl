@@ -61,6 +61,59 @@ function divide(board::Board, white::Bool, depth::Int)
     return nodes
 end
 
+function perft_capture(board::Board, white::Bool, depth::Int)
+    # ms = get_moves(board, white)
+    # ms = get_capture_moves(board, white, ms)
+    ms = get_captures(board, white)
+    #println(ms)
+    if depth == 1
+        return length(ms)
+    else
+        nodes = 0
+        # for (i, m) in ms
+        for m in ms
+            undo = make_move!(board, white, m)
+            nodes += perft_capture(board, !white, depth-1) + 1
+            undo_move!(board, white, m, undo)
+        end
+        return nodes
+    end
+end
+
+function Chess_perft_capture_int(b::Chess.Board, depth::Int, ply::Int)
+    _movelist = Chess.moves(b)
+    occ = Chess.occupiedsquares(b)
+
+    movelist = []
+    for m in _movelist
+        if Chess.to(m) in occ
+            push!(movelist, m)
+        end
+    end
+
+    # println(movelist)
+
+    if depth == 1
+        return length(movelist)
+    else
+        result = 0
+        for m ∈ movelist
+            u = Chess.domove!(b, m)
+            result += Chess_perft_capture_int(b, depth - 1, ply + 1) + 1
+            Chess.undomove!(b, u)
+        end
+        result
+    end
+end
+
+function Chess_perft_capture(b::Chess.Board, depth::Int)::Int
+    if depth == 0
+        1
+    else
+        Chess_perft_capture_int(b, depth, 0)
+    end
+end
+
 import Chess
 
 using BenchmarkTools

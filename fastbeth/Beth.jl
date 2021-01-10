@@ -1,11 +1,10 @@
 include("../fastchess/chess.jl")
 include("evaluation.jl")
-
-import Base.Iterators.Pairs
+using Printf
 
 mutable struct Beth
     search_algorithm::Function
-    search_args::Vector{Pair{Symbol,Any}}
+    search_args::Dict{String, Any}
 
     value_heuristic::Function
     rank_heuristic::Function
@@ -16,6 +15,7 @@ mutable struct Beth
 
     n_leafes::Int
     n_explored_nodes::Int
+    n_quiesce_nodes::Int
 
     function Beth(;board=StartPosition(), white=true, search_algorithm, search_args=Pair[], value_heuristic, rank_heuristic)
         beth = new()
@@ -35,6 +35,7 @@ mutable struct Beth
 
         beth.n_leafes = 0
         beth.n_explored_nodes = 0
+        beth.n_quiesce_nodes = 0
 
         # mates, dps = load_3_men_tablebase()
         # beth.tb_3_men_mates = mates
@@ -44,6 +45,17 @@ mutable struct Beth
 
         return beth
     end
+end
+
+function (beth::Beth)(board::Board, white::Bool)
+    # if haskey(beth.ob, board)
+    #     @info("Position known.")
+    #     return beth.ob[board]
+    # end
+
+    value, move = beth.search_algorithm(beth, board=board, white=white)
+    println(@sprintf "Computer says: %s valued with %.2f." move value/100)
+    return move
 end
 
 #
