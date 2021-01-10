@@ -1,6 +1,8 @@
 const PIECE_VALUES = [1, 3, 3, 5, 9]
 const MAX_VALUE = 1_000_000
 const MIN_VALUE = -1_000_000
+const WHITE_MATE = 100_000
+const BLACK_MATE = -100_000
 
 function piece_value(p)
     @inbounds PIECE_VALUES[p]
@@ -101,8 +103,8 @@ function evaluation(board::Board, white::Bool; check_value::Int=0, no_moves::Boo
                         piece_value(QUEEN) * n_queens(board, false)
 
 
-    white_piece_count = n_pieces(board, true)
-    black_piece_count = n_pieces(board, false)
+    white_piece_count = n_pieces(board, true) - 1
+    black_piece_count = n_pieces(board, false) - 1
 
     white_pawn_struct = pawn_struct(board.pawns & board.whites)
     black_pawn_struct = pawn_struct(board.pawns & board.blacks)
@@ -118,9 +120,9 @@ function evaluation(board::Board, white::Bool; check_value::Int=0, no_moves::Boo
 
     if no_moves
         if white_in_check
-            return -100_000 # checkmate
+            return BLACK_MATE # checkmate
         elseif black_in_check
-            return 100_000 # checkmate
+            return WHITE_MATE # checkmate
         else
             return 0 # stalemate
         end
@@ -297,7 +299,7 @@ function rank_moves_by_eval(board::Board, white::Bool, ms::MoveList)::Vector{Tup
     player = 7 + !white
     opponent = 7 + white
 
-    pawn_endgame = n_pieces(board, !white) == 0 && n_pawns(board, white) > 0
+    pawn_endgame = n_pieces(board, !white) == 1 && n_pawns(board, white) > 0
     check_value = pawn_endgame ? 0 : 30
 
     for (i,m) in enumerate(ms)

@@ -1,25 +1,26 @@
 
-OpeningBook = Dict{Board,Move}
+const OpeningBook = Dict{Board,Move}
 
-function generate_opening_book(d::Dict, board = Board(), white = true, player=WHITE, book::OpeningBook=OpeningBook())
+function generate_opening_book(d::Dict, board = StartPosition(), white = true, player=WHITE, book::OpeningBook=OpeningBook())
     if 7 + !white == player
         @assert length(d) == 1
-        short = first(d)[1]
-        next = first(d)[2]
+        only_entry = pop!(d)
+        short = only_entry[1]
+        next = only_entry[2]
         @assert next isa Dict
 
         m = short_to_long(board, white, short)
         book[board] = m
 
         _board = deepcopy(board)
-        move!(_board, white, m[1], m[2], m[3])
+        make_move!(_board, white, m)
         # @info("$white, $short")
         generate_opening_book(next, _board, !white, player, book)
     else
         for (short, next) in d
             _board = deepcopy(board)
             m = short_to_long(_board, white, short)
-            move!(_board, white, m[1], m[2], m[3])
+            make_move!(_board, white, m)
             # @info("$white, $short")
             generate_opening_book(next, _board, !white, player, book)
         end
@@ -28,7 +29,7 @@ function generate_opening_book(d::Dict, board = Board(), white = true, player=WH
     return book
 end
 
-function generate_opening_book(short::String, board = Board(), white = true, player=WHITE, book::OpeningBook=OpeningBook())
+function generate_opening_book(short::String, board = StartPosition(), white = true, player=WHITE, book::OpeningBook=OpeningBook())
     @assert 7 + !white == player
     m = short_to_long(board, white, short)
     book[board] = m

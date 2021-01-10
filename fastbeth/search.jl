@@ -13,11 +13,10 @@ function quiesce_nomem(beth::Beth, α::Int, β::Int, white::Bool)::Int
     sort!(capture_moves, rev=true, lt=cap_lt)
 
 
-    # board_value, is_3_men = tb_3_men_lookup(beth.tb_3_men_mates, beth.tb_3_men_desperate_positions, beth._board, white)
-    # if !is_3_men
-    #     board_value = beth.value_heuristic(beth._board, white)
-    # end
-    board_value = beth.value_heuristic(beth._board, white)
+    board_value, is_3_men = tb_3_men_lookup(beth.tb_3_men_mates, beth.tb_3_men_desperate_positions, beth._board, white)
+    if !is_3_men
+        board_value = beth.value_heuristic(beth._board, white)
+    end
 
     if length(capture_moves) == 0
         beth.n_leafes += 1
@@ -67,11 +66,10 @@ function quiesce(beth::Beth, depth::Int, ply::Int, α::Int, β::Int, white::Bool
     sort!(capture_moves, rev=true, lt=cap_lt)
 
 
-    # board_value, is_3_men = tb_3_men_lookup(beth.tb_3_men_mates, beth.tb_3_men_desperate_positions, beth._board, white)
-    # if !is_3_men
-    #     board_value = beth.value_heuristic(beth._board, white)
-    # end
-    board_value = beth.value_heuristic(beth._board, white)
+    board_value, is_3_men = tb_3_men_lookup(beth.tb_3_men_mates, beth.tb_3_men_desperate_positions, beth._board, white)
+    if !is_3_men
+        board_value = beth.value_heuristic(beth._board, white)
+    end
 
     if length(capture_moves) == 0 || depth == 0
         beth.max_quiesce_depth = max(beth.max_quiesce_depth, ply)
@@ -305,6 +303,7 @@ function AlphaBeta_Search(beth::Beth; board=beth.board, white=beth.white)
         @info(@sprintf "%d nodes explored in %.4f seconds (%.2f/s)." beth.n_explored_nodes t (beth.n_explored_nodes/t) )
         if do_quiesce
             q_perc = beth.n_quiesce_nodes/beth.n_explored_nodes*100
+            @info(@sprintf "%d leaf nodes" beth.n_leafes)
             @info(@sprintf "%d quiesce nodes (%.2f%%), %d/%d depth reached" beth.n_quiesce_nodes q_perc beth.max_quiesce_depth quiesce_depth)
         end
         @info(@sprintf "number of tree nodes: %d (%.2f MB)" count_nodes(root) Base.summarysize(root) / 10^6)
@@ -415,7 +414,7 @@ function IterativeMTDF(beth::Beth; board=beth.board, white=beth.white)
 
         push!(guesses, value)
 
-        abs(value) == MAX_VALUE && break # stop early for mates
+        # abs(value) > WHITE_MATE - 100 && break # stop early for mates
 
         time() > t1 && break
     end
@@ -432,84 +431,3 @@ function IterativeMTDF(beth::Beth; board=beth.board, white=beth.white)
 
     return guesses[end], root.children[root.best_child_index].move
 end
-
-
-
-board = Board("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1")
-
-# board = Board("6k1/1p4bp/3p4/1q1P1pN1/1r2p3/4B2P/r4PP1/3Q1RK1 w - - 0 1")
-# board = Board("r2qkbnr/ppp2ppp/2n1p1b1/3p4/4PP2/3P1N2/PPPN2PP/R1BQKB1R w KQkq - 0 1")
-
-
-beth = Beth(
-    value_heuristic=evaluation,
-    rank_heuristic=rank_moves_by_eval,
-    search_algorithm=AlphaBeta_Search,
-    search_args=Dict(
-        "depth" => 2,
-        "do_quiesce" => true,
-        "quiesce_depth" => 20,
-        "verbose" => true
-    ))
-
-
-@time beth(board, true)
-
-
-pz = rush_20_12_13[9]
-print_puzzle(pz)
-
-beth = Beth(
-    value_heuristic=evaluation,
-    rank_heuristic=rank_moves_by_eval,
-    search_algorithm=AlphaBeta_Search,
-    search_args=Dict(
-        "depth" => 6,
-        "do_quiesce" => true,
-        "quiesce_depth" => 50,
-        "verbose" => true
-    ))
-
-@time beth(pz.board, pz.white_to_move)
-
-beth = Beth(
-    value_heuristic=evaluation,
-    rank_heuristic=rank_moves_by_eval,
-    search_algorithm=MTDF_Search,
-    search_args=Dict(
-        "depth" => 6,
-        "do_quiesce" => true,
-        "quiesce_depth" => 50,
-        "verbose" => true
-    ))
-
-@time beth(pz.board, pz.white_to_move)
-
-beth = Beth(
-    value_heuristic=evaluation,
-    rank_heuristic=rank_moves_by_eval,
-    search_algorithm=IterativeMTDF,
-    search_args=Dict(
-        "max_depth" => 6,
-        "do_quiesce" => true,
-        "quiesce_depth" => 50,
-        "verbose" => 2
-    ))
-
-@time beth(pz.board, pz.white_to_move)
-
-beth = Beth(
-    value_heuristic=evaluation,
-    rank_heuristic=rank_moves_by_eval,
-    search_algorithm=IterativeMTDF,
-    search_args=Dict(
-        "max_depth" => 20,
-        "do_quiesce" => true,
-        "quiesce_depth" => 50,
-        "verbose" => 1,
-        "time" => 1
-    ))
-
-@time beth(pz.board, pz.white_to_move)
-
-puzzle_rush(rush_20_12_31, beth, print_solution=true)

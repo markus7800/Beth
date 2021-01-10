@@ -1,5 +1,8 @@
 include("../fastchess/chess.jl")
 include("evaluation.jl")
+include("../endgame/tablebase.jl")
+include("../opening/opening_book.jl")
+
 using Printf
 
 mutable struct Beth
@@ -18,6 +21,11 @@ mutable struct Beth
     n_quiesce_nodes::Int
 
     max_quiesce_depth::Int
+
+    tb_3_men_mates::TableBase
+    tb_3_men_desperate_positions::TableBase
+
+    ob::OpeningBook
 
     function Beth(;board=StartPosition(), white=true, search_algorithm, search_args=Pair[], value_heuristic, rank_heuristic)
         beth = new()
@@ -40,26 +48,30 @@ mutable struct Beth
 
         beth.n_quiesce_nodes = 0
         beth.max_quiesce_depth = 0
-        # mates, dps = load_3_men_tablebase()
-        # beth.tb_3_men_mates = mates
-        # beth.tb_3_men_desperate_positions = dps
-        #
-        # beth.ob = get_queens_gambit()
+
+        mates, dps = load_3_men_tablebase()
+        beth.tb_3_men_mates = mates
+        beth.tb_3_men_desperate_positions = dps
+
+        beth.ob = get_queens_gambit()
 
         return beth
     end
 end
 
 function (beth::Beth)(board::Board, white::Bool)
-    # if haskey(beth.ob, board)
-    #     @info("Position known.")
-    #     return beth.ob[board]
-    # end
+    if haskey(beth.ob, board)
+        move = beth.ob[board]
+        @info("Position known. Move is $move.")
+        return move
+    end
 
     value, move = beth.search_algorithm(beth, board=board, white=white)
     println(@sprintf "Computer says: %s valued with %.2f." move value/100)
     return move
 end
+
+include("search.jl")
 
 
 include("../puzzles/puzzle.jl")

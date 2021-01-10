@@ -53,6 +53,21 @@ function ==(left::Board, right::Board)
         left.en_passant == right.en_passant
 end
 
+import Base.hash
+function Base.hash(board::Board)
+    h = hash(board.pawns)
+    h = hash(board.bishops, h)
+    h = hash(board.knights, h)
+    h = hash(board.rooks, h)
+    h = hash(board.queens, h)
+    h = hash(board.kings, h)
+    h = hash(board.whites, h)
+    h = hash(board.blacks, h)
+
+    h = hash(board.castle, h)
+    h = hash(board.en_passant, h)
+end
+
 function Board()
     return Board(0,0,0,0,0,0,0,0, 0, 0)
 end
@@ -205,7 +220,7 @@ function n_queens(board::Board, white::Bool)
 end
 
 function n_pieces(board::Board, white::Bool)
-    white ? count_ones(board.whites)-1 : count_ones(board.blacks)-1
+    white ? count_ones(board.whites) : count_ones(board.blacks)
 end
 
 function count_pieces(fields::Fields)
