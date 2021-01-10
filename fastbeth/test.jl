@@ -79,6 +79,8 @@ beth = Beth(
 
 puzzle_rush(rush_20_12_31, beth, print_solution=true)
 
+play_puzzle(rush_20_12_31[13], beth)
+
 play_game(black_player=user_input, white_player=beth)
 
 board = Board()

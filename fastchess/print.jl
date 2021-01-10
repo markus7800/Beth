@@ -73,6 +73,8 @@ function Base.show(io::IO, board::Board)
     else
         print(io, "-")
     end
+    println(io)
+    println(io, FEN(board, true))
 end
 
 function print_board(board::Board; highlight=nothing, white=true)

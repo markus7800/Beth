@@ -14,17 +14,28 @@ function quiesce(beth::Beth, depth::Int, ply::Int, α::Int, β::Int, white::Bool
     beth.n_quiesce_nodes += 1
 
     capture_moves = lists[ply+1]
+
+    @assert length(capture_moves) == 0
     # println(ply+1, ", ", depth)
 
     get_captures!(beth._board, white, capture_moves)
     sort!(capture_moves, rev=true, lt=cap_lt)
 
 
-    if count_pieces(beth._board.blacks | beth._board.whites) ≤ 3
-        board_value, is_3_men = tb_3_men_lookup(beth.tb_3_men_mates, beth.tb_3_men_desperate_positions, beth._board, white)
-        @assert is_3_men # TODO
-        return board_value
-    end
+    # if count_pieces(beth._board.blacks | beth._board.whites) ≤ 3
+    #     board_value, is_3_men = tb_3_men_lookup(beth.tb_3_men_mates, beth.tb_3_men_desperate_positions, beth._board, white)
+    #     if !is_3_men
+    #         print_board(beth._board) # TODO
+    #         println()
+    #         println(n_pieces(beth._board, true) + n_pieces(beth._board, false))
+    #         println(count_pieces(beth._board.blacks | beth._board.whites))
+    #         print_fields(beth._board.blacks)
+    #         print_fields(beth._board.whites)
+    #         println(key_3_men(beth._board, white))
+    #         @assert false
+    #     end
+    #     return board_value
+    # end
 
     board_value = beth.value_heuristic(beth._board, white)
 
@@ -123,10 +134,10 @@ function AlphaBeta(beth::Beth, node::ABNode, depth::Int, ply::Int, α::Int, β::
         best_value = white ? MIN_VALUE : MAX_VALUE
         value = white ? MIN_VALUE : MAX_VALUE
 
-        tb_value, is_3_men = tb_3_men_lookup(beth.tb_3_men_mates, beth.tb_3_men_desperate_positions, beth._board, white)
-        if is_3_men && ply > 0
-            return tb_value
-        end
+        # tb_value, is_3_men = tb_3_men_lookup(beth.tb_3_men_mates, beth.tb_3_men_desperate_positions, beth._board, white)
+        # if is_3_men && ply > 0
+        #     return tb_value
+        # end
 
         # successor moves were not generated yet
         if !node.is_expanded

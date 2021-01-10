@@ -46,7 +46,24 @@ mutable struct Undo
     en_passant::UInt8
 end
 
-const DEBUG_MOVE = false
+function Base.show(io::IO, undo::Undo)
+    print(io, "Undo(")
+    if undo.captured > 0
+        print(io, "captured ", PIECE_SYMBOLS[undo.captured], " at ", tostring(undo.capture_field))
+    end
+    if undo.did_castle > 0
+        undo.did_castle == WHITE_SHORT_CASTLE && print(io, "K")
+        undo.did_castle == WHITE_LONG_CASTLE && print(io, "Q")
+        undo.did_castle == BLACK_SHORT_CASTLE && print(io, "k")
+        undo.did_castle == BLACK_LONG_CASTLE && print(io, "q")
+    end
+    if undo.en_passant > 0
+        print(io, " en passant: ", undo.en_passant)
+    end
+    print(io, ")")
+end
+
+const DEBUG_MOVE = true
 
 include("movelist.jl")
 
@@ -64,8 +81,8 @@ function make_move!(board::Board, white::Bool, move::Move)::Undo
         board.en_passant)
 
 
-    DEBUG_MOVE && @assert get_piece(board, from, white) == move.from_piece (board, move, white)
-    DEBUG_MOVE && @assert get_piece(board, to, white) == NO_PIECE (board, move, white)
+    DEBUG_MOVE && @assert get_piece(board, from, white) == move.from_piece ("no piece at from", board, move, white)
+    DEBUG_MOVE && @assert get_piece(board, to, white) == NO_PIECE ("own piece at to", board, move, white)
 
     # disable en passant
     board.en_passant = 0
@@ -147,6 +164,8 @@ function make_move!(board::Board, white::Bool, move::Move)::Undo
     end
 
 
+    @assert n_pieces(board, true) + n_pieces(board, false) == count_pieces(board.blacks | board.whites) (board, move, undo)
+
     return undo
 end
 
@@ -181,6 +200,7 @@ function undo_move!(board::Board, white::Bool, move::Move, undo::Undo)
         end
     end
 
+    @assert n_pieces(board, true) + n_pieces(board, false) == count_pieces(board.blacks | board.whites) (board, move, undo)
 end
 
 
@@ -307,12 +327,17 @@ function filter_evasions!(board::Board, white::Bool, movelist::MoveList)
     count = 0
     for i in 1:n_moves
         move = movelist[i]
+
+        _board = deepcopy(board)
+
         undo = make_move!(board, white, move)
         if !is_in_check(board, white)
             count += 1
             movelist.moves[count] = move
         end
         undo_move!(board, white, move, undo)
+
+        @assert board == _board ("filter evasions", _board, board, move)
     end
     movelist.count = count
 end
