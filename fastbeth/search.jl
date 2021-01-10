@@ -275,7 +275,7 @@ function AlphaBeta(beth::Beth, node::ABNode, depth::Int, ply::Int, α::Int, β::
     return node.value
 end
 
-function AlphaBeta_search(beth::Beth; board=beth.board, white=beth.white)
+function AlphaBeta_Search(beth::Beth; board=beth.board, white=beth.white)
 
     beth.board = deepcopy(board)
     beth._board = deepcopy(board)
@@ -315,27 +315,16 @@ function AlphaBeta_search(beth::Beth; board=beth.board, white=beth.white)
     return v, root.children[root.best_child_index].move
 end
 
-function MTDF(beth::Beth; board=beth.board, white=beth.white,
+function MTDF(beth::Beth; depth::Int, do_quiesce::Bool, quiesce_depth::Int, verbose::Bool=false,
     guess::Int=0, root=ABNode(), iter_id=0)
 
-    beth.board = deepcopy(board)
-    beth._board = deepcopy(board)
-    beth.white = white
-    beth.n_leafes = 0
-    beth.n_explored_nodes = 0
-    beth.n_quiesce_nodes = 0
-    beth.max_quiesce_depth = 0
+    white = beth.white
 
     use_stored_values = true
     store_values = true
     ply = 0
 
-    depth = beth.search_args["depth"]
-    do_quiesce = get(beth.search_args, "do_quiesce", false)
-    quiesce_depth = get(beth.search_args, "quiesce_depth", 20)
     quiese_lists = [MoveList(200) for _ in 1:quiesce_depth+1]
-
-    verbose = get(beth.search_args, "verbose", false)
 
     value = guess
     upper = MAX_VALUE
@@ -372,6 +361,68 @@ function MTDF(beth::Beth; board=beth.board, white=beth.white,
     return value, root.children[root.best_child_index].move
 end
 
+function MTDF_Search(beth::Beth; board=beth.board, white=beth.white)
+    beth.board = deepcopy(board)
+    beth._board = deepcopy(board)
+    beth.white = white
+    beth.n_leafes = 0
+    beth.n_explored_nodes = 0
+    beth.n_quiesce_nodes = 0
+    beth.max_quiesce_depth = 0
+
+    depth = beth.search_args["depth"]
+    do_quiesce = get(beth.search_args, "do_quiesce", false)
+    quiesce_depth = get(beth.search_args, "quiesce_depth", 20)
+
+    verbose = get(beth.search_args, "verbose", false)
+
+    return MTDF(beth, depth=depth, do_quiesce=do_quiesce, quiesce_depth=quiesce_depth, verbose=verbose, guess=0, root=ABNode(), iter_id=0)
+end
+
+function IterativeMTDF(beth::Beth; board=beth.board, white=beth.white)
+    beth.board = deepcopy(board)
+    beth._board = deepcopy(board)
+    beth.white = white
+    beth.n_leafes = 0
+    beth.n_explored_nodes = 0
+    beth.n_quiesce_nodes = 0
+    beth.max_quiesce_depth = 0
+
+    min_depth = get(beth.search_args, "min_depth", 2)
+    max_depth = beth.search_args["max_depth"]
+
+    do_quiesce = get(beth.search_args, "do_quiesce", false)
+    quiesce_depth = get(beth.search_args, "quiesce_depth", 20)
+
+    verbose = get(beth.search_args, "verbose", false)
+
+    guesses = Int[0]
+    root = ABNode() # reuse
+
+    v,t, = @timed for depth in min_depth:1:max_depth
+        guess = guesses[end]
+        if verbose
+            @info @sprintf "Depth: %d, guess: %.2f" depth guess/100
+        end
+
+        value, best_move = MTDF(beth, depth=depth, do_quiesce=do_quiesce, quiesce_depth=quiesce_depth, verbose=verbose,
+            guess=guess, root=root, iter_id=depth)
+
+        push!(guesses, value)
+    end
+
+    if verbose
+        @info(@sprintf "%d nodes explored in %.4f seconds (%.2f/s)." beth.n_explored_nodes t (beth.n_explored_nodes/t) )
+        if do_quiesce
+            q_perc = beth.n_quiesce_nodes/beth.n_explored_nodes*100
+            @info(@sprintf "%d quiesce nodes (%.2f%%), %d/%d depth reached" beth.n_quiesce_nodes q_perc beth.max_quiesce_depth quiesce_depth)
+        end
+        @info(@sprintf "number of tree nodes: %d (%.2f MB)" count_nodes(root) Base.summarysize(root) / 10^6)
+    end
+
+    return guesses[end], root.children[root.best_child_index].move
+end
+
 
 board = Board("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1")
 
@@ -382,7 +433,7 @@ board = Board("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 
 beth = Beth(
     value_heuristic=evaluation,
     rank_heuristic=rank_moves_by_eval,
-    search_algorithm=AlphaBeta_search,
+    search_algorithm=AlphaBeta_Search,
     search_args=Dict(
         "depth" => 2,
         "do_quiesce" => true,
@@ -400,7 +451,7 @@ print_puzzle(pz)
 beth = Beth(
     value_heuristic=evaluation,
     rank_heuristic=rank_moves_by_eval,
-    search_algorithm=AlphaBeta_search,
+    search_algorithm=AlphaBeta_Search,
     search_args=Dict(
         "depth" => 6,
         "do_quiesce" => true,
@@ -413,9 +464,22 @@ beth = Beth(
 beth = Beth(
     value_heuristic=evaluation,
     rank_heuristic=rank_moves_by_eval,
-    search_algorithm=MTDF,
+    search_algorithm=MTDF_Search,
     search_args=Dict(
         "depth" => 6,
+        "do_quiesce" => true,
+        "quiesce_depth" => 50,
+        "verbose" => true
+    ))
+
+@time beth(pz.board, pz.white_to_move)
+
+beth = Beth(
+    value_heuristic=evaluation,
+    rank_heuristic=rank_moves_by_eval,
+    search_algorithm=IterativeMTDF,
+    search_args=Dict(
+        "max_depth" => 6,
         "do_quiesce" => true,
         "quiesce_depth" => 50,
         "verbose" => true
