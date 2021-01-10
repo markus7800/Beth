@@ -37,6 +37,9 @@ function Base.getindex(list::MoveList, i::Int)
     list.moves[i]
 end
 
+function Base.setindex!(list::MoveList, v::Move, i::Int)
+    list.moves[i] = v
+end
 
 function MoveList(capacity::Int)
     MoveList(Array{Move}(undef, capacity), 0)

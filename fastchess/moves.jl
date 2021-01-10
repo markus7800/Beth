@@ -250,29 +250,56 @@ function is_in_check(board::Board, white::Bool)
     is_attacked(board, white, player, opponent, occupied, king_field_number)
 end
 
-function get_moves!(board::Board, white::Bool, movelist)
+function get_moves!(board::Board, white::Bool, movelist::MoveList)
     player = white ? board.whites : board.blacks
     opponent = white ? board.blacks : board.whites
     occupied = player | opponent
     pinned = get_pinned(board, player, opponent, occupied)
 
-    get_pawn_moves!(board, white, player, opponent, occupied, pinned, movelist)
-    get_knight_moves!(board, player, pinned, movelist)
-    get_bishop_moves!(board, player, occupied, pinned, movelist)
-    get_rook_moves!(board, player, occupied, pinned, movelist)
-    get_queen_moves!(board, player, occupied, pinned, movelist)
-    get_king_moves!(board, white, player, opponent, occupied, movelist)
+    filter = UInt64(0) - 1 # no filter
+    get_pawn_moves!(board, white, player, opponent, occupied, pinned, filter, movelist)
+    get_knight_moves!(board, player, pinned, filter, movelist)
+    get_bishop_moves!(board, player, occupied, pinned, filter, movelist)
+    get_rook_moves!(board, player, occupied, pinned, filter, movelist)
+    get_queen_moves!(board, player, occupied, pinned, filter,  movelist)
+    get_king_moves!(board, white, player, opponent, occupied, filter, movelist)
 
     if is_in_check(board, white, player, opponent, occupied)
         filter_evasions!(board, white, movelist)
     end
 end
 
-function get_moves(board::Board, white::Bool)
+function get_moves(board::Board, white::Bool)::MoveList
     movelist = MoveList(200) # maximum 200 moves
     get_moves!(board, white, movelist)
     return movelist
 end
+
+function get_captures!(board::Board, white::Bool, movelist::MoveList)
+    player = white ? board.whites : board.blacks
+    opponent = white ? board.blacks : board.whites
+    occupied = player | opponent
+    pinned = get_pinned(board, player, opponent, occupied)
+
+    filter = opponent
+    get_pawn_moves!(board, white, player, opponent, occupied, pinned, filter, movelist)
+    get_knight_moves!(board, player, pinned, filter, movelist)
+    get_bishop_moves!(board, player, occupied, pinned, filter, movelist)
+    get_rook_moves!(board, player, occupied, pinned, filter, movelist)
+    get_queen_moves!(board, player, occupied, pinned, filter,  movelist)
+    get_king_moves!(board, white, player, opponent, occupied, filter, movelist)
+
+    if is_in_check(board, white, player, opponent, occupied)
+        filter_evasions!(board, white, movelist)
+    end
+end
+
+function get_captures(board::Board, white::Bool)::MoveList
+    movelist = MoveList(100) # maximum 200 moves
+    get_captures!(board, white, movelist)
+    return movelist
+end
+
 
 function filter_evasions!(board::Board, white::Bool, movelist::MoveList)
     n_moves = length(movelist)
@@ -289,7 +316,7 @@ function filter_evasions!(board::Board, white::Bool, movelist::MoveList)
     movelist.count = count
 end
 
-function get_pawn_moves!(board::Board, white::Bool, player::Fields, opponent::Fields, occupied::Fields, pinned::Fields, movelist::MoveList)
+function get_pawn_moves!(board::Board, white::Bool, player::Fields, opponent::Fields, occupied::Fields, pinned::Fields, filter::Fields, movelist::MoveList)
     for field_number in board.pawns & player
         if white
             moves = white_pawn_push_empty(field_number) & ~occupied
@@ -318,6 +345,7 @@ function get_pawn_moves!(board::Board, white::Bool, player::Fields, opponent::Fi
             end
         end
 
+        moves &= filter
 
         promote = white ? (moves & RANK_8 > 0) : (moves & RANK_1 > 0)
 
@@ -360,10 +388,11 @@ function get_pawn_moves!(board::Board, white::Bool, player::Fields, opponent::Fi
     end
 end
 
-function get_knight_moves!(board::Board, player::Fields, pinned::Fields, movelist::MoveList)
+function get_knight_moves!(board::Board, player::Fields, pinned::Fields, filter::Fields, movelist::MoveList)
     for field_number in board.knights & player & ~pinned
         moves = knight_move_empty(field_number)
         moves &= ~player
+        moves &= filter
         for n in moves
             push!(movelist, Move(KNIGHT, field_number, n))
         end
@@ -371,7 +400,7 @@ function get_knight_moves!(board::Board, player::Fields, pinned::Fields, movelis
     end
 end
 
-function get_bishop_moves!(board::Board, player::Fields, occupied::Fields, pinned::Fields, movelist::MoveList)
+function get_bishop_moves!(board::Board, player::Fields, occupied::Fields, pinned::Fields, filter::Fields, movelist::MoveList)
     for field_number in board.bishops & player
         moves = bishop_move_empty(field_number)
         occupied_moves = moves & occupied
@@ -379,6 +408,7 @@ function get_bishop_moves!(board::Board, player::Fields, occupied::Fields, pinne
             moves &= ~shadow(field_number, n) # remove fields behind closest pieces
         end
         moves &= ~player
+        moves &= filter
         # print_fields(moves)
 
         if pinned & tofield(field_number) > 0
@@ -401,7 +431,7 @@ function get_bishop_moves!(board::Board, player::Fields, occupied::Fields, pinne
     end
 end
 
-function get_rook_moves!(board::Board, player::Fields, occupied::Fields, pinned::Fields, movelist::MoveList)
+function get_rook_moves!(board::Board, player::Fields, occupied::Fields, pinned::Fields, filter::Fields, movelist::MoveList)
     for field_number in board.rooks & player
         moves = rook_move_empty(field_number)
         occupied_moves = moves & occupied
@@ -409,6 +439,7 @@ function get_rook_moves!(board::Board, player::Fields, occupied::Fields, pinned:
             moves &= ~shadow(field_number, n) # remove fields behind closest pieces
         end
         moves &= ~player
+        moves &= filter
         # print_fields(moves)
 
         if pinned & tofield(field_number) > 0
@@ -431,7 +462,7 @@ function get_rook_moves!(board::Board, player::Fields, occupied::Fields, pinned:
     end
 end
 
-function get_queen_moves!(board::Board, player::Fields, occupied::Fields, pinned::Fields, movelist::MoveList)
+function get_queen_moves!(board::Board, player::Fields, occupied::Fields, pinned::Fields, filter::Fields, movelist::MoveList)
     for field_number in board.queens & player
         moves = queen_move_empty(field_number)
         occupied_moves = moves & occupied
@@ -439,6 +470,7 @@ function get_queen_moves!(board::Board, player::Fields, occupied::Fields, pinned
             moves &= ~shadow(field_number, n) # remove fields behind closest pieces
         end
         moves &= ~player
+        moves &= filter
         # print_fields(moves)
 
         if pinned & tofield(field_number) > 0
@@ -461,10 +493,13 @@ function get_queen_moves!(board::Board, player::Fields, occupied::Fields, pinned
     end
 end
 
-function get_king_moves!(board::Board, white::Bool, player::Fields, opponent::Fields, occupied::Fields, movelist::MoveList)
+function get_king_moves!(board::Board, white::Bool, player::Fields, opponent::Fields, occupied::Fields, filter::Fields, movelist::MoveList)
     king_field = board.kings & player
     king_field_number = tonumber(king_field)
     moves = king_move_empty(king_field_number) & ~player
+
+    moves &= filter
+
     for n in moves
         if !is_attacked(board, white, player, opponent, occupied, n)
             push!(movelist, Move(KING, king_field_number, n))
@@ -473,17 +508,21 @@ function get_king_moves!(board::Board, white::Bool, player::Fields, opponent::Fi
 
     if board.castle > 0
         if !is_attacked(board, white, player, opponent, occupied, king_field_number)
-            if (white && (board.castle & WHITE_SHORT_CASTLE > 0)) ||
-                (!white && (board.castle & BLACK_SHORT_CASTLE > 0))
+            if ((king_field << 2) & filter > 0) &&
+                ((white && (board.castle & WHITE_SHORT_CASTLE > 0)) ||
+                (!white && (board.castle & BLACK_SHORT_CASTLE > 0)))
                 if (king_field << 1) & occupied == 0 &&
                     (king_field << 2) & occupied == 0 &&
                     !is_attacked(board, white, player, opponent, occupied, king_field_number + 1) &&
                     !is_attacked(board, white, player, opponent, occupied, king_field_number + 2)
+
+
                     push!(movelist, Move(KING, king_field_number, king_field_number + 2))
                 end
             end
-            if (white && (board.castle & WHITE_LONG_CASTLE > 0)) ||
-                (!white && (board.castle & BLACK_LONG_CASTLE > 0))
+            if ((king_field >> 2) & filter > 0) &&
+                ((white && (board.castle & WHITE_LONG_CASTLE > 0)) ||
+                (!white && (board.castle & BLACK_LONG_CASTLE > 0)))
                 if (king_field >> 1) & occupied == 0 &&
                     (king_field >> 2) & occupied == 0 &&
                     (king_field >> 3) & occupied == 0 &&

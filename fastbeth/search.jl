@@ -14,8 +14,11 @@ function get_capture_moves(board::Board, white::Bool, ms::MoveList)::Vector{Tupl
     return ranked_captures
 end
 
-function first_lt(x,y)
-    x[1] < y[1]
+function cap_lt(m1::Move, m2::Move)
+    p1 = get_piece(board, tofield(m1.to))
+    p2 = get_piece(board, tofield(m2.to))
+    return piece_value(p1) < piece_value(p2)
+
 end
 
 # alpha beta search with only capture move and no caching and unlimited depth
@@ -25,9 +28,9 @@ function quiesce(beth::Beth, α::Int, β::Int, white::Bool)::Int
     #     return 0
     # end
 
-    ms = get_moves(beth._board, white)
-    capture_moves = get_capture_moves(beth._board, white, ms)
-    sort!(capture_moves, rev=white, lt=first_lt)
+    # ms = get_moves(beth._board, white)
+    capture_moves = get_captures(beth._board, white)
+    sort!(capture_moves, rev=true, lt=cap_lt)
     # println(beth.n_explored_nodes, ": ", capture_moves)
 
 
@@ -43,12 +46,12 @@ function quiesce(beth::Beth, α::Int, β::Int, white::Bool)::Int
     else
         if white
             value = MIN_VALUE
-            for (prescore, m) in capture_moves
+            for m in capture_moves
                 undo = make_move!(beth._board, white, m)
                 value = max(value, quiesce(beth, α, β, !white))
                 undo_move!(beth._board, white, m, undo)
                 α = max(α, value)
-                # α ≥ β && break # β cutoff
+                α ≥ β && break # β cutoff
             end
             # if you dont take max here only the board values where the player
             # are forced to make all capture moves are taken into account
@@ -56,12 +59,12 @@ function quiesce(beth::Beth, α::Int, β::Int, white::Bool)::Int
             return final_value
         else
             value = MAX_VALUE
-            for (prescore, m) in capture_moves
+            for m in capture_moves
                 undo = make_move!(beth._board, white, m)
                 value = min(value, quiesce(beth, α, β, !white))
                 undo_move!(beth._board, white, m, undo)
                 β = min(β, value)
-                # β ≤ α && break # α cutoff
+                β ≤ α && break # α cutoff
             end
             # if you dont take min here only the board values where the player
             # are forced to make all capture moves are taken into account
@@ -72,14 +75,16 @@ function quiesce(beth::Beth, α::Int, β::Int, white::Bool)::Int
 end
 
 function perft_capture(board::Board, white::Bool, depth::Int)
-    ms = get_moves(board, white)
-    ms = get_capture_moves(board, white, ms)
+    # ms = get_moves(board, white)
+    # ms = get_capture_moves(board, white, ms)
+    ms = get_captures(board, white)
     #println(ms)
     if depth == 1
         return length(ms)
     else
         nodes = 0
-        for (i, m) in ms
+        # for (i, m) in ms
+        for m in ms
             undo = make_move!(board, white, m)
             nodes += perft_capture(board, !white, depth-1) + 1
             undo_move!(board, white, m, undo)
@@ -145,7 +150,8 @@ function my_perft_cap(b::Chess.Board, depth::Int)::Int
 end
 
 cboard = Chess.fromfen("r2qkbnr/ppp2ppp/2n1p1b1/3p4/4PP2/3P1N2/PPPN2PP/R1BQKB1R w KQkq - 0 1")
+cboard = Chess.fromfen("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1")
+@btime my_perft_cap($deepcopy(cboard), 8)
 
-my_perft_cap(cboard, 1000)
-
-perft_capture(board, true, 1000)
+board = Board("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1")
+@btime perft_capture($deepcopy(board), true, 8)
