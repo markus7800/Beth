@@ -17,6 +17,8 @@ mutable struct Beth
     n_explored_nodes::Int
     n_quiesce_nodes::Int
 
+    max_quiesce_depth::Int
+
     function Beth(;board=StartPosition(), white=true, search_algorithm, search_args=Pair[], value_heuristic, rank_heuristic)
         beth = new()
         @info "Heuristics: $value_heuristic, $rank_heuristic"
@@ -35,8 +37,9 @@ mutable struct Beth
 
         beth.n_leafes = 0
         beth.n_explored_nodes = 0
-        beth.n_quiesce_nodes = 0
 
+        beth.n_quiesce_nodes = 0
+        beth.max_quiesce_depth = 0
         # mates, dps = load_3_men_tablebase()
         # beth.tb_3_men_mates = mates
         # beth.tb_3_men_desperate_positions = dps

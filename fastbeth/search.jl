@@ -55,7 +55,7 @@ end
 
 # alpha beta search with only capture move and no caching and unlimited depth
 function quiesce(beth::Beth, depth::Int, ply::Int, α::Int, β::Int, white::Bool,
-        lists::Vector{MoveList}=[MoveList(100) for _ in 1:depth])::Int
+        lists::Vector{MoveList}=[MoveList(100) for _ in 1:depth+1])::Int
 
     beth.n_explored_nodes += 1
     beth.n_quiesce_nodes += 1
@@ -74,6 +74,7 @@ function quiesce(beth::Beth, depth::Int, ply::Int, α::Int, β::Int, white::Bool
     board_value = beth.value_heuristic(beth._board, white)
 
     if length(capture_moves) == 0 || depth == 0
+        beth.max_quiesce_depth = max(beth.max_quiesce_depth, ply)
         beth.n_leafes += 1
     else
         if white
@@ -113,9 +114,10 @@ function first_lt(x, y)
     return x[1] < y[1]
 end
 
+# TODO: alpha beta with only best move stored and fast rank moves 
 function AlphaBeta(beth::Beth, node::ABNode, depth::Int, ply::Int, α::Int, β::Int, white::Bool,
-    use_stored_values=false, store_values=false, do_quiesce=false, quiesce_depth::Int=20, iter_id::Int=0,
-    lists::Vector{MoveList}=[MoveList(200) for _ in 1:depth+quiesce_depth+2])::Int
+    use_stored_values=false, store_values=false, do_quiesce=false, quiesce_depth::Int=20,
+    quiesce_lists::Vector{MoveList}=[MoveList(200) for _ in 1:quiesce_depth+1], iter_id::Int=0)::Int
 
     beth.n_explored_nodes += 1
     _α = α # store
@@ -144,7 +146,7 @@ function AlphaBeta(beth::Beth, node::ABNode, depth::Int, ply::Int, α::Int, β::
         # cannot retrieve since dependent on α, β which are changing by the input
         if do_quiesce
             # println(ply + 1)
-            value = quiesce(beth, quiesce_depth, ply+1, α, β, white, lists)
+            value = quiesce(beth, quiesce_depth, 0, α, β, white, quiesce_lists)
         else
             value = beth.value_heuristic(beth._board, white)
         end
@@ -165,8 +167,7 @@ function AlphaBeta(beth::Beth, node::ABNode, depth::Int, ply::Int, α::Int, β::
 
         # successor moves were not generated yet
         if !node.is_expanded
-            ms = lists[ply+1]
-            get_moves!(beth._board, white, ms)
+            ms = get_moves(beth._board, white)
             if length(ms) == 0 # terminal unexplored node
                 beth.n_leafes += 1
                 value = beth.value_heuristic(beth._board, white, no_moves=true)
@@ -177,7 +178,6 @@ function AlphaBeta(beth::Beth, node::ABNode, depth::Int, ply::Int, α::Int, β::
                 sort!(ranked_moves, rev=white, lt=first_lt) # try to choose best moves first
                 node.ranked_moves = ranked_moves
             end
-            recycle!(ms)
             node.is_expanded = true
         end
 
@@ -217,9 +217,9 @@ function AlphaBeta(beth::Beth, node::ABNode, depth::Int, ply::Int, α::Int, β::
                 undo = make_move!(beth._board, white, child.move)
                 value = max(value,
                             AlphaBeta(beth, child, depth-1, ply+1, α, β, !white,
-                                use_stored_values, store_values, do_quiesce, quiesce_depth, iter_id, lists)
+                                use_stored_values, store_values, do_quiesce, quiesce_depth, quiesce_lists, iter_id)
                             )
-                undo_move!(beth.board, white, child.move, undo)
+                undo_move!(beth._board, white, child.move, undo)
 
                 # keep track of best move
                 if value > best_value
@@ -236,9 +236,9 @@ function AlphaBeta(beth::Beth, node::ABNode, depth::Int, ply::Int, α::Int, β::
                 undo = make_move!(beth._board, white, child.move)
                 value = min(value,
                             AlphaBeta(beth, child, depth-1, ply+1, α, β, !white,
-                                use_stored_values, store_values, do_quiesce, quiesce_depth, iter_id, lists)
+                                use_stored_values, store_values, do_quiesce, quiesce_depth, quiesce_lists, iter_id)
                             )
-                undo_move!(beth.board, white, child.move, undo)
+                undo_move!(beth._board, white, child.move, undo)
 
                 # keep track of best move
                 if value < best_value
@@ -277,12 +277,13 @@ end
 
 function AlphaBeta_search(beth::Beth; board=beth.board, white=beth.white)
 
-    beth.board = board
-    beth._board = board
+    beth.board = deepcopy(board)
+    beth._board = deepcopy(board)
     beth.white = white
     beth.n_leafes = 0
     beth.n_explored_nodes = 0
     beth.n_quiesce_nodes = 0
+    beth.max_quiesce_depth = 0
 
     use_stored_values = false
     store_values = false
@@ -291,19 +292,25 @@ function AlphaBeta_search(beth::Beth; board=beth.board, white=beth.white)
     ply = 0
     do_quiesce = get(beth.search_args, "do_quiesce", false)
     quiesce_depth = get(beth.search_args, "quiesce_depth", 20)
+    quiese_lists = [MoveList(200) for _ in 1:quiesce_depth+1]
 
     verbose = get(beth.search_args, "verbose", false)
 
     root = ABNode()
     v, t, = @timed AlphaBeta(beth, root, depth, ply, MIN_VALUE, MAX_VALUE, white,
-        use_stored_values, store_values, do_quiesce, quiesce_depth)
+        use_stored_values, store_values, do_quiesce, quiesce_depth, quiese_lists)
 
 
     if verbose
-        @info(@sprintf "%d nodes (%d leafes, %d quiesce) explored in %.4f seconds (%.2f/s)." beth.n_explored_nodes beth.n_leafes beth.n_quiesce_nodes t (beth.n_explored_nodes/t) )
-        @info(@sprintf "number of tree nodes: %d (%d MB)" count_nodes(root) Base.summarysize(root) / 10^6)
+        @info(@sprintf "%d nodes explored in %.4f seconds (%.2f/s)." beth.n_explored_nodes t (beth.n_explored_nodes/t) )
+        if do_quiesce
+            q_perc = beth.n_quiesce_nodes/beth.n_explored_nodes*100
+            @info(@sprintf "%d quiesce nodes (%.2f%%), %d/%d depth reached" beth.n_quiesce_nodes q_perc beth.max_quiesce_depth quiesce_depth)
+        end
+        @info(@sprintf "number of tree nodes: %d (%.2f MB)" count_nodes(root) Base.summarysize(root) / 10^6)
     end
 
+    @assert beth.board == beth._board
 
     return v, root.children[root.best_child_index].move
 end
@@ -321,14 +328,20 @@ beth = Beth(
     rank_heuristic=rank_moves_by_eval,
     search_algorithm=AlphaBeta_search,
     search_args=Dict(
-        "depth" => 5,
+        "depth" => 2,
         "do_quiesce" => true,
+        "quiesce_depth" => 20,
         "verbose" => true
     ))
 
+
+@time beth(board, true)
+
+
+
 @time quiesce_nomem(beth, MIN_VALUE, MAX_VALUE, true)
+
+beth._board = deepcopy(board)
 v,t, = @timed quiesce(beth, 100, 0, MIN_VALUE, MAX_VALUE, true)
 
-beth.n_explored_nodes
-
-beth(board, true)
+beth.max_quiesce_depth
