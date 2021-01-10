@@ -282,7 +282,7 @@ function AlphaBeta_Search(beth::Beth; board=beth.board, white=beth.white)
 end
 
 function MTDF(beth::Beth; depth::Int, do_quiesce::Bool, quiesce_depth::Int, verbose::Bool=false,
-    guess::Int=0, root=ABNode(), iter_id=0)
+    guess::Int=0, root=ABNode(), t1::Float64=Inf, iter_id=0)
 
     white = beth.white
 
@@ -291,6 +291,8 @@ function MTDF(beth::Beth; depth::Int, do_quiesce::Bool, quiesce_depth::Int, verb
     ply = 0
 
     quiese_lists = [MoveList(200) for _ in 1:quiesce_depth+1]
+
+    finished = true
 
     value = guess
     upper = MAX_VALUE
@@ -313,10 +315,15 @@ function MTDF(beth::Beth; depth::Int, do_quiesce::Bool, quiesce_depth::Int, verb
         if lower ≥ upper
             break
         end
+
+        if time() > t1
+            finished = false
+            break
+        end
     end
 
     if verbose
-        @info(@sprintf "%d nodes explored in %.4f seconds (%.2f/s)." beth.n_explored_nodes t (beth.n_explored_nodes/t) )
+        @info(@sprintf "%d nodes explored in %.4f seconds (%.2f/s). Finished? %s" beth.n_explored_nodes t (beth.n_explored_nodes/t) finished)
         if do_quiesce
             q_perc = beth.n_quiesce_nodes/beth.n_explored_nodes*100
             @info(@sprintf "%d quiesce nodes (%.2f%%), %d/%d depth reached" beth.n_quiesce_nodes q_perc beth.max_quiesce_depth quiesce_depth)
@@ -324,7 +331,7 @@ function MTDF(beth::Beth; depth::Int, do_quiesce::Bool, quiesce_depth::Int, verb
         @info(@sprintf "number of tree nodes: %d (%.2f MB)" count_nodes(root) Base.summarysize(root) / 10^6)
     end
 
-    return value, root.children[root.best_child_index].move
+    return value, root.children[root.best_child_index].move, finished
 end
 
 function MTDF_Search(beth::Beth; board=beth.board, white=beth.white)
@@ -336,13 +343,19 @@ function MTDF_Search(beth::Beth; board=beth.board, white=beth.white)
     beth.n_quiesce_nodes = 0
     beth.max_quiesce_depth = 0
 
+
+    Δt = get(beth.search_args, "time", Inf)
+    t1 = time() + Δt
+
+
     depth = beth.search_args["depth"]
     do_quiesce = get(beth.search_args, "do_quiesce", false)
     quiesce_depth = get(beth.search_args, "quiesce_depth", 20)
 
     verbose = get(beth.search_args, "verbose", false)
 
-    return MTDF(beth, depth=depth, do_quiesce=do_quiesce, quiesce_depth=quiesce_depth, verbose=verbose, guess=0, root=ABNode(), iter_id=0)
+    value, best_move, finished =  MTDF(beth, depth=depth, do_quiesce=do_quiesce, quiesce_depth=quiesce_depth, verbose=verbose, guess=0, root=ABNode(), t1=t1, iter_id=0)
+    return value, best_move
 end
 
 function IterativeMTDF(beth::Beth; board=beth.board, white=beth.white)
@@ -369,6 +382,9 @@ function IterativeMTDF(beth::Beth; board=beth.board, white=beth.white)
     root = ABNode() # reuse
     reached_depth = 0
 
+    final_best_move = EMPTY_MOVE
+    final_value = 0
+
     v,t, = @timed for depth in min_depth:1:max_depth
         reached_depth = depth
         guess = guesses[end]
@@ -376,8 +392,13 @@ function IterativeMTDF(beth::Beth; board=beth.board, white=beth.white)
             @info @sprintf "Depth: %d, guess: %.2f" depth guess/100
         end
 
-        value, best_move = MTDF(beth, depth=depth, do_quiesce=do_quiesce, quiesce_depth=quiesce_depth, verbose=verbose ≥ 3,
-            guess=guess, root=root, iter_id=depth)
+        value, best_move, finished = MTDF(beth, depth=depth, do_quiesce=do_quiesce, quiesce_depth=quiesce_depth, verbose=verbose ≥ 3,
+            guess=guess, root=root, t1=t1, iter_id=depth)
+
+        if finished
+            final_best_move = best_move
+            final_value = value
+        end
 
         push!(guesses, value)
 
@@ -392,9 +413,9 @@ function IterativeMTDF(beth::Beth; board=beth.board, white=beth.white)
             q_perc = beth.n_quiesce_nodes/beth.n_explored_nodes*100
             @info(@sprintf "%d quiesce nodes (%.2f%%), %d/%d depth reached" beth.n_quiesce_nodes q_perc beth.max_quiesce_depth quiesce_depth)
         end
-        @info(@sprintf "number of tree nodes: %d (%.2f MB)" count_nodes(root) Base.summarysize(root) / 10^6)
+        # @info(@sprintf "number of tree nodes: %d (%.2f MB)" count_nodes(root) Base.summarysize(root) / 10^6)
         @info("Reached depth: $reached_depth")
     end
 
-    return guesses[end], root.children[root.best_child_index].move
+    return final_value, final_best_move
 end

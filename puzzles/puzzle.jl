@@ -121,8 +121,8 @@ function play_puzzle(puzzle::Puzzle, player=user_input)
         i > n_moves && break
     end
 
-    # print_board(board, white=white)
-    println(board)
+    print_board(board, white=white)
+    # println(board)
     println()
     @info "Puzzle solved! (Difficulty: $(puzzle.difficulty))"
     return true

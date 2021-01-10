@@ -20,6 +20,19 @@ beth = Beth(
 
 @time beth(board, true)
 
+beth = Beth(
+    value_heuristic=evaluation,
+    rank_heuristic=rank_moves_by_eval,
+    search_algorithm=MTDF_Search,
+    search_args=Dict(
+        "depth" => 2,
+        "do_quiesce" => true,
+        "quiesce_depth" => 20,
+        "verbose" => true
+    ))
+
+@time beth(board, true)
+
 
 pz = rush_20_12_13[9]
 print_puzzle(pz)
@@ -72,7 +85,7 @@ beth = Beth(
         "do_quiesce" => true,
         "quiesce_depth" => 50,
         "verbose" => 1,
-        "time" => 1
+        "time" => 5
     ))
 
 @time beth(pz.board, pz.white_to_move)
@@ -131,4 +144,4 @@ beth = Beth(
 
 beth(board, true)
 
-play_game(board, true, black_player=beth, white_player=beth)
+play_game(board, false, black_player=beth, white_player=beth)
