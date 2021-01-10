@@ -1,4 +1,4 @@
-13=========
+3=========
 
 8 ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ k ⋅
 7 ⋅ p R ⋅ r p p p
@@ -14,10 +14,10 @@
 [ Info: check_score: 0.0
 [ Info: pawn_score: -1.0, -3.0, -2.0
 [ Info: center_score: 0, 0, 0
-[ Info: king_score: 0, 1.0, 3.0
-[ Info: pawn_adv_score: 0.0, 0.0, 0.0
 [ Info: development_score: 0, 0, 0
-1: -6.1
+[ Info: king_score: 0, 0.0, 0.0
+[ Info: pawn_adv_score: -5.0, 0, 5.0
+1: -5.6
 Chess Board
 8 r ⋅ b q k b n r
 7 p p p p p ⋅ ⋅ p
@@ -33,9 +33,9 @@ Chess Board
 [ Info: check_score: 0.0
 [ Info: pawn_score: 1.0, 0.0, -1.0
 [ Info: center_score: -2, 0, 0
+[ Info: development_score: 0, -5, -5
 [ Info: king_score: 0, 0.0, 0.0
 [ Info: pawn_adv_score: 0.0, 0.0, 0.0
-[ Info: development_score: 0, -5, -5
 2: -0.1
 Chess Board
 8 k ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅
@@ -52,10 +52,10 @@ Chess Board
 [ Info: check_score: 0.0
 [ Info: pawn_score: 5.0, 0.0, -5.0
 [ Info: center_score: 2, 1, 1
-[ Info: king_score: 0, 1.0, 2.0
-[ Info: pawn_adv_score: 0.0, 0.0, 0.0
 [ Info: development_score: 0, 0, 0
-3: 4.2
+[ Info: king_score: 0, 0.0, 0.0
+[ Info: pawn_adv_score: -4.0, 1, 5.0
+3: 4.3
 Chess Board
 8 r ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ r
 7 ⋅ Q p ⋅ k ⋅ b ⋅
@@ -71,9 +71,9 @@ Chess Board
 [ Info: check_score: 0.0
 [ Info: pawn_score: 2.0, -1.0, -3.0
 [ Info: center_score: 2, 1, 0
+[ Info: development_score: -1, -1, 0
 [ Info: king_score: -1, 3.0, 0.0
 [ Info: pawn_adv_score: 0.0, 0.0, 0.0
-[ Info: development_score: -1, -1, 0
 4: 5.800000000000001
 Chess Board
 8 ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅
@@ -90,10 +90,10 @@ Chess Board
 [ Info: check_score: 0.0
 [ Info: pawn_score: -4.0, -4.0, 0.0
 [ Info: center_score: -4, 0, 2
-[ Info: king_score: 0, 0.0, 0.0
-[ Info: pawn_adv_score: 0.0, 0.0, 0.0
 [ Info: development_score: 0, 0, 0
-5: -0.8
+[ Info: king_score: 0, 0.0, 0.0
+[ Info: pawn_adv_score: -6.0, -1, 5.0
+5: -1.4000000000000001
 Chess Board
 8 ⋅ ⋅ ⋅ ⋅ ⋅ k ⋅ ⋅
 7 ⋅ ⋅ q ⋅ ⋅ ⋅ p ⋅
@@ -109,10 +109,10 @@ Chess Board
 [ Info: check_score: 0.0
 [ Info: pawn_score: 3.0, -1.0, -4.0
 [ Info: center_score: 0, 1, 0
-[ Info: king_score: 0, 1.0, 0.0
-[ Info: pawn_adv_score: 0.0, 0.0, 0.0
 [ Info: development_score: 0, 0, 0
-6: 1.8
+[ Info: king_score: 0, 0.0, 0.0
+[ Info: pawn_adv_score: -5.0, 0, 5.0
+6: 0.8
 Chess Board
 8 ⋅ ⋅ k r ⋅ ⋅ ⋅ ⋅
 7 p p ⋅ ⋅ ⋅ p ⋅ ⋅
@@ -128,9 +128,9 @@ Chess Board
 [ Info: check_score: 0.0
 [ Info: pawn_score: 0.0, -1.0, -1.0
 [ Info: center_score: 3, 2, 1
+[ Info: development_score: -2, -2, 0
 [ Info: king_score: -2, 1.0, 2.0
 [ Info: pawn_adv_score: 0.0, 0.0, 0.0
-[ Info: development_score: -2, -2, 0
 7: 5.6
 Chess Board
 8 r ⋅ ⋅ ⋅ k ⋅ n r
@@ -147,9 +147,9 @@ Chess Board
 [ Info: check_score: 0.0
 [ Info: pawn_score: 1.0, 0.0, -1.0
 [ Info: center_score: 2, 0, 0
+[ Info: development_score: 0, -1, -1
 [ Info: king_score: 0, 0.0, 0.0
 [ Info: pawn_adv_score: 0.0, 0.0, 0.0
-[ Info: development_score: 0, -1, -1
 8: 1.3
 Chess Board
 8 r ⋅ ⋅ q k b ⋅ r
@@ -166,9 +166,9 @@ Chess Board
 [ Info: check_score: 0.0
 [ Info: pawn_score: 3.0, 0.0, -3.0
 [ Info: center_score: 1, 2, 1
+[ Info: development_score: 1, 0, -1
 [ Info: king_score: 1, 2.0, 0.0
 [ Info: pawn_adv_score: 0.0, 0.0, 0.0
-[ Info: development_score: 1, 0, -1
 9: -0.4999999999999998
 Chess Board
 8 ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅
@@ -185,10 +185,10 @@ Chess Board
 [ Info: check_score: 0.0
 [ Info: pawn_score: -1.0, -3.0, -2.0
 [ Info: center_score: 1, 0, 0
-[ Info: king_score: 0, 0.0, 0.0
-[ Info: pawn_adv_score: 0.0, 0.0, 0.0
 [ Info: development_score: 0, 0, 0
-10: 2.0
+[ Info: king_score: 0, 0.0, 0.0
+[ Info: pawn_adv_score: -4.0, 1, 5.0
+10: 1.6
 Chess Board
 8 r n ⋅ ⋅ k ⋅ ⋅ r
 7 p p ⋅ q ⋅ p p p
@@ -204,9 +204,9 @@ Chess Board
 [ Info: check_score: 0.0
 [ Info: pawn_score: -1.0, -1.0, 0.0
 [ Info: center_score: 0, 1, 2
+[ Info: development_score: 0, -1, -1
 [ Info: king_score: 0, 0.0, 0.0
 [ Info: pawn_adv_score: 0.0, 0.0, 0.0
-[ Info: development_score: 0, -1, -1
 11: -0.1
 Chess Board
 8 ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅
@@ -223,10 +223,10 @@ Chess Board
 [ Info: check_score: 0.0
 [ Info: pawn_score: -1.0, -4.0, -3.0
 [ Info: center_score: -1, 0, 0
-[ Info: king_score: 0, 0.0, 0.0
-[ Info: pawn_adv_score: 0.0, 0.0, 0.0
 [ Info: development_score: 0, 0, 0
-12: -6.199999999999999
+[ Info: king_score: 0, 0.0, 0.0
+[ Info: pawn_adv_score: -7.0, -2, 5.0
+12: -6.8999999999999995
 Chess Board
 8 ⋅ k ⋅ r ⋅ ⋅ ⋅ ⋅
 7 p p ⋅ ⋅ b ⋅ ⋅ p
@@ -242,9 +242,9 @@ Chess Board
 [ Info: check_score: 0.0
 [ Info: pawn_score: 2.0, 0.0, -2.0
 [ Info: center_score: -1, 0, 0
+[ Info: development_score: -1, -1, 0
 [ Info: king_score: -1, 2.0, 2.0
 [ Info: pawn_adv_score: 0.0, 0.0, 0.0
-[ Info: development_score: -1, -1, 0
 13: 0.9999999999999999
 Chess Board
 8 r ⋅ b ⋅ k b ⋅ r
@@ -261,9 +261,9 @@ Chess Board
 [ Info: check_score: 0.0
 [ Info: pawn_score: 0.0, 0.0, 0.0
 [ Info: center_score: -3, 0, 1
+[ Info: development_score: 0, -2, -2
 [ Info: king_score: 0, 0.0, 0.0
 [ Info: pawn_adv_score: 0.0, 0.0, 0.0
-[ Info: development_score: 0, -2, -2
 14: -0.30000000000000004
 Chess Board
 8 ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ k ⋅
@@ -280,9 +280,9 @@ Chess Board
 [ Info: check_score: 0.0
 [ Info: pawn_score: 1.0, -2.0, -3.0
 [ Info: center_score: 0, 0, 1
+[ Info: development_score: -1, -1, 0
 [ Info: king_score: -1, 0.0, 3.0
 [ Info: pawn_adv_score: 0.0, 0.0, 0.0
-[ Info: development_score: -1, -1, 0
 15: -3.5
 Chess Board
 8 r ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ r
@@ -299,9 +299,9 @@ Chess Board
 [ Info: check_score: 0.0
 [ Info: pawn_score: 0.0, -3.0, -3.0
 [ Info: center_score: 3, 0, 0
+[ Info: development_score: 0, 0, 0
 [ Info: king_score: 0, 2.0, 2.0
 [ Info: pawn_adv_score: 0.0, 0.0, 0.0
-[ Info: development_score: 0, 0, 0
 16: 1.3
 Chess Board
 8 r ⋅ ⋅ ⋅ r ⋅ k ⋅
@@ -318,9 +318,9 @@ Chess Board
 [ Info: check_score: 0.0
 [ Info: pawn_score: -1.0, -1.0, 0.0
 [ Info: center_score: -2, 0, 1
+[ Info: development_score: 0, 0, 0
 [ Info: king_score: 0, 3.0, 2.0
 [ Info: pawn_adv_score: 0.0, 0.0, 0.0
-[ Info: development_score: 0, 0, 0
 17: -5.8
 Chess Board
 8 ⋅ ⋅ ⋅ ⋅ ⋅ r k ⋅
@@ -337,9 +337,9 @@ Chess Board
 [ Info: check_score: 0.0
 [ Info: pawn_score: -3.0, -3.0, 0.0
 [ Info: center_score: 2, 2, 1
+[ Info: development_score: 0, 0, 0
 [ Info: king_score: 0, 0.0, 1.0
 [ Info: pawn_adv_score: 0.0, 0.0, 0.0
-[ Info: development_score: 0, 0, 0
 18: 1.4
 Chess Board
 8 ⋅ ⋅ ⋅ ⋅ R r k ⋅
@@ -356,9 +356,9 @@ Chess Board
 [ Info: check_score: 0.0
 [ Info: pawn_score: 0.0, 0.0, 0.0
 [ Info: center_score: -3, 0, 1
+[ Info: development_score: 0, 0, 0
 [ Info: king_score: 0, 2.0, 2.0
 [ Info: pawn_adv_score: 0.0, 0.0, 0.0
-[ Info: development_score: 0, 0, 0
 19: -3.3
 Chess Board
 8 r ⋅ ⋅ r ⋅ ⋅ k ⋅
@@ -375,9 +375,9 @@ Chess Board
 [ Info: check_score: 0.0
 [ Info: pawn_score: 0.0, 0.0, 0.0
 [ Info: center_score: 1, 1, 1
+[ Info: development_score: 0, 0, 0
 [ Info: king_score: 0, 3.0, 3.0
 [ Info: pawn_adv_score: 0.0, 0.0, 0.0
-[ Info: development_score: 0, 0, 0
 20: -0.9
 Chess Board
 8 r ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅
@@ -394,10 +394,10 @@ Chess Board
 [ Info: check_score: 0.0
 [ Info: pawn_score: 1.0, -1.0, -2.0
 [ Info: center_score: 1, 1, 1
-[ Info: king_score: 0, 0.0, 0.0
-[ Info: pawn_adv_score: 0.0, 0.0, 0.0
 [ Info: development_score: 0, 0, 0
-21: 0.2
+[ Info: king_score: 0, 0.0, 0.0
+[ Info: pawn_adv_score: -5.0, 0, 5.0
+21: -0.3
 Chess Board
 8 r ⋅ ⋅ ⋅ ⋅ ⋅ k ⋅
 7 ⋅ ⋅ ⋅ ⋅ ⋅ p ⋅ p
@@ -413,9 +413,9 @@ Chess Board
 [ Info: check_score: 0.0
 [ Info: pawn_score: 1.0, 0.0, -1.0
 [ Info: center_score: 1, 0, 0
+[ Info: development_score: 0, 0, 0
 [ Info: king_score: 0, 2.0, 3.0
 [ Info: pawn_adv_score: 0.0, 0.0, 0.0
-[ Info: development_score: 0, 0, 0
 22: 2.7
 Chess Board
 8 r ⋅ b q k ⋅ ⋅ r
@@ -432,9 +432,9 @@ Chess Board
 [ Info: check_score: 0.0
 [ Info: pawn_score: 0.0, 0.0, 0.0
 [ Info: center_score: 0, 1, 0
+[ Info: development_score: 1, 0, -1
 [ Info: king_score: 1, 0.0, 0.0
 [ Info: pawn_adv_score: 0.0, 0.0, 0.0
-[ Info: development_score: 1, 0, -1
 23: 3.1
 Chess Board
 8 ⋅ ⋅ ⋅ ⋅ r ⋅ k ⋅
@@ -451,9 +451,9 @@ Chess Board
 [ Info: check_score: 0.0
 [ Info: pawn_score: 0.0, -1.0, -1.0
 [ Info: center_score: -2, 1, 2
+[ Info: development_score: 0, 0, 0
 [ Info: king_score: 0, 3.0, 3.0
 [ Info: pawn_adv_score: 0.0, 0.0, 0.0
-[ Info: development_score: 0, 0, 0
 24: -0.2
 30=========
 Chess Board
@@ -471,9 +471,9 @@ Chess Board
 [ Info: check_score: 0.0
 [ Info: pawn_score: 0.0, 0.0, 0.0
 [ Info: center_score: 1, 0, 1
+[ Info: development_score: 0, -3, -3
 [ Info: king_score: 0, 0.0, 0.0
 [ Info: pawn_adv_score: 0.0, 0.0, 0.0
-[ Info: development_score: 0, -3, -3
 1: 0.1
 Chess Board
 8 ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅
@@ -490,10 +490,10 @@ Chess Board
 [ Info: check_score: 0.0
 [ Info: pawn_score: 0.0, -8.0, -8.0
 [ Info: center_score: 1, 0, 0
-[ Info: king_score: 0, 0.0, 0.0
-[ Info: pawn_adv_score: 0.0, 0.0, 0.0
 [ Info: development_score: 0, 0, 0
-2: 0.1
+[ Info: king_score: 0, 0.0, 0.0
+[ Info: pawn_adv_score: -9.0, -4, 5.0
+2: -0.8
 Chess Board
 8 ⋅ ⋅ k r ⋅ b ⋅ r
 7 p p p ⋅ p ⋅ ⋅ p
@@ -509,9 +509,9 @@ Chess Board
 [ Info: check_score: 0.0
 [ Info: pawn_score: 2.0, 0.0, -2.0
 [ Info: center_score: 0, 1, 2
+[ Info: development_score: 1, -1, -2
 [ Info: king_score: 1, 2.0, 3.0
 [ Info: pawn_adv_score: 0.0, 0.0, 0.0
-[ Info: development_score: 1, -1, -2
 3: 1.8000000000000003
 Chess Board
 8 r ⋅ ⋅ q k b n r
@@ -528,9 +528,9 @@ Chess Board
 [ Info: check_score: 0.0
 [ Info: pawn_score: 0.0, 0.0, 0.0
 [ Info: center_score: 0, 1, 1
+[ Info: development_score: 0, -2, -2
 [ Info: king_score: 0, 0.0, 0.0
 [ Info: pawn_adv_score: 0.0, 0.0, 0.0
-[ Info: development_score: 0, -2, -2
 4: 0.0
 Chess Board
 8 r ⋅ ⋅ ⋅ k ⋅ ⋅ r
@@ -547,9 +547,9 @@ Chess Board
 [ Info: check_score: 0.0
 [ Info: pawn_score: 1.0, -3.0, -4.0
 [ Info: center_score: 0, 0, 0
+[ Info: development_score: 0, 0, 0
 [ Info: king_score: 0, 0.0, 0.0
 [ Info: pawn_adv_score: 0.0, 0.0, 0.0
-[ Info: development_score: 0, 0, 0
 5: -4.9
 Chess Board
 8 r n b ⋅ k b n r
@@ -566,9 +566,9 @@ Chess Board
 [ Info: check_score: 0.0
 [ Info: pawn_score: 0.0, 0.0, 0.0
 [ Info: center_score: 2, 2, 0
+[ Info: development_score: 0, -4, -4
 [ Info: king_score: 0, 0.0, 0.0
 [ Info: pawn_adv_score: 0.0, 0.0, 0.0
-[ Info: development_score: 0, -4, -4
 6: 0.2
 Chess Board
 8 ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ k ⋅
@@ -585,10 +585,10 @@ Chess Board
 [ Info: check_score: 0.0
 [ Info: pawn_score: -1.0, -5.0, -4.0
 [ Info: center_score: -1, 0, 1
-[ Info: king_score: 0, 0.0, 2.0
-[ Info: pawn_adv_score: 0.0, 0.0, 0.0
 [ Info: development_score: 0, 0, 0
-7: -2.2
+[ Info: king_score: 0, 0.0, 0.0
+[ Info: pawn_adv_score: -4.0, 1, 5.0
+7: -1.6
 Chess Board
 8 r n b q k b n r
 7 p p ⋅ ⋅ p p p p
@@ -604,9 +604,9 @@ Chess Board
 [ Info: check_score: 0.0
 [ Info: pawn_score: 0.0, 0.0, 0.0
 [ Info: center_score: 1, 1, 0
+[ Info: development_score: 2, -3, -5
 [ Info: king_score: 2, 0.0, 0.0
 [ Info: pawn_adv_score: 0.0, 0.0, 0.0
-[ Info: development_score: 2, -3, -5
 8: 0.30000000000000004
 Chess Board
 8 ⋅ ⋅ ⋅ ⋅ k ⋅ ⋅ ⋅
@@ -623,10 +623,10 @@ Chess Board
 [ Info: check_score: 0.0
 [ Info: pawn_score: 1.0, -1.0, -2.0
 [ Info: center_score: 2, 2, 0
-[ Info: king_score: 0, 0.0, 0.0
-[ Info: pawn_adv_score: 0.0, 0.0, 0.0
 [ Info: development_score: 0, 0, 0
-9: 5.3
+[ Info: king_score: 0, 0.0, 0.0
+[ Info: pawn_adv_score: -3.0, 2, 5.0
+9: 5.0
 Chess Board
 8 ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅
 7 ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ R ⋅
@@ -642,10 +642,10 @@ Chess Board
 [ Info: check_score: 0.0
 [ Info: pawn_score: -3.0, -6.0, -3.0
 [ Info: center_score: -1, 1, 1
-[ Info: king_score: 0, 1.0, 0.0
-[ Info: pawn_adv_score: 0.0, 0.0, 0.0
 [ Info: development_score: 0, 0, 0
-10: -1.9
+[ Info: king_score: 0, 0.0, 0.0
+[ Info: pawn_adv_score: -6.0, -1, 5.0
+10: -3.0
 Chess Board
 8 r ⋅ ⋅ ⋅ ⋅ r ⋅ k
 7 ⋅ p p n b p p p
@@ -661,9 +661,9 @@ Chess Board
 [ Info: check_score: 0.0
 [ Info: pawn_score: 0.0, 0.0, 0.0
 [ Info: center_score: 4, 1, 0
+[ Info: development_score: 0, 0, 0
 [ Info: king_score: 0, 2.0, 3.0
 [ Info: pawn_adv_score: 0.0, 0.0, 0.0
-[ Info: development_score: 0, 0, 0
 11: -1.1
 Chess Board
 8 ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ k ⋅
@@ -680,10 +680,10 @@ Chess Board
 [ Info: check_score: 0.0
 [ Info: pawn_score: -1.0, -1.0, 0.0
 [ Info: center_score: 1, 1, 0
-[ Info: king_score: 0, 2.0, 3.0
-[ Info: pawn_adv_score: 0.0, 0.0, 0.0
 [ Info: development_score: 0, 0, 0
-12: -1.5
+[ Info: king_score: 0, 0.0, 0.0
+[ Info: pawn_adv_score: -4.0, 1, 5.0
+12: -1.4
 Chess Board
 8 ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅
 7 ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅
@@ -699,10 +699,10 @@ Chess Board
 [ Info: check_score: 0.0
 [ Info: pawn_score: 1.0, -5.0, -6.0
 [ Info: center_score: 0, 0, 0
-[ Info: king_score: 0, 0.0, 0.0
-[ Info: pawn_adv_score: 0.0, 0.0, 0.0
 [ Info: development_score: 0, 0, 0
-13: 0.1
+[ Info: king_score: 0, 0.0, 0.0
+[ Info: pawn_adv_score: -4.0, 1, 5.0
+13: -0.30000000000000004
 Chess Board
 8 ⋅ ⋅ ⋅ r ⋅ r k ⋅
 7 ⋅ ⋅ ⋅ ⋅ b p p p
@@ -718,9 +718,9 @@ Chess Board
 [ Info: check_score: 0.0
 [ Info: pawn_score: -2.0, -1.0, 1.0
 [ Info: center_score: 5, 1, 0
+[ Info: development_score: 0, 0, 0
 [ Info: king_score: 0, 0.0, 3.0
 [ Info: pawn_adv_score: 0.0, 0.0, 0.0
-[ Info: development_score: 0, 0, 0
 14: -4.2
 Chess Board
 8 ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅
@@ -737,10 +737,10 @@ Chess Board
 [ Info: check_score: 0.0
 [ Info: pawn_score: 0.0, -1.0, -1.0
 [ Info: center_score: 1, 2, 1
-[ Info: king_score: 0, 0.0, 0.0
-[ Info: pawn_adv_score: 0.0, 0.0, 0.0
 [ Info: development_score: 0, 0, 0
-15: -0.9
+[ Info: king_score: 0, 0.0, 0.0
+[ Info: pawn_adv_score: -5.0, 0, 5.0
+15: -1.4
 Chess Board
 8 r ⋅ ⋅ ⋅ ⋅ r k ⋅
 7 ⋅ b ⋅ ⋅ ⋅ p p p
@@ -756,9 +756,9 @@ Chess Board
 [ Info: check_score: 0.0
 [ Info: pawn_score: -1.0, -1.0, 0.0
 [ Info: center_score: 0, 1, 1
+[ Info: development_score: 0, 0, 0
 [ Info: king_score: 0, 2.0, 3.0
 [ Info: pawn_adv_score: 0.0, 0.0, 0.0
-[ Info: development_score: 0, 0, 0
 16: 1.4
 Chess Board
 8 ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅
@@ -775,10 +775,10 @@ Chess Board
 [ Info: check_score: 0.0
 [ Info: pawn_score: 0.0, -4.0, -4.0
 [ Info: center_score: 0, 0, 0
-[ Info: king_score: 0, 2.0, 0.0
-[ Info: pawn_adv_score: 0.0, 0.0, 0.0
 [ Info: development_score: 0, 0, 0
-17: 1.0
+[ Info: king_score: 0, 0.0, 0.0
+[ Info: pawn_adv_score: -5.0, 0, 5.0
+17: -0.5
 Chess Board
 8 ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ k ⋅
 7 ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ b R
@@ -794,9 +794,9 @@ Chess Board
 [ Info: check_score: 0.0
 [ Info: pawn_score: -8.0, -5.0, 3.0
 [ Info: center_score: -2, 0, 1
+[ Info: development_score: 0, 0, 0
 [ Info: king_score: 0, 0.0, 1.0
 [ Info: pawn_adv_score: 0.0, 0.0, 0.0
-[ Info: development_score: 0, 0, 0
 18: 2.5
 Chess Board
 8 r ⋅ ⋅ ⋅ ⋅ ⋅ r ⋅
@@ -813,9 +813,9 @@ Chess Board
 [ Info: check_score: 0.0
 [ Info: pawn_score: 2.0, -1.0, -3.0
 [ Info: center_score: -1, 0, 0
+[ Info: development_score: 0, 0, 0
 [ Info: king_score: 0, 2.0, 0.0
 [ Info: pawn_adv_score: 0.0, 0.0, 0.0
-[ Info: development_score: 0, 0, 0
 19: 1.1
 Chess Board
 8 r ⋅ b q ⋅ ⋅ k ⋅
@@ -832,9 +832,9 @@ Chess Board
 [ Info: check_score: 0.0
 [ Info: pawn_score: 1.0, 0.0, -1.0
 [ Info: center_score: -2, 0, 0
+[ Info: development_score: 0, -1, -1
 [ Info: king_score: 0, 3.0, 2.0
 [ Info: pawn_adv_score: 0.0, 0.0, 0.0
-[ Info: development_score: 0, -1, -1
 20: 1.4000000000000001
 Chess Board
 8 r ⋅ b q ⋅ r k ⋅
@@ -851,9 +851,9 @@ Chess Board
 [ Info: check_score: 0.0
 [ Info: pawn_score: 0.0, 0.0, 0.0
 [ Info: center_score: 1, 1, 1
+[ Info: development_score: 0, -1, -1
 [ Info: king_score: 0, 3.0, 3.0
 [ Info: pawn_adv_score: 0.0, 0.0, 0.0
-[ Info: development_score: 0, -1, -1
 21: -3.9
 Chess Board
 8 ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅
@@ -866,7 +866,7 @@ Chess Board
 1 ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅
   a b c d e f g h
 
-22: 0
+0
 Chess Board
 8 ⋅ k ⋅ ⋅ ⋅ r ⋅ ⋅
 7 ⋅ p p ⋅ Q ⋅ ⋅ ⋅
@@ -882,9 +882,9 @@ Chess Board
 [ Info: check_score: 0.0
 [ Info: pawn_score: 1.0, -1.0, -2.0
 [ Info: center_score: 0, 0, 0
+[ Info: development_score: 0, 0, 0
 [ Info: king_score: 0, 1.0, 3.0
 [ Info: pawn_adv_score: 0.0, 0.0, 0.0
-[ Info: development_score: 0, 0, 0
 23: -3.9
 Chess Board
 8 ⋅ ⋅ ⋅ r k ⋅ n r
@@ -901,9 +901,9 @@ Chess Board
 [ Info: check_score: 0.0
 [ Info: pawn_score: 0.0, 0.0, 0.0
 [ Info: center_score: 3, 1, 0
+[ Info: development_score: 1, -1, -2
 [ Info: king_score: 1, 3.0, 0.0
 [ Info: pawn_adv_score: 0.0, 0.0, 0.0
-[ Info: development_score: 1, -1, -2
 24: 1.9
 Chess Board
 8 ⋅ ⋅ ⋅ ⋅ r k ⋅ r
@@ -920,9 +920,9 @@ Chess Board
 [ Info: check_score: 0.0
 [ Info: pawn_score: 2.0, 0.0, -2.0
 [ Info: center_score: -1, 1, 2
+[ Info: development_score: -1, -1, 0
 [ Info: king_score: -1, 2.0, 0.0
 [ Info: pawn_adv_score: 0.0, 0.0, 0.0
-[ Info: development_score: -1, -1, 0
 25: 2.0
 Chess Board
 8 ⋅ ⋅ ⋅ ⋅ n ⋅ ⋅ ⋅
@@ -939,10 +939,10 @@ Chess Board
 [ Info: check_score: 0.0
 [ Info: pawn_score: 2.0, 0.0, -2.0
 [ Info: center_score: -4, 0, 1
-[ Info: king_score: 0, 3.0, 0.0
-[ Info: pawn_adv_score: 0.0, 0.0, 0.0
 [ Info: development_score: 0, 0, 0
-26: 2.3
+[ Info: king_score: 0, 0.0, 0.0
+[ Info: pawn_adv_score: -6.0, -1, 5.0
+26: 0.19999999999999984
 Chess Board
 8 r ⋅ b q ⋅ ⋅ r ⋅
 7 p p p ⋅ ⋅ ⋅ ⋅ Q
@@ -958,9 +958,9 @@ Chess Board
 [ Info: check_score: 0.0
 [ Info: pawn_score: 3.0, 0.0, -3.0
 [ Info: center_score: 0, 1, 0
+[ Info: development_score: 0, -1, -1
 [ Info: king_score: 0, 2.0, 0.0
 [ Info: pawn_adv_score: 0.0, 0.0, 0.0
-[ Info: development_score: 0, -1, -1
 27: 1.3
 Chess Board
 8 r ⋅ b q ⋅ k ⋅ r
@@ -977,9 +977,9 @@ Chess Board
 [ Info: check_score: 0.0
 [ Info: pawn_score: 1.0, 0.0, -1.0
 [ Info: center_score: -1, 1, 0
+[ Info: development_score: 1, 0, -1
 [ Info: king_score: 1, 3.0, 0.0
 [ Info: pawn_adv_score: 0.0, 0.0, 0.0
-[ Info: development_score: 1, 0, -1
 28: -0.3999999999999999
 Chess Board
 8 ⋅ r ⋅ ⋅ k ⋅ ⋅ r
@@ -996,11 +996,11 @@ Chess Board
 [ Info: check_score: 0.0
 [ Info: pawn_score: 1.0, 0.0, -1.0
 [ Info: center_score: -1, 2, 1
+[ Info: development_score: 0, 0, 0
 [ Info: king_score: 0, 3.0, 0.0
 [ Info: pawn_adv_score: 0.0, 0.0, 0.0
-[ Info: development_score: 0, 0, 0
 29: 1.5
-31==========
+31=========
 Chess Board
 8 ⋅ r ⋅ ⋅ ⋅ ⋅ k ⋅
 7 ⋅ ⋅ ⋅ ⋅ n ⋅ ⋅ ⋅
@@ -1016,9 +1016,9 @@ Chess Board
 [ Info: check_score: 0.0
 [ Info: pawn_score: 0.0, -2.0, -2.0
 [ Info: center_score: -4, 0, 1
+[ Info: development_score: 0, 0, 0
 [ Info: king_score: 0, 2.0, 0.0
 [ Info: pawn_adv_score: 0.0, 0.0, 0.0
-[ Info: development_score: 0, 0, 0
 1: 0.6
 Chess Board
 8 ⋅ ⋅ R ⋅ n ⋅ k ⋅
@@ -1035,9 +1035,9 @@ Chess Board
 [ Info: check_score: 0.0
 [ Info: pawn_score: 0.0, -2.0, -2.0
 [ Info: center_score: -2, 1, 1
+[ Info: development_score: 0, 0, 0
 [ Info: king_score: 0, 2.0, 2.0
 [ Info: pawn_adv_score: 0.0, 0.0, 0.0
-[ Info: development_score: 0, 0, 0
 2: -1.2
 Chess Board
 8 ⋅ ⋅ r ⋅ ⋅ k ⋅ ⋅
@@ -1054,10 +1054,10 @@ Chess Board
 [ Info: check_score: 0.0
 [ Info: pawn_score: 1.0, 0.0, -1.0
 [ Info: center_score: 1, 1, 1
-[ Info: king_score: 0, 3.0, 0.0
-[ Info: pawn_adv_score: 0.0, 0.0, 0.0
 [ Info: development_score: 0, 0, 0
-3: 2.7
+[ Info: king_score: 0, 0.0, 0.0
+[ Info: pawn_adv_score: -5.0, 0, 5.0
+3: 0.7000000000000002
 Chess Board
 8 ⋅ ⋅ r ⋅ r ⋅ k ⋅
 7 p p q ⋅ ⋅ p ⋅ p
@@ -1073,9 +1073,9 @@ Chess Board
 [ Info: check_score: 0.0
 [ Info: pawn_score: -2.0, -3.0, -1.0
 [ Info: center_score: -3, 0, 2
+[ Info: development_score: 0, 0, 0
 [ Info: king_score: 0, 3.0, 3.0
 [ Info: pawn_adv_score: 0.0, 0.0, 0.0
-[ Info: development_score: 0, 0, 0
 4: -0.5
 Chess Board
 8 ⋅ ⋅ ⋅ ⋅ ⋅ q ⋅ k
@@ -1092,9 +1092,9 @@ Chess Board
 [ Info: check_score: 0.0
 [ Info: pawn_score: 4.0, 1.0, -3.0
 [ Info: center_score: 0, 0, 0
+[ Info: development_score: 0, 0, 0
 [ Info: king_score: 0, 3.0, 2.0
 [ Info: pawn_adv_score: 0.0, 0.0, 0.0
-[ Info: development_score: 0, 0, 0
 5: 7.9
 Chess Board
 8 r ⋅ ⋅ ⋅ ⋅ r k ⋅
@@ -1111,9 +1111,9 @@ Chess Board
 [ Info: check_score: 0.0
 [ Info: pawn_score: 0.0, -4.0, -4.0
 [ Info: center_score: 1, 1, 0
+[ Info: development_score: 0, 0, 0
 [ Info: king_score: 0, 3.0, 3.0
 [ Info: pawn_adv_score: 0.0, 0.0, 0.0
-[ Info: development_score: 0, 0, 0
 6: 0.1
 Chess Board
 8 r n ⋅ ⋅ k b ⋅ r
@@ -1130,9 +1130,9 @@ Chess Board
 [ Info: check_score: 0.0
 [ Info: pawn_score: 0.0, 0.0, 0.0
 [ Info: center_score: 5, 2, 0
+[ Info: development_score: 1, -2, -3
 [ Info: king_score: 1, 2.0, 0.0
 [ Info: pawn_adv_score: 0.0, 0.0, 0.0
-[ Info: development_score: 1, -2, -3
 7: 2.6
 Chess Board
 8 ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅
@@ -1149,10 +1149,10 @@ Chess Board
 [ Info: check_score: 0.0
 [ Info: pawn_score: -3.0, -5.0, -2.0
 [ Info: center_score: 0, 0, 0
-[ Info: king_score: 0, 0.0, 0.0
-[ Info: pawn_adv_score: 0.0, 0.0, 0.0
 [ Info: development_score: 0, 0, 0
-8: 7.7
+[ Info: king_score: 0, 0.0, 0.0
+[ Info: pawn_adv_score: -5.0, 0, 5.0
+8: 7.2
 Chess Board
 8 ⋅ ⋅ ⋅ q r ⋅ k ⋅
 7 p ⋅ r ⋅ ⋅ p ⋅ p
@@ -1168,9 +1168,9 @@ Chess Board
 [ Info: check_score: 0.0
 [ Info: pawn_score: 1.0, 0.0, -1.0
 [ Info: center_score: 2, 1, 1
+[ Info: development_score: 0, 0, 0
 [ Info: king_score: 0, 2.0, 3.0
 [ Info: pawn_adv_score: 0.0, 0.0, 0.0
-[ Info: development_score: 0, 0, 0
 9: -0.19999999999999996
 Chess Board
 8 ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ k ⋅
@@ -1187,9 +1187,9 @@ Chess Board
 [ Info: check_score: 0.0
 [ Info: pawn_score: 0.0, 0.0, 0.0
 [ Info: center_score: 0, 1, 0
+[ Info: development_score: -1, -1, 0
 [ Info: king_score: -1, 3.0, 3.0
 [ Info: pawn_adv_score: 0.0, 0.0, 0.0
-[ Info: development_score: -1, -1, 0
 10: -7.1
 Chess Board
 8 r n b q k ⋅ n r
@@ -1206,9 +1206,9 @@ Chess Board
 [ Info: check_score: 0.0
 [ Info: pawn_score: 0.0, 0.0, 0.0
 [ Info: center_score: 0, 2, 1
+[ Info: development_score: 0, -3, -3
 [ Info: king_score: 0, 0.0, 0.0
 [ Info: pawn_adv_score: 0.0, 0.0, 0.0
-[ Info: development_score: 0, -3, -3
 11: 0.0
 Chess Board
 8 ⋅ r ⋅ ⋅ ⋅ r ⋅ k
@@ -1225,9 +1225,9 @@ Chess Board
 [ Info: check_score: 0.0
 [ Info: pawn_score: 3.0, -1.0, -4.0
 [ Info: center_score: 4, 1, 0
+[ Info: development_score: 0, 0, 0
 [ Info: king_score: 0, 2.0, 2.0
 [ Info: pawn_adv_score: 0.0, 0.0, 0.0
-[ Info: development_score: 0, 0, 0
 12: -2.3000000000000003
 Chess Board
 8 ⋅ ⋅ ⋅ ⋅ ⋅ r ⋅ ⋅
@@ -1244,9 +1244,9 @@ Chess Board
 [ Info: check_score: 0.0
 [ Info: pawn_score: 0.0, -2.0, -2.0
 [ Info: center_score: -1, 1, 1
+[ Info: development_score: 0, 0, 0
 [ Info: king_score: 0, 3.0, 2.0
 [ Info: pawn_adv_score: 0.0, 0.0, 0.0
-[ Info: development_score: 0, 0, 0
 13: 0.4
 Chess Board
 8 r ⋅ ⋅ ⋅ ⋅ ⋅ k ⋅
@@ -1263,9 +1263,9 @@ Chess Board
 [ Info: check_score: 0.0
 [ Info: pawn_score: 1.0, 0.0, -1.0
 [ Info: center_score: -1, 1, 2
+[ Info: development_score: 0, 0, 0
 [ Info: king_score: 0, 3.0, 2.0
 [ Info: pawn_adv_score: 0.0, 0.0, 0.0
-[ Info: development_score: 0, 0, 0
 14: 2.5
 Chess Board
 8 ⋅ ⋅ r ⋅ ⋅ b k ⋅
@@ -1282,9 +1282,9 @@ Chess Board
 [ Info: check_score: 0.0
 [ Info: pawn_score: 1.0, -1.0, -2.0
 [ Info: center_score: 4, 2, 1
+[ Info: development_score: 1, 0, -1
 [ Info: king_score: 1, 3.0, 3.0
 [ Info: pawn_adv_score: 0.0, 0.0, 0.0
-[ Info: development_score: 1, 0, -1
 15: 1.6
 Chess Board
 8 ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅
@@ -1301,10 +1301,10 @@ Chess Board
 [ Info: check_score: 0.0
 [ Info: pawn_score: 2.0, -2.0, -4.0
 [ Info: center_score: 0, 0, 0
-[ Info: king_score: 0, 3.0, 0.0
-[ Info: pawn_adv_score: 0.0, 0.0, 0.0
 [ Info: development_score: 0, 0, 0
-16: 2.7
+[ Info: king_score: 0, 0.0, 0.0
+[ Info: pawn_adv_score: -6.0, -1, 5.0
+16: 0.5999999999999999
 Chess Board
 8 ⋅ r ⋅ r ⋅ ⋅ k ⋅
 7 ⋅ p ⋅ ⋅ ⋅ p p p
@@ -1320,9 +1320,9 @@ Chess Board
 [ Info: check_score: 0.0
 [ Info: pawn_score: 0.0, 0.0, 0.0
 [ Info: center_score: 0, 1, 1
+[ Info: development_score: 0, 0, 0
 [ Info: king_score: 0, 3.0, 3.0
 [ Info: pawn_adv_score: 0.0, 0.0, 0.0
-[ Info: development_score: 0, 0, 0
 17: 0.0
 Chess Board
 8 r ⋅ b ⋅ ⋅ r k ⋅
@@ -1339,9 +1339,9 @@ Chess Board
 [ Info: check_score: 0.0
 [ Info: pawn_score: 0.0, 0.0, 0.0
 [ Info: center_score: 1, 2, 1
+[ Info: development_score: 1, 0, -1
 [ Info: king_score: 1, 2.0, 3.0
 [ Info: pawn_adv_score: 0.0, 0.0, 0.0
-[ Info: development_score: 1, 0, -1
 18: -9.3
 Chess Board
 8 ⋅ ⋅ ⋅ ⋅ r r k ⋅
@@ -1358,9 +1358,9 @@ Chess Board
 [ Info: check_score: 0.0
 [ Info: pawn_score: 2.0, 0.0, -2.0
 [ Info: center_score: 2, 1, 0
+[ Info: development_score: 0, 0, 0
 [ Info: king_score: 0, 3.0, 3.0
 [ Info: pawn_adv_score: 0.0, 0.0, 0.0
-[ Info: development_score: 0, 0, 0
 19: 1.4
 Chess Board
 8 ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ R ⋅
@@ -1377,14 +1377,14 @@ Chess Board
 [ Info: check_score: 0.0
 [ Info: pawn_score: 0.0, -1.0, -1.0
 [ Info: center_score: -2, 1, 1
+[ Info: development_score: -1, -1, 0
 [ Info: king_score: -1, 3.0, 0.0
 [ Info: pawn_adv_score: 0.0, 0.0, 0.0
-[ Info: development_score: -1, -1, 0
 20: 0.19999999999999996
 Chess Board
 8 ⋅ b r ⋅ ⋅ ⋅ ⋅ R
 7 p ⋅ ⋅ ⋅ ⋅ p k ⋅
-6 ⋅ ⋅ ⋅ ⋅ q ⋅ p p
+⋅ ⋅ ⋅ q ⋅ p p
 5 ⋅ ⋅ ⋅ ⋅ p ⋅ ⋅ ⋅
 4 ⋅ p ⋅ ⋅ N n ⋅ ⋅
 3 ⋅ P ⋅ ⋅ Q ⋅ N ⋅
@@ -1396,9 +1396,9 @@ Chess Board
 [ Info: check_score: 0.0
 [ Info: pawn_score: -3.0, -2.0, 1.0
 [ Info: center_score: -1, 1, 1
+[ Info: development_score: 1, 0, -1
 [ Info: king_score: 1, 0.0, 2.0
 [ Info: pawn_adv_score: 0.0, 0.0, 0.0
-[ Info: development_score: 1, 0, -1
 21: 4.7
 Chess Board
 8 ⋅ ⋅ ⋅ ⋅ r ⋅ ⋅ k
@@ -1415,9 +1415,9 @@ Chess Board
 [ Info: check_score: 0.0
 [ Info: pawn_score: -1.0, -3.0, -2.0
 [ Info: center_score: 0, 0, 0
+[ Info: development_score: 0, 0, 0
 [ Info: king_score: 0, 0.0, 1.0
 [ Info: pawn_adv_score: 0.0, 0.0, 0.0
-[ Info: development_score: 0, 0, 0
 22: -1.6
 Chess Board
 8 ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ R
@@ -1434,9 +1434,9 @@ Chess Board
 [ Info: check_score: 0.0
 [ Info: pawn_score: 1.0, -1.0, -2.0
 [ Info: center_score: 3, 2, 0
+[ Info: development_score: 0, 0, 0
 [ Info: king_score: 0, 1.0, 1.0
 [ Info: pawn_adv_score: 0.0, 0.0, 0.0
-[ Info: development_score: 0, 0, 0
 23: 0.4
 Chess Board
 8 r ⋅ b q k ⋅ ⋅ r
@@ -1453,9 +1453,9 @@ Chess Board
 [ Info: check_score: 0.0
 [ Info: pawn_score: -2.0, -2.0, 0.0
 [ Info: center_score: 0, 0, 1
+[ Info: development_score: 0, -2, -2
 [ Info: king_score: 0, 0.0, 0.0
 [ Info: pawn_adv_score: 0.0, 0.0, 0.0
-[ Info: development_score: 0, -2, -2
 24: 0.8
 Chess Board
 8 ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅
@@ -1472,9 +1472,9 @@ Chess Board
 [ Info: check_score: 0.0
 [ Info: pawn_score: 0.0, -5.0, -5.0
 [ Info: center_score: 2, 0, 0
-[ Info: king_score: 0, 0.0, 1.0
-[ Info: pawn_adv_score: 0.0, 0.0, 0.0
 [ Info: development_score: 0, 0, 0
+[ Info: king_score: 0, 0.0, 0.0
+[ Info: pawn_adv_score: -5.0, 0, 5.0
 25: -2.3
 Chess Board
 8 ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ R
@@ -1491,10 +1491,10 @@ Chess Board
 [ Info: check_score: 0.0
 [ Info: pawn_score: -1.0, -5.0, -4.0
 [ Info: center_score: -4, 0, 2
-[ Info: king_score: 0, 0.0, 0.0
-[ Info: pawn_adv_score: 0.0, 0.0, 0.0
 [ Info: development_score: 0, 0, 0
-26: 1.5
+[ Info: king_score: 0, 0.0, 0.0
+[ Info: pawn_adv_score: -6.0, -1, 5.0
+26: 0.8999999999999999
 Chess Board
 8 ⋅ ⋅ ⋅ ⋅ ⋅ r k ⋅
 7 ⋅ ⋅ ⋅ ⋅ ⋅ p ⋅ p
@@ -1510,9 +1510,9 @@ Chess Board
 [ Info: check_score: 0.0
 [ Info: pawn_score: 1.0, 0.0, -1.0
 [ Info: center_score: 1, 0, 1
+[ Info: development_score: 0, 0, 0
 [ Info: king_score: 0, 3.0, 3.0
 [ Info: pawn_adv_score: 0.0, 0.0, 0.0
-[ Info: development_score: 0, 0, 0
 27: 1.2000000000000002
 Chess Board
 8 ⋅ ⋅ ⋅ ⋅ ⋅ ⋅ k ⋅
@@ -1529,7 +1529,7 @@ Chess Board
 [ Info: check_score: 0.0
 [ Info: pawn_score: -2.0, -3.0, -1.0
 [ Info: center_score: -1, 1, 1
+[ Info: development_score: 0, 0, 0
 [ Info: king_score: 0, 3.0, 1.0
 [ Info: pawn_adv_score: 0.0, 0.0, 0.0
-[ Info: development_score: 0, 0, 0
 28: -2.3000000000000003
