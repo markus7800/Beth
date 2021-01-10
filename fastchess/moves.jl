@@ -63,7 +63,7 @@ function Base.show(io::IO, undo::Undo)
     print(io, ")")
 end
 
-const DEBUG_MOVE = true
+const DEBUG_MOVE = false
 
 include("movelist.jl")
 
@@ -163,9 +163,6 @@ function make_move!(board::Board, white::Bool, move::Move)::Undo
         end
     end
 
-
-    @assert n_pieces(board, true) + n_pieces(board, false) == count_pieces(board.blacks | board.whites) (board, move, undo)
-
     return undo
 end
 
@@ -199,8 +196,6 @@ function undo_move!(board::Board, white::Bool, move::Move, undo::Undo)
             set_piece!(board, Field(r1, 1), white, ROOK)
         end
     end
-
-    @assert n_pieces(board, true) + n_pieces(board, false) == count_pieces(board.blacks | board.whites) (board, move, undo)
 end
 
 
@@ -327,17 +322,12 @@ function filter_evasions!(board::Board, white::Bool, movelist::MoveList)
     count = 0
     for i in 1:n_moves
         move = movelist[i]
-
-        _board = deepcopy(board)
-
         undo = make_move!(board, white, move)
         if !is_in_check(board, white)
             count += 1
             movelist.moves[count] = move
         end
         undo_move!(board, white, move, undo)
-
-        @assert board == _board ("filter evasions", _board, board, move)
     end
     movelist.count = count
 end
