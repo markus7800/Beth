@@ -1,5 +1,14 @@
 const PIECE_SYMBOLS = ['P', 'B', 'N', 'R', 'Q', 'K']
 
+const PIECES = Dict{Char, Piece}(
+    'P' => PAWN,
+    'B' => BISHOP,
+    'N' => KNIGHT,
+    'R' => ROOK,
+    'Q' => QUEEN,
+    'K' => KING
+)
+
 function print_fields(fs::Fields)
     println("Fields")
     for rank in 8:-1:1
@@ -67,19 +76,19 @@ function Base.show(io::IO, board::Board)
 end
 
 function print_board(board::Board; highlight=nothing, white=true)
-    cols = [:white, :blue, :red]
+    cols = [:white, :blue]
 
     highlight_fields = []
     if highlight != nothing && white != nothing
         if highlight != "."
             p = PIECES[highlight[1]]
-            rf = symbol(highlight[2:3])
+            rf = Field(highlight[2:3])
             moves = get_moves(board, white)
-            highlight_moves = filter(m -> m[1] == p && m[2] == rf, moves)
+            highlight_moves = filter(m -> m.from_piece == p && m.from == tonumber(rf), moves)
         else
             highlight_moves = get_moves(board, white)
         end
-        highlight_fields = map(m -> cartesian(field(m[3])), highlight_moves)
+        highlight_fields = map(m -> rankfile(m.to), highlight_moves)
     end
 
     println("Chess Board")
@@ -91,47 +100,28 @@ function print_board(board::Board; highlight=nothing, white=true)
         printstyled("$rank ", color=:magenta) # col = 13
         for file in files
             s = "•" #"⦿" # "⋅"
-            if sum(board[rank,file,:]) != 0
-                piece = findfirst(board[rank,file,1:6])
-                if piece == nothing
-                    printstyled("X ", color=:red, bold=true)
-                    continue
-                end
-                if any(board[rank,file,7:8])
-                    si = 0
-                    if board[rank,file,7]
-                        si = 1
-                    end
-                    if board[rank,file,8]
-                        if si == 0
-                            si = 2
-                        else
-                            # error
-                            si = 3
-                        end
-                    end
+            piece = get_piece(board, Field(rank, file))
+            is_highlighted = (rank, file) in highlight_fields
 
-                    s = SYMBOLS[1, piece]
+            if piece != NO_PIECE
 
-                    col = cols[si]
-                    if (rank, file) in highlight_fields
-                        col = :red
-                    end
+                s = PIECE_SYMBOLS[piece]
 
-                    if all(board[rank,file,7:8])
-                        col = :magenta
-                    end
-
+                if is_occupied_by_white(board, Field(rank, file))
+                    col = is_highlighted ? :red : cols[1]
                     printstyled("$s ", color=col, bold=true)
-                    continue
+                elseif is_occupied_by_black(board, Field(rank, file))
+                    col = is_highlighted ? :red : cols[2]
+                    printstyled("$s ", color=col, bold=true)
+                else
+                    printstyled("X ", color=:red, bold=true)
                 end
-            end
-            col = :light_black # 8
-            if (rank, file) in highlight_fields
-                col = :green
-            end
+            else
 
-            printstyled("$s ", bold=true, color=col)
+                col = is_highlighted ? :green : :light_black # 8
+
+                printstyled("$s ", bold=true, color=col)
+            end
         end
         print("\n")
     end

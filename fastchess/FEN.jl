@@ -1,14 +1,4 @@
 
-const PIECES = Dict{Char, Piece}(
-    'P' => PAWN,
-    'B' => BISHOP,
-    'N' => KNIGHT,
-    'R' => ROOK,
-    'Q' => QUEEN,
-    'K' => KING
-)
-
-
 function Board(FEN::String)
     groups = split(FEN, " ")
 

@@ -8,6 +8,7 @@ end
 
 const EMPTY_MOVE = Move(0x0, 0, 0, 0x0)
 
+# TODO: maybe leads to confusion
 function Move(piece::Piece, from::Field, to::Field)
     return Move(piece, tonumber(from), tonumber(to), piece)
 end
