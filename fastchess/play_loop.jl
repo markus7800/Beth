@@ -213,6 +213,7 @@ function play_game(board = StartPosition(), white = true; white_player=user_inpu
             return
         end
         println(e)
+        rethrow(e) # TODO
     end
     return game_history
 end

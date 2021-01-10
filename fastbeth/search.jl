@@ -6,52 +6,6 @@ function cap_lt(m1::Move, m2::Move)
     return piece_value(p1) < piece_value(p2)
 end
 
-function quiesce_nomem(beth::Beth, α::Int, β::Int, white::Bool)::Int
-    beth.n_explored_nodes += 1
-
-    capture_moves = get_captures(beth._board, white)
-    sort!(capture_moves, rev=true, lt=cap_lt)
-
-
-    board_value, is_3_men = tb_3_men_lookup(beth.tb_3_men_mates, beth.tb_3_men_desperate_positions, beth._board, white)
-    if !is_3_men
-        board_value = beth.value_heuristic(beth._board, white)
-    end
-
-    if length(capture_moves) == 0
-        beth.n_leafes += 1
-        return board_value
-    else
-        if white
-            value = MIN_VALUE
-            for m in capture_moves
-                undo = make_move!(beth._board, white, m)
-                value = max(value, quiesce_nomem(beth, α, β, !white))
-                undo_move!(beth._board, white, m, undo)
-                α = max(α, value)
-                α ≥ β && break # β cutoff
-            end
-            # if you dont take max here only the board values where the player
-            # are forced to make all capture moves are taken into account
-            final_value = max(value, board_value)
-            return final_value
-        else
-            value = MAX_VALUE
-            for m in capture_moves
-                undo = make_move!(beth._board, white, m)
-                value = min(value, quiesce_nomem(beth, α, β, !white))
-                undo_move!(beth._board, white, m, undo)
-                β = min(β, value)
-                β ≤ α && break # α cutoff
-            end
-            # if you dont take min here only the board values where the player
-            # are forced to make all capture moves are taken into account
-            final_value = min(value, board_value)
-            return final_value
-        end
-    end
-end
-
 # alpha beta search with only capture move and no caching and unlimited depth
 function quiesce(beth::Beth, depth::Int, ply::Int, α::Int, β::Int, white::Bool,
         lists::Vector{MoveList}=[MoveList(100) for _ in 1:depth+1])::Int
@@ -66,10 +20,14 @@ function quiesce(beth::Beth, depth::Int, ply::Int, α::Int, β::Int, white::Bool
     sort!(capture_moves, rev=true, lt=cap_lt)
 
 
-    board_value, is_3_men = tb_3_men_lookup(beth.tb_3_men_mates, beth.tb_3_men_desperate_positions, beth._board, white)
-    if !is_3_men
-        board_value = beth.value_heuristic(beth._board, white)
+    if count_pieces(beth._board.blacks | beth._board.whites) ≤ 3
+        board_value, is_3_men = tb_3_men_lookup(beth.tb_3_men_mates, beth.tb_3_men_desperate_positions, beth._board, white)
+        @assert is_3_men # TODO
+        return board_value
     end
+
+    board_value = beth.value_heuristic(beth._board, white)
+
 
     if length(capture_moves) == 0 || depth == 0
         beth.max_quiesce_depth = max(beth.max_quiesce_depth, ply)
@@ -145,6 +103,8 @@ function AlphaBeta(beth::Beth, node::ABNode, depth::Int, ply::Int, α::Int, β::
         if do_quiesce
             # println(ply + 1)
             value = quiesce(beth, quiesce_depth, 0, α, β, white, quiesce_lists)
+            beth.n_explored_nodes -= 1 # correction
+            beth.n_quiesce_nodes -= 1 # correction
         else
             value = beth.value_heuristic(beth._board, white)
         end
@@ -162,6 +122,11 @@ function AlphaBeta(beth::Beth, node::ABNode, depth::Int, ply::Int, α::Int, β::
 
         best_value = white ? MIN_VALUE : MAX_VALUE
         value = white ? MIN_VALUE : MAX_VALUE
+
+        tb_value, is_3_men = tb_3_men_lookup(beth.tb_3_men_mates, beth.tb_3_men_desperate_positions, beth._board, white)
+        if is_3_men && ply > 0
+            return tb_value
+        end
 
         # successor moves were not generated yet
         if !node.is_expanded
@@ -414,7 +379,7 @@ function IterativeMTDF(beth::Beth; board=beth.board, white=beth.white)
 
         push!(guesses, value)
 
-        # abs(value) > WHITE_MATE - 100 && break # stop early for mates
+        abs(value) ≥ WHITE_MATE && break # stop early for mates
 
         time() > t1 && break
     end

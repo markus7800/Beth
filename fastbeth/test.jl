@@ -116,6 +116,17 @@ beth = Beth(
         "verbose" => true
     ))
 
+beth = Beth(
+    value_heuristic=evaluation,
+    rank_heuristic=rank_moves_by_eval,
+    search_algorithm=IterativeMTDF,
+    search_args=Dict(
+        "max_depth" => 6,
+        "do_quiesce" => true,
+        "quiesce_depth" => 50,
+        "verbose" => 2
+    ))
+
 beth(board, true)
 
 play_game(board, true, black_player=beth, white_player=beth)
