@@ -140,7 +140,13 @@ route("/move") do
         if value == :book
             message = @sprintf "Computer says: %s." next_move
         else
-            message = @sprintf "Computer says: %s valued at %.2f.\n" next_move value/100
+            message = ""
+            if abs(value) ≥ WHITE_MATE
+                message = @sprintf "Computer says: %s is forced mate.\n" next_move
+            else
+                message = @sprintf "Computer says: %s valued at %.2f.\n" next_move value/100
+            end
+
             message *= @sprintf "Explored %d nodes in %.2fs (%.2f kN/s).\n" game.beth.n_explored_nodes t game.beth.n_explored_nodes/(t*1000)
             message *= @sprintf "Completely explored up to depth %d. Deepest node at depth %d." game.beth.max_depth game.beth.max_depth+game.beth.max_quiesce_depth
         end
