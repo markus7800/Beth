@@ -1,0 +1,58 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <title>Play Beth</title>
+  <link rel="stylesheet"
+      href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css"
+      integrity="sha384-q94+BZtLrkL1/ohfjR8c6L+A6qzNH9R2hBLwyoAfu3i/WCvQjzL2RQJ3uNHDISdU"
+      crossorigin="anonymous">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+  <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"
+        integrity="sha384-8Vi8VHwn3vjQ9eUHUxex3JSN/NFqUg3QbPyX8kWyb93+8AC/pPWTzj+nHtbC5bxD"
+        crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="myBoard" style="width: 600px"></div>
+
+<script>
+
+var board = Chessboard('myBoard', {
+  draggable: true,
+  moveSpeed: 'medium',
+  snapbackSpeed: 500,
+  snapSpeed: 100,
+  position: 'start',
+  pieceTheme: 'img/chesspieces/wikipedia/{piece}.png',
+  onDrop: onDrop
+})
+
+var loc = window.location.pathname;
+var dir = loc.substring(0, loc.lastIndexOf('/'));
+
+console.log(loc);
+console.log(dir);
+
+function onDrop(source, target, piece) {
+  if(source == target) return
+
+  var promotion = piece.toLowerCase().charAt(1) == 'p' && parseInt(target.charAt(1)) == 8;
+  console.log(source, target, piece, promotion)
+
+  $.get('/move', {'from': source, 'to': target, 'promotion': promotion}, function(fen) {
+    console.log(fen)
+    board.position(fen)
+    // if (r.includes("game over")) {
+    // } else {
+    //   board.position(fen);
+    // }
+  });
+}
+
+
+</script>
+</body>
+</html>
