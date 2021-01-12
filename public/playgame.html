@@ -8,6 +8,7 @@
       href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css"
       integrity="sha384-q94+BZtLrkL1/ohfjR8c6L+A6qzNH9R2hBLwyoAfu3i/WCvQjzL2RQJ3uNHDISdU"
       crossorigin="anonymous">
+  <link rel="stylesheet" type="text/css" href="style.css">
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
@@ -16,8 +17,16 @@
         crossorigin="anonymous"></script>
 </head>
 <body>
-<div id="myBoard" style="width: 600px"></div>
-
+<div id="main">
+  <div id="myBoard" style="width: 600px"></div>
+  <div id="button_div">
+    <button onclick="newGame(true)" id="new_white">New Game As White</button>
+    <button onclick="newGame(false)" id="new_black">New Game As Black</button>
+    <button onclick="printGame()" id="new_black">Print Game</button>
+    <!-- <button id="undo" onclick="undo()">Undo Move</button> -->
+  </div>
+  <p id="message"></p>
+</div>
 <script>
 
 var board = Chessboard('myBoard', {
@@ -30,25 +39,56 @@ var board = Chessboard('myBoard', {
   onDrop: onDrop
 })
 
-var loc = window.location.pathname;
-var dir = loc.substring(0, loc.lastIndexOf('/'));
-
-console.log(loc);
-console.log(dir);
 
 function onDrop(source, target, piece) {
+  $( "#message" ).text("")
   if(source == target) return
 
   var promotion = piece.toLowerCase().charAt(1) == 'p' && parseInt(target.charAt(1)) == 8;
   console.log(source, target, piece, promotion)
+  board.draggable = false
 
-  $.get('/move', {'from': source, 'to': target, 'promotion': promotion}, function(fen) {
-    console.log(fen)
+  $.get('/move', {'from': source, 'to': target, 'promotion': promotion}, function(response) {
+    r = JSON.parse(response)
+    console.log(r.fen)
+    console.log(r.message)
+    board.position(r.fen)
+    board.draggable = true
+    $( "#message" ).text(r.message)
+  });
+}
+
+function newGame(white) {
+  $( "#message" ).text("")
+  console.log(white)
+  board.position('start')
+  if (white) {
+    board.orientation('white')
+  } else {
+    board.draggable = false
+    board.orientation('black')
+  }
+
+  $.get('/newgame', {'white': white}, function(fen) {
     board.position(fen)
-    // if (r.includes("game over")) {
-    // } else {
-    //   board.position(fen);
-    // }
+    board.draggable = true
+  });
+}
+
+function undo() {
+  console.log("undo")
+  $( "#message" ).text("")
+  $.get('/undo', function(fen) {
+    console.log("undo handler ", fen)
+    board.position(fen)
+  });
+}
+
+function printGame() {
+  console.log("print game")
+  $( "#message" ).text("")
+  $.get('/printgame', function(game) {
+    $( "#message" ).text(game)
   });
 }
 
