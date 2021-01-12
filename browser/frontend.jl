@@ -79,7 +79,7 @@ route("/") do
     game.history = [Ply(0, 0, deepcopy(game.board), game.white, EMPTY_MOVE, 0.)]
     game.busy = false
 
-    println("start up")
+    @info("Reset")
 
     serve_static_file("playgame.html")
 end
@@ -137,7 +137,8 @@ route("/move") do
             return respond(json(Dict("fen"=>FEN(game.board, game.white), "message"=>message)))
         end
 
-        message = @sprintf "Explored %d Nodes in %.2fs (%.2f kN/s).\n" game.beth.n_explored_nodes t game.beth.n_explored_nodes/(t*1000)
+        message = @sprintf "Explored %d nodes in %.2fs (%.2f kN/s).\n" game.beth.n_explored_nodes t game.beth.n_explored_nodes/(t*1000)
+        message *= @sprintf "Completely explored up to depth %d. Deepest node at depth %d." game.beth.max_depth game.beth.max_depth+game.beth.max_quiesce_depth
         return respond(json(Dict("fen"=>FEN(game.board, game.white), "message"=> message)))
     else
         return respond(json(Dict("fen"=>FEN(game.board, game.white), "message"=>"Invalid Move!")))
@@ -242,4 +243,5 @@ route("/printgame") do
     return respond(out)
 end
 
+@info "Start listening at localhost:8000"
 Genie.AppServer.startup(async=false)

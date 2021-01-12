@@ -20,6 +20,7 @@ mutable struct Beth
     n_explored_nodes::Int
     n_quiesce_nodes::Int
 
+    max_depth::Int
     max_quiesce_depth::Int
 
     tb_3_men_mates::TableBase

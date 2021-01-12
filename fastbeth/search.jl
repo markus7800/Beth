@@ -248,12 +248,14 @@ function AlphaBeta_Search(beth::Beth; board=beth.board, white=beth.white)
     beth.n_leafes = 0
     beth.n_explored_nodes = 0
     beth.n_quiesce_nodes = 0
+    beth.max_depth = 0
     beth.max_quiesce_depth = 0
 
     use_stored_values = false
     store_values = false
 
     depth = beth.search_args["depth"]
+    beth.max_depth = depth
     ply = 0
     do_quiesce = get(beth.search_args, "do_quiesce", false)
     quiesce_depth = get(beth.search_args, "quiesce_depth", 20)
@@ -341,6 +343,7 @@ function MTDF_Search(beth::Beth; board=beth.board, white=beth.white)
     beth.n_leafes = 0
     beth.n_explored_nodes = 0
     beth.n_quiesce_nodes = 0
+    beth.max_depth = 0
     beth.max_quiesce_depth = 0
 
 
@@ -349,6 +352,7 @@ function MTDF_Search(beth::Beth; board=beth.board, white=beth.white)
 
 
     depth = beth.search_args["depth"]
+    beth.max_depth = depth
     do_quiesce = get(beth.search_args, "do_quiesce", false)
     quiesce_depth = get(beth.search_args, "quiesce_depth", 20)
 
@@ -365,6 +369,7 @@ function IterativeMTDF(beth::Beth; board=beth.board, white=beth.white)
     beth.n_leafes = 0
     beth.n_explored_nodes = 0
     beth.n_quiesce_nodes = 0
+    beth.max_depth = 0
     beth.max_quiesce_depth = 0
 
     Δt = get(beth.search_args, "time", Inf)
@@ -406,6 +411,9 @@ function IterativeMTDF(beth::Beth; board=beth.board, white=beth.white)
 
         time() > t1 && break
     end
+    
+    beth.max_depth = reached_depth
+
 
     if verbose ≥ 1
         @info(@sprintf "%d nodes explored in %.4f seconds (%.2f/s)." beth.n_explored_nodes t (beth.n_explored_nodes/t) )
