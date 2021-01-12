@@ -64,12 +64,12 @@ function (beth::Beth)(board::Board, white::Bool)
     if haskey(beth.ob, board)
         move = beth.ob[board]
         @info("Position known. Move is $move.")
-        return move
+        return move, :book
     end
 
     value, move = beth.search_algorithm(beth, board=board, white=white)
     println(@sprintf "Computer says: %s valued with %.2f." move value/100)
-    return move
+    return move, value
 end
 
 include("search.jl")

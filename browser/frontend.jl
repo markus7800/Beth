@@ -124,8 +124,8 @@ route("/move") do
 
         # computer move
         game.busy = true
-        @info("Start Computer Search")
-        next_move, t, = @timed game.beth(game.board, game.white)
+        @info("Start Search.")
+        (next_move, value), t, = @timed game.beth(game.board, game.white)
         make_move!(game.board, game.white, next_move)
         game.white = !game.white
         game.busy = false
@@ -137,8 +137,13 @@ route("/move") do
             return respond(json(Dict("fen"=>FEN(game.board, game.white), "message"=>message)))
         end
 
-        message = @sprintf "Explored %d nodes in %.2fs (%.2f kN/s).\n" game.beth.n_explored_nodes t game.beth.n_explored_nodes/(t*1000)
-        message *= @sprintf "Completely explored up to depth %d. Deepest node at depth %d." game.beth.max_depth game.beth.max_depth+game.beth.max_quiesce_depth
+        if value == :book
+            message = @sprintf "Computer says: %s." next_move
+        else
+            message = @sprintf "Computer says: %s valued at %.2f.\n" next_move value/100
+            message *= @sprintf "Explored %d nodes in %.2fs (%.2f kN/s).\n" game.beth.n_explored_nodes t game.beth.n_explored_nodes/(t*1000)
+            message *= @sprintf "Completely explored up to depth %d. Deepest node at depth %d." game.beth.max_depth game.beth.max_depth+game.beth.max_quiesce_depth
+        end
         return respond(json(Dict("fen"=>FEN(game.board, game.white), "message"=> message)))
     else
         return respond(json(Dict("fen"=>FEN(game.board, game.white), "message"=>"Invalid Move!")))
@@ -157,14 +162,14 @@ route("/newgame") do
 
     if !start_as_white
         game.busy = true
-        move = game.beth(game.board, game.white)
+        (move, value) = game.beth(game.board, game.white)
         make_move!(game.board, game.white, move)
         push!(game.history, Ply(1, 1, deepcopy(game.board), game.white, move, 0.))
         game.white = !game.white
         game.busy = false
-        return respond(FEN(game.board, game.white))
+        return respond(json(Dict("fen"=>FEN(game.board, game.white), "message"=> "Computer says: $move.")))
     else
-        return respond(FEN(game.board, game.white))
+        return respond(json(Dict("fen"=>FEN(game.board, game.white), "message"=> "")))
     end
 end
 

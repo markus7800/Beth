@@ -112,7 +112,7 @@ function user_input(board, white)
             end
         end
     end
-    return m
+    return m, NaN
 end
 
 
@@ -180,9 +180,9 @@ function play_game(board = StartPosition(), white = true; white_player=user_inpu
 
         v,move_time, = @timed if !done
             if white
-                m = white_player(board, true)
+                m, value = white_player(board, true)
             else
-                m = black_player(board, false)
+                m, value = black_player(board, false)
             end
         end
 
