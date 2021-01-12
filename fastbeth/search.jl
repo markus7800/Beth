@@ -72,6 +72,16 @@ function first_lt(x, y)
     return x[1] < y[1]
 end
 
+function is_inverse(m1::Move, m2::Move)
+    if m1.from_piece != m2.from_piece
+        return false
+    end
+    if m1.from == m2.to && m2.from == m1.to
+        return true
+    end
+    return false
+end
+
 # TODO: alpha beta with only best move stored and fast rank moves
 function AlphaBeta(beth::Beth, node::ABNode, depth::Int, ply::Int, α::Int, β::Int, white::Bool,
     use_stored_values=false, store_values=false, do_quiesce=false, quiesce_depth::Int=20,
@@ -96,6 +106,14 @@ function AlphaBeta(beth::Beth, node::ABNode, depth::Int, ply::Int, α::Int, β::
 
         if α ≥ β
             return value
+        end
+    end
+
+    if ply ≥ 4
+        n_prev = node.parent
+        if is_inverse(node.move, node.parent.parent.move) &&
+            is_inverse(n_prev.move, n_prev.parent.parent.move)
+            return 0 # repetition, is stored higher up
         end
     end
 
@@ -411,7 +429,7 @@ function IterativeMTDF(beth::Beth; board=beth.board, white=beth.white)
 
         time() > t1 && break
     end
-    
+
     beth.max_depth = reached_depth
 
 
