@@ -1,0 +1,45 @@
+As white won against BadboyTeenager (738)
+
+1. Pd2d4 Nb8c6
+2. Pd4d5 Nc6e5
+3. Nb1c3 Pe7e6
+4. Pf2f4 Ne5g6
+5. Pe2e4 Pf7f5
+6. Bf1d3 Bf8b4
+7. Pe4f5 Ng6f4
+8. Bc1f4 Ng8e7
+9. Qd1h5 Pg7g6
+10. Pf5g6 Ne7g6
+11. Bd3g6 Ke8e7
+12. Qh5h4 Ke7f8
+13. Bf4h6 Kf8g8
+14. Qh4d8
+
+'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+'rnbqkbnr/pppppppp/8/8/3P4/8/PPP1PPPP/RNBQKBNR b KQkq - 0 1',
+'r1bqkbnr/pppppppp/2n5/8/3P4/8/PPP1PPPP/RNBQKBNR w KQkq - 0 2',
+'r1bqkbnr/pppppppp/2n5/3P4/8/8/PPP1PPPP/RNBQKBNR b KQkq - 0 2',
+'r1bqkbnr/pppppppp/8/3Pn3/8/8/PPP1PPPP/RNBQKBNR w KQkq - 0 3',
+'r1bqkbnr/pppppppp/8/3Pn3/8/2N5/PPP1PPPP/R1BQKBNR b KQkq - 0 3',
+'r1bqkbnr/pppp1ppp/4p3/3Pn3/8/2N5/PPP1PPPP/R1BQKBNR w KQkq - 0 4',
+'r1bqkbnr/pppp1ppp/4p3/3Pn3/5P2/2N5/PPP1P1PP/R1BQKBNR b KQkq - 0 4',
+'r1bqkbnr/pppp1ppp/4p1n1/3P4/5P2/2N5/PPP1P1PP/R1BQKBNR w KQkq - 0 5',
+'r1bqkbnr/pppp1ppp/4p1n1/3P4/4PP2/2N5/PPP3PP/R1BQKBNR b KQkq - 0 5',
+'r1bqkbnr/pppp2pp/4p1n1/3P1p2/4PP2/2N5/PPP3PP/R1BQKBNR w KQkq - 0 6',
+'r1bqkbnr/pppp2pp/4p1n1/3P1p2/4PP2/2NB4/PPP3PP/R1BQK1NR b KQkq - 0 6',
+'r1bqk1nr/pppp2pp/4p1n1/3P1p2/1b2PP2/2NB4/PPP3PP/R1BQK1NR w KQkq - 0 7',
+'r1bqk1nr/pppp2pp/4p1n1/3P1P2/1b3P2/2NB4/PPP3PP/R1BQK1NR b KQkq - 0 7',
+'r1bqk1nr/pppp2pp/4p3/3P1P2/1b3n2/2NB4/PPP3PP/R1BQK1NR w KQkq - 0 8',
+'r1bqk1nr/pppp2pp/4p3/3P1P2/1b3B2/2NB4/PPP3PP/R2QK1NR b KQkq - 0 8',
+'r1bqk2r/ppppn1pp/4p3/3P1P2/1b3B2/2NB4/PPP3PP/R2QK1NR w KQkq - 0 9',
+'r1bqk2r/ppppn1pp/4p3/3P1P1Q/1b3B2/2NB4/PPP3PP/R3K1NR b KQkq - 0 9',
+'r1bqk2r/ppppn2p/4p1p1/3P1P1Q/1b3B2/2NB4/PPP3PP/R3K1NR w KQkq - 0 10',
+'r1bqk2r/ppppn2p/4p1P1/3P3Q/1b3B2/2NB4/PPP3PP/R3K1NR b KQkq - 0 10',
+'r1bqk2r/pppp3p/4p1n1/3P3Q/1b3B2/2NB4/PPP3PP/R3K1NR w KQkq - 0 11',
+'r1bqk2r/pppp3p/4p1B1/3P3Q/1b3B2/2N5/PPP3PP/R3K1NR b KQkq - 0 11',
+'r1bq3r/ppppk2p/4p1B1/3P3Q/1b3B2/2N5/PPP3PP/R3K1NR w KQ - 0 12',
+'r1bq3r/ppppk2p/4p1B1/3P4/1b3B1Q/2N5/PPP3PP/R3K1NR b KQ - 0 12',
+'r1bq1k1r/pppp3p/4p1B1/3P4/1b3B1Q/2N5/PPP3PP/R3K1NR w KQ - 0 13',
+'r1bq1k1r/pppp3p/4p1BB/3P4/1b5Q/2N5/PPP3PP/R3K1NR b KQ - 0 13',
+'r1bq2kr/pppp3p/4p1BB/3P4/1b5Q/2N5/PPP3PP/R3K1NR w KQ - 0 14',
+'r1bQ2kr/pppp3p/4p1BB/3P4/1b6/2N5/PPP3PP/R3K1NR b KQ - 0 14'

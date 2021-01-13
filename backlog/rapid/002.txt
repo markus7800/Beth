@@ -1,0 +1,89 @@
+As black won against Safster21 (979)
+
+1. Pd2d4 Pd7d6
+2. Pe2e4 Pe7e5
+3. Pd4d5 Ng8f6
+4. Nb1c3 Bf8e7
+5. Pf2f4 O-O
+6. Pf4f5 Pc7c6
+7. Bf1c4 Pb7b5
+8. Bc4d3 Pb5b4
+9. Nc3a4 Pc6d5
+10. Pe4d5 Bc8d7
+11. Pb2b3 Bd7a4
+12. Pb3a4 Nf6d5
+13. Bd3c4 Nd5c3
+14. Qd1g4 Nc3a4
+15. Bc4b5 Qd8a5
+16. Bb5a4 Qa5a4
+17. Bc1d2 Qa4c2
+18. Qg4b4 Nb8c6
+19. Qb4b3 Be7h4
+20. Pg2g3 Qc2e4
+21. Qb3e3 Qe4h1
+22. Pg3h4 Nc6d4
+23. O-O-O Ra8c8
+24. Bd2c3 Nd4f5
+25. Qe3a7 Rc8c3
+26. Kc1d2 Rf8c8
+27. Ng1e2 Rc3c2
+28. Kd2d3 Pe5e4
+
+
+'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+'rnbqkbnr/pppppppp/8/8/3P4/8/PPP1PPPP/RNBQKBNR b KQkq - 0 1',
+'rnbqkbnr/ppp1pppp/3p4/8/3P4/8/PPP1PPPP/RNBQKBNR w KQkq - 0 2',
+'rnbqkbnr/ppp1pppp/3p4/8/3PP3/8/PPP2PPP/RNBQKBNR b KQkq - 0 2',
+'rnbqkbnr/ppp2ppp/3p4/4p3/3PP3/8/PPP2PPP/RNBQKBNR w KQkq - 0 3',
+'rnbqkbnr/ppp2ppp/3p4/3Pp3/4P3/8/PPP2PPP/RNBQKBNR b KQkq - 0 3',
+'rnbqkb1r/ppp2ppp/3p1n2/3Pp3/4P3/8/PPP2PPP/RNBQKBNR w KQkq - 0 4',
+'rnbqkb1r/ppp2ppp/3p1n2/3Pp3/4P3/2N5/PPP2PPP/R1BQKBNR b KQkq - 0 4',
+'rnbqk2r/ppp1bppp/3p1n2/3Pp3/4P3/2N5/PPP2PPP/R1BQKBNR w KQkq - 0 5',
+'rnbqk2r/ppp1bppp/3p1n2/3Pp3/4PP2/2N5/PPP3PP/R1BQKBNR b KQkq - 0 5',
+'rnbq1rk1/ppp1bppp/3p1n2/3Pp3/4PP2/2N5/PPP3PP/R1BQKBNR w KQ - 0 6',
+'rnbq1rk1/ppp1bppp/3p1n2/3PpP2/4P3/2N5/PPP3PP/R1BQKBNR b KQ - 0 6',
+'rnbq1rk1/pp2bppp/2pp1n2/3PpP2/4P3/2N5/PPP3PP/R1BQKBNR w KQ - 0 7',
+'rnbq1rk1/pp2bppp/2pp1n2/3PpP2/2B1P3/2N5/PPP3PP/R1BQK1NR b KQ - 0 7',
+'rnbq1rk1/p3bppp/2pp1n2/1p1PpP2/2B1P3/2N5/PPP3PP/R1BQK1NR w KQ - 0 8',
+'rnbq1rk1/p3bppp/2pp1n2/1p1PpP2/4P3/2NB4/PPP3PP/R1BQK1NR b KQ - 0 8',
+'rnbq1rk1/p3bppp/2pp1n2/3PpP2/1p2P3/2NB4/PPP3PP/R1BQK1NR w KQ - 0 9',
+'rnbq1rk1/p3bppp/2pp1n2/3PpP2/Np2P3/3B4/PPP3PP/R1BQK1NR b KQ - 0 9',
+'rnbq1rk1/p3bppp/3p1n2/3ppP2/Np2P3/3B4/PPP3PP/R1BQK1NR w KQ - 0 10',
+'rnbq1rk1/p3bppp/3p1n2/3PpP2/Np6/3B4/PPP3PP/R1BQK1NR b KQ - 0 10',
+'rn1q1rk1/p2bbppp/3p1n2/3PpP2/Np6/3B4/PPP3PP/R1BQK1NR w KQ - 0 11',
+'rn1q1rk1/p2bbppp/3p1n2/3PpP2/Np6/1P1B4/P1P3PP/R1BQK1NR b KQ - 0 11',
+'rn1q1rk1/p3bppp/3p1n2/3PpP2/bp6/1P1B4/P1P3PP/R1BQK1NR w KQ - 0 12',
+'rn1q1rk1/p3bppp/3p1n2/3PpP2/Pp6/3B4/P1P3PP/R1BQK1NR b KQ - 0 12',
+'rn1q1rk1/p3bppp/3p4/3npP2/Pp6/3B4/P1P3PP/R1BQK1NR w KQ - 0 13',
+'rn1q1rk1/p3bppp/3p4/3npP2/PpB5/8/P1P3PP/R1BQK1NR b KQ - 0 13',
+'rn1q1rk1/p3bppp/3p4/4pP2/PpB5/2n5/P1P3PP/R1BQK1NR w KQ - 0 14',
+'rn1q1rk1/p3bppp/3p4/4pP2/PpB3Q1/2n5/P1P3PP/R1B1K1NR b KQ - 0 14',
+'rn1q1rk1/p3bppp/3p4/4pP2/npB3Q1/8/P1P3PP/R1B1K1NR w KQ - 0 15',
+'rn1q1rk1/p3bppp/3p4/1B2pP2/np4Q1/8/P1P3PP/R1B1K1NR b KQ - 0 15',
+'rn3rk1/p3bppp/3p4/qB2pP2/np4Q1/8/P1P3PP/R1B1K1NR w KQ - 0 16',
+'rn3rk1/p3bppp/3p4/q3pP2/Bp4Q1/8/P1P3PP/R1B1K1NR b KQ - 0 16',
+'rn3rk1/p3bppp/3p4/4pP2/qp4Q1/8/P1P3PP/R1B1K1NR w KQ - 0 17',
+'rn3rk1/p3bppp/3p4/4pP2/qp4Q1/8/P1PB2PP/R3K1NR b KQ - 0 17',
+'rn3rk1/p3bppp/3p4/4pP2/1p4Q1/8/P1qB2PP/R3K1NR w KQ - 0 18',
+'rn3rk1/p3bppp/3p4/4pP2/1Q6/8/P1qB2PP/R3K1NR b KQ - 0 18',
+'r4rk1/p3bppp/2np4/4pP2/1Q6/8/P1qB2PP/R3K1NR w KQ - 0 19',
+'r4rk1/p3bppp/2np4/4pP2/8/1Q6/P1qB2PP/R3K1NR b KQ - 0 19',
+'r4rk1/p4ppp/2np4/4pP2/7b/1Q6/P1qB2PP/R3K1NR w KQ - 0 20',
+'r4rk1/p4ppp/2np4/4pP2/7b/1Q4P1/P1qB3P/R3K1NR b KQ - 0 20',
+'r4rk1/p4ppp/2np4/4pP2/4q2b/1Q4P1/P2B3P/R3K1NR w KQ - 0 21',
+'r4rk1/p4ppp/2np4/4pP2/4q2b/4Q1P1/P2B3P/R3K1NR b KQ - 0 21',
+'r4rk1/p4ppp/2np4/4pP2/7b/4Q1P1/P2B3P/R3K1Nq w Q - 0 22',
+'r4rk1/p4ppp/2np4/4pP2/7P/4Q3/P2B3P/R3K1Nq b Q - 0 22',
+'r4rk1/p4ppp/3p4/4pP2/3n3P/4Q3/P2B3P/R3K1Nq w Q - 0 23',
+'r4rk1/p4ppp/3p4/4pP2/3n3P/4Q3/P2B3P/2KR2Nq b - - 0 23',
+'2r2rk1/p4ppp/3p4/4pP2/3n3P/4Q3/P2B3P/2KR2Nq w - - 0 24',
+'2r2rk1/p4ppp/3p4/4pP2/3n3P/2B1Q3/P6P/2KR2Nq b - - 0 24',
+'2r2rk1/p4ppp/3p4/4pn2/7P/2B1Q3/P6P/2KR2Nq w - - 0 25',
+'2r2rk1/Q4ppp/3p4/4pn2/7P/2B5/P6P/2KR2Nq b - - 0 25',
+'5rk1/Q4ppp/3p4/4pn2/7P/2r5/P6P/2KR2Nq w - - 0 26',
+'5rk1/Q4ppp/3p4/4pn2/7P/2r5/P2K3P/3R2Nq b - - 0 26',
+'2r3k1/Q4ppp/3p4/4pn2/7P/2r5/P2K3P/3R2Nq w - - 0 27',
+'2r3k1/Q4ppp/3p4/4pn2/7P/2r5/P2KN2P/3R3q b - - 0 27',
+'2r3k1/Q4ppp/3p4/4pn2/7P/8/P1rKN2P/3R3q w - - 0 28',
+'2r3k1/Q4ppp/3p4/4pn2/7P/3K4/P1r1N2P/3R3q b - - 0 28',
+'2r3k1/Q4ppp/3p4/5n2/4p2P/3K4/P1r1N2P/3R3q w - - 0 29'

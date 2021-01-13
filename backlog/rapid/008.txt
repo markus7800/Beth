@@ -1,0 +1,69 @@
+As white won against lilulik (1267)
+
+1. Pd2d4 Pd7d5
+2. Pc2c4 Pe7e6
+3. Ng1f3 Nb8c6
+4. Pc4d5 Pe6d5
+5. Nb1c3 Bf8d6
+6. Nc3d5 Bc8e6
+7. Nd5c3 Bd6b4
+8. Bc1g5 Pf7f6
+9. Bg5f4 Pa7a5
+10. Pe2e4 Pf6f5
+11. Bf1d3 Ng8e7
+12. O-O Ne7g6
+13. Bf4g5 Ra8a6
+14. Bg5d8 Ke8d8
+15. Pe4f5 Ng6f4
+16. Bd3a6 Pb7a6
+17. Pf5e6 Rh8e8
+18. Pd4d5 Nc6e7
+19. Pg2g3 Nf4d5
+20. Nc3d5 Ne7d5
+21. Qd1d5 Kd8c8
+22. Qd5a8
+
+'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+'rnbqkbnr/pppppppp/8/8/3P4/8/PPP1PPPP/RNBQKBNR b KQkq - 0 1',
+'rnbqkbnr/ppp1pppp/8/3p4/3P4/8/PPP1PPPP/RNBQKBNR w KQkq - 0 2',
+'rnbqkbnr/ppp1pppp/8/3p4/2PP4/8/PP2PPPP/RNBQKBNR b KQkq - 0 2',
+'rnbqkbnr/ppp2ppp/4p3/3p4/2PP4/8/PP2PPPP/RNBQKBNR w KQkq - 0 3',
+'rnbqkbnr/ppp2ppp/4p3/3p4/2PP4/5N2/PP2PPPP/RNBQKB1R b KQkq - 0 3',
+'r1bqkbnr/ppp2ppp/2n1p3/3p4/2PP4/5N2/PP2PPPP/RNBQKB1R w KQkq - 0 4',
+'r1bqkbnr/ppp2ppp/2n1p3/3P4/3P4/5N2/PP2PPPP/RNBQKB1R b KQkq - 0 4',
+'r1bqkbnr/ppp2ppp/2n5/3p4/3P4/5N2/PP2PPPP/RNBQKB1R w KQkq - 0 5',
+'r1bqkbnr/ppp2ppp/2n5/3p4/3P4/2N2N2/PP2PPPP/R1BQKB1R b KQkq - 0 5',
+'r1bqk1nr/ppp2ppp/2nb4/3p4/3P4/2N2N2/PP2PPPP/R1BQKB1R w KQkq - 0 6',
+'r1bqk1nr/ppp2ppp/2nb4/3N4/3P4/5N2/PP2PPPP/R1BQKB1R b KQkq - 0 6',
+'r2qk1nr/ppp2ppp/2nbb3/3N4/3P4/5N2/PP2PPPP/R1BQKB1R w KQkq - 0 7',
+'r2qk1nr/ppp2ppp/2nbb3/8/3P4/2N2N2/PP2PPPP/R1BQKB1R b KQkq - 0 7',
+'r2qk1nr/ppp2ppp/2n1b3/8/1b1P4/2N2N2/PP2PPPP/R1BQKB1R w KQkq - 0 8',
+'r2qk1nr/ppp2ppp/2n1b3/6B1/1b1P4/2N2N2/PP2PPPP/R2QKB1R b KQkq - 0 8',
+'r2qk1nr/ppp3pp/2n1bp2/6B1/1b1P4/2N2N2/PP2PPPP/R2QKB1R w KQkq - 0 9',
+'r2qk1nr/ppp3pp/2n1bp2/8/1b1P1B2/2N2N2/PP2PPPP/R2QKB1R b KQkq - 0 9',
+'r2qk1nr/1pp3pp/2n1bp2/p7/1b1P1B2/2N2N2/PP2PPPP/R2QKB1R w KQkq - 0 10',
+'r2qk1nr/1pp3pp/2n1bp2/p7/1b1PPB2/2N2N2/PP3PPP/R2QKB1R b KQkq - 0 10',
+'r2qk1nr/1pp3pp/2n1b3/p4p2/1b1PPB2/2N2N2/PP3PPP/R2QKB1R w KQkq - 0 11',
+'r2qk1nr/1pp3pp/2n1b3/p4p2/1b1PPB2/2NB1N2/PP3PPP/R2QK2R b KQkq - 0 11',
+'r2qk2r/1pp1n1pp/2n1b3/p4p2/1b1PPB2/2NB1N2/PP3PPP/R2QK2R w KQkq - 0 12',
+'r2qk2r/1pp1n1pp/2n1b3/p4p2/1b1PPB2/2NB1N2/PP3PPP/R2Q1RK1 b kq - 0 12',
+'r2qk2r/1pp3pp/2n1b1n1/p4p2/1b1PPB2/2NB1N2/PP3PPP/R2Q1RK1 w kq - 0 13',
+'r2qk2r/1pp3pp/2n1b1n1/p4pB1/1b1PP3/2NB1N2/PP3PPP/R2Q1RK1 b kq - 0 13',
+'3qk2r/1pp3pp/r1n1b1n1/p4pB1/1b1PP3/2NB1N2/PP3PPP/R2Q1RK1 w k - 0 14',
+'3Bk2r/1pp3pp/r1n1b1n1/p4p2/1b1PP3/2NB1N2/PP3PPP/R2Q1RK1 b k - 0 14',
+'3k3r/1pp3pp/r1n1b1n1/p4p2/1b1PP3/2NB1N2/PP3PPP/R2Q1RK1 w - - 0 15',
+'3k3r/1pp3pp/r1n1b1n1/p4P2/1b1P4/2NB1N2/PP3PPP/R2Q1RK1 b - - 0 15',
+'3k3r/1pp3pp/r1n1b3/p4P2/1b1P1n2/2NB1N2/PP3PPP/R2Q1RK1 w - - 0 16',
+'3k3r/1pp3pp/B1n1b3/p4P2/1b1P1n2/2N2N2/PP3PPP/R2Q1RK1 b - - 0 16',
+'3k3r/2p3pp/p1n1b3/p4P2/1b1P1n2/2N2N2/PP3PPP/R2Q1RK1 w - - 0 17',
+'3k3r/2p3pp/p1n1P3/p7/1b1P1n2/2N2N2/PP3PPP/R2Q1RK1 b - - 0 17',
+'3kr3/2p3pp/p1n1P3/p7/1b1P1n2/2N2N2/PP3PPP/R2Q1RK1 w - - 0 18',
+'3kr3/2p3pp/p1n1P3/p2P4/1b3n2/2N2N2/PP3PPP/R2Q1RK1 b - - 0 18',
+'3kr3/2p1n1pp/p3P3/p2P4/1b3n2/2N2N2/PP3PPP/R2Q1RK1 w - - 0 19',
+'3kr3/2p1n1pp/p3P3/p2P4/1b3n2/2N2NP1/PP3P1P/R2Q1RK1 b - - 0 19',
+'3kr3/2p1n1pp/p3P3/p2n4/1b6/2N2NP1/PP3P1P/R2Q1RK1 w - - 0 20',
+'3kr3/2p1n1pp/p3P3/p2N4/1b6/5NP1/PP3P1P/R2Q1RK1 b - - 0 20',
+'3kr3/2p3pp/p3P3/p2n4/1b6/5NP1/PP3P1P/R2Q1RK1 w - - 0 21',
+'3kr3/2p3pp/p3P3/p2Q4/1b6/5NP1/PP3P1P/R4RK1 b - - 0 21',
+'2k1r3/2p3pp/p3P3/p2Q4/1b6/5NP1/PP3P1P/R4RK1 w - - 0 22',
+'Q1k1r3/2p3pp/p3P3/p7/1b6/5NP1/PP3P1P/R4RK1 b - - 0 22'

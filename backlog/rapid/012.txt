@@ -1,0 +1,67 @@
+Won as black against piro99 (1538)
+
+Weird middle game leads to ragequit
+
+1. Pe2e4 Pd7d5
+2. Pe4d5 Qd8d5
+3. Nb1c3 Qd5e6
+4. Bf1e2 Qe6g6
+5. Pg2g3 Bc8f5
+6. Pd2d3 Nb8c6
+7. Ng1f3 O-O-O
+8. Nf3h4 Qg6e6
+9. Nh4f5 Ng8f6
+10. O-O Qe6f5
+11. Nc3e4 Pe7e5
+12. Ne4f6 Qf5f6
+13. Ph2h4 Ph7h6
+14. Rf1e1 Bf8c5
+15. Re1f1 Rd8d6
+16. Bc1e3 Bc5e3
+17. Pf2e3 Qf6e7
+18. Rf1f3 Pe5e4
+19. Rf3f4 Pe4d3
+20. Pc2d3 Qe7e3
+
+
+'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+'rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1',
+'rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2',
+'rnbqkbnr/ppp1pppp/8/3P4/8/8/PPPP1PPP/RNBQKBNR b KQkq - 0 2',
+'rnb1kbnr/ppp1pppp/8/3q4/8/8/PPPP1PPP/RNBQKBNR w KQkq - 0 3',
+'rnb1kbnr/ppp1pppp/8/3q4/8/2N5/PPPP1PPP/R1BQKBNR b KQkq - 0 3',
+'rnb1kbnr/ppp1pppp/4q3/8/8/2N5/PPPP1PPP/R1BQKBNR w KQkq - 0 4',
+'rnb1kbnr/ppp1pppp/4q3/8/8/2N5/PPPPBPPP/R1BQK1NR b KQkq - 0 4',
+'rnb1kbnr/ppp1pppp/6q1/8/8/2N5/PPPPBPPP/R1BQK1NR w KQkq - 0 5',
+'rnb1kbnr/ppp1pppp/6q1/8/8/2N3P1/PPPPBP1P/R1BQK1NR b KQkq - 0 5',
+'rn2kbnr/ppp1pppp/6q1/5b2/8/2N3P1/PPPPBP1P/R1BQK1NR w KQkq - 0 6',
+'rn2kbnr/ppp1pppp/6q1/5b2/8/2NP2P1/PPP1BP1P/R1BQK1NR b KQkq - 0 6',
+'r3kbnr/ppp1pppp/2n3q1/5b2/8/2NP2P1/PPP1BP1P/R1BQK1NR w KQkq - 0 7',
+'r3kbnr/ppp1pppp/2n3q1/5b2/8/2NP1NP1/PPP1BP1P/R1BQK2R b KQkq - 0 7',
+'2kr1bnr/ppp1pppp/2n3q1/5b2/8/2NP1NP1/PPP1BP1P/R1BQK2R w KQ - 0 8',
+'2kr1bnr/ppp1pppp/2n3q1/5b2/7N/2NP2P1/PPP1BP1P/R1BQK2R b KQ - 0 8',
+'2kr1bnr/ppp1pppp/2n1q3/5b2/7N/2NP2P1/PPP1BP1P/R1BQK2R w KQ - 0 9',
+'2kr1bnr/ppp1pppp/2n1q3/5N2/8/2NP2P1/PPP1BP1P/R1BQK2R b KQ - 0 9',
+'2kr1b1r/ppp1pppp/2n1qn2/5N2/8/2NP2P1/PPP1BP1P/R1BQK2R w KQ - 0 10',
+'2kr1b1r/ppp1pppp/2n1qn2/5N2/8/2NP2P1/PPP1BP1P/R1BQ1RK1 b - - 0 10',
+'2kr1b1r/ppp1pppp/2n2n2/5q2/8/2NP2P1/PPP1BP1P/R1BQ1RK1 w - - 0 11',
+'2kr1b1r/ppp1pppp/2n2n2/5q2/4N3/3P2P1/PPP1BP1P/R1BQ1RK1 b - - 0 11',
+'2kr1b1r/ppp2ppp/2n2n2/4pq2/4N3/3P2P1/PPP1BP1P/R1BQ1RK1 w - - 0 12',
+'2kr1b1r/ppp2ppp/2n2N2/4pq2/8/3P2P1/PPP1BP1P/R1BQ1RK1 b - - 0 12',
+'2kr1b1r/ppp2ppp/2n2q2/4p3/8/3P2P1/PPP1BP1P/R1BQ1RK1 w - - 0 13',
+'2kr1b1r/ppp2ppp/2n2q2/4p3/7P/3P2P1/PPP1BP2/R1BQ1RK1 b - - 0 13',
+'2kr1b1r/ppp2pp1/2n2q1p/4p3/7P/3P2P1/PPP1BP2/R1BQ1RK1 w - - 0 14',
+'2kr1b1r/ppp2pp1/2n2q1p/4p3/7P/3P2P1/PPP1BP2/R1BQR1K1 b - - 0 14',
+'2kr3r/ppp2pp1/2n2q1p/2b1p3/7P/3P2P1/PPP1BP2/R1BQR1K1 w - - 0 15',
+'2kr3r/ppp2pp1/2n2q1p/2b1p3/7P/3P2P1/PPP1BP2/R1BQ1RK1 b - - 0 15',
+'2k4r/ppp2pp1/2nr1q1p/2b1p3/7P/3P2P1/PPP1BP2/R1BQ1RK1 w - - 0 16',
+'2k4r/ppp2pp1/2nr1q1p/2b1p3/7P/3PB1P1/PPP1BP2/R2Q1RK1 b - - 0 16',
+'2k4r/ppp2pp1/2nr1q1p/4p3/7P/3Pb1P1/PPP1BP2/R2Q1RK1 w - - 0 17',
+'2k4r/ppp2pp1/2nr1q1p/4p3/7P/3PP1P1/PPP1B3/R2Q1RK1 b - - 0 17',
+'2k4r/ppp1qpp1/2nr3p/4p3/7P/3PP1P1/PPP1B3/R2Q1RK1 w - - 0 18',
+'2k4r/ppp1qpp1/2nr3p/4p3/7P/3PPRP1/PPP1B3/R2Q2K1 b - - 0 18',
+'2k4r/ppp1qpp1/2nr3p/8/4p2P/3PPRP1/PPP1B3/R2Q2K1 w - - 0 19',
+'2k4r/ppp1qpp1/2nr3p/8/4pR1P/3PP1P1/PPP1B3/R2Q2K1 b - - 0 19',
+'2k4r/ppp1qpp1/2nr3p/8/5R1P/3pP1P1/PPP1B3/R2Q2K1 w - - 0 20',
+'2k4r/ppp1qpp1/2nr3p/8/5R1P/3PP1P1/PP2B3/R2Q2K1 b - - 0 20',
+'2k4r/ppp2pp1/2nr3p/8/5R1P/3Pq1P1/PP2B3/R2Q2K1 w - - 0 21'
