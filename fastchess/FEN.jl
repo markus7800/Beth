@@ -46,7 +46,7 @@ function Board(FEN::String)
 end
 
 
-function FEN(board::Board, white::Bool)
+function FEN(board::Board, white::Bool, n_move::Int=1)
     first_group = ""
     count = 0
     for rank in 8:-1:1
@@ -121,5 +121,5 @@ function FEN(board::Board, white::Bool)
         end
     end
 
-    return first_group * " " * second_group * " " * third_group * " " * fourth_group * " 0 1"
+    return first_group * " " * second_group * " " * third_group * " " * fourth_group * " 0 " * string(n_move)
 end

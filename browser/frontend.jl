@@ -170,8 +170,8 @@ route("/newgame") do
         game.busy = true
         (move, value) = game.beth(game.board, game.white)
         make_move!(game.board, game.white, move)
-        push!(game.history, Ply(1, 1, deepcopy(game.board), game.white, move, 0.))
         game.white = !game.white
+        push!(game.history, Ply(1, 1, deepcopy(game.board), game.white, move, 0.))
         game.busy = false
         return respond(json(Dict("fen"=>FEN(game.board, game.white), "message"=> "Computer says: $move.")))
     else
@@ -198,6 +198,25 @@ end
 #         return respond(FEN(game.board, game.white))
 #     end
 # end
+
+route("/load") do
+    fen = @params(:fen)
+    if fen == ""
+        game.board = StartPosition()
+        game.white = true
+    else
+        game.board = Board(fen)
+
+        groups = split(fen, " ")
+        white_to_move = groups[2] == "w"
+
+        game.white = white_to_move
+    end
+    game.busy = false
+    game.history = [Ply(0, 0, deepcopy(game.board), game.white, EMPTY_MOVE, 0.)]
+
+    return respond(json(Dict("fen"=>FEN(game.board, game.white), "message"=> "FEN loaded.")))
+end
 
 route("/printgame") do
     out = ""
@@ -247,10 +266,13 @@ route("/printgame") do
 
 
     # FEN strings
-    for ply in game.history
-        out *= string("'" ,FEN(ply.board, ply.white), "',\n‚")
+    for (i,ply) in enumerate(game.history)
+        n_move = (i-1) ÷ 2 + 1
+        out *= string("'" ,FEN(ply.board, ply.white, n_move), "'")
+        if i < length(game.history)
+            out *= ",\n"
+        end
     end
-
     return respond(out)
 end
 

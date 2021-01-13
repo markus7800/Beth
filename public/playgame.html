@@ -25,8 +25,12 @@
     <button onclick="printGame()" id="new_black">Print Game</button>
     <!-- <button id="undo" onclick="undo()">Undo Move</button> -->
   </div>
-  <p id="message"></p>
+  <div id="button_div">
+    <input type="text" style="width:400px" id="fen_input">
+    <button onclick="loadFen()">Load FEN</button>
+    </div>
   </div>
+  <p id="message"></p>
 <script>
 
 var board = Chessboard('myBoard', {
@@ -94,6 +98,20 @@ function printGame() {
   $( "#message" ).text("")
   $.get('/printgame', function(game) {
     $( "#message" ).text(game)
+  });
+}
+
+function loadFen() {
+  console.log("load fen")
+  fen = $( "#fen_input" ).val()
+  console.log(fen);
+  $.get('/load', {'fen': fen}, function(response) {
+    r = JSON.parse(response)
+    console.log(r.fen)
+    console.log(r.message)
+    board.position(r.fen)
+    board.draggable = true
+    $( "#message" ).text(r.message)
   });
 }
 
