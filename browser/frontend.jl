@@ -18,12 +18,24 @@ mutable struct Game
 end
 
 function Game()
+    # beth = Beth(
+    #     value_heuristic=evaluation,
+    #     rank_heuristic=rank_moves_by_eval,
+    #     search_algorithm=IterativeMTDF,
+    #     search_args=Dict(
+    #         "max_depth" => 20,
+    #         "do_quiesce" => true,
+    #         "quiesce_depth" => 50,
+    #         "verbose" => 1,
+    #         "time" => 5
+    #     ))
+
     beth = Beth(
         value_heuristic=evaluation,
         rank_heuristic=rank_moves_by_eval,
         search_algorithm=IterativeMTDF,
         search_args=Dict(
-            "max_depth" => 20,
+            "max_depth" => 6,
             "do_quiesce" => true,
             "quiesce_depth" => 50,
             "verbose" => 1,
