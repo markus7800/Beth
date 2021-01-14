@@ -48,7 +48,7 @@ function onDrop(source, target, piece) {
   $( "#message" ).text("")
   if(source == target) return
 
-  var promotion = piece.toLowerCase().charAt(1) == 'p' && parseInt(target.charAt(1)) == 8;
+  var promotion = piece.toLowerCase().charAt(1) == 'p' && (parseInt(target.charAt(1)) == 8 || parseInt(target.charAt(1)) == 1);
   console.log(source, target, piece, promotion)
   board.draggable = false
   $( "#message" ).text("Thinking about a response ...")
