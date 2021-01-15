@@ -1,4 +1,5 @@
 Calm and collected in KPNKP endgame
+First en passant
 
 1. Pd2d4 Ng8f6
 2. Pe2e4 Pd7d5

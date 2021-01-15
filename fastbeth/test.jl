@@ -161,6 +161,7 @@ play_game(board, false, black_player=beth, white_player=beth)
 # razoring
 # todos scathered throughout repo
 # beth ascii art
+# play forced moves immediately
 
 board = Board("3Q4/3b1p1k/3b4/8/8/1Pq1PN2/P4PrP/1K5R w - - 0 37")
 board = Board("8/3b1pk1/3b4/8/7Q/1Pq1PN2/P4PrP/1K5R w - - 2 38")
