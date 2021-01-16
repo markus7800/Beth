@@ -2,6 +2,7 @@ include("../fastchess/chess.jl")
 
 include("reverse_moves.jl")
 
+import ProgressMeter
 
 function generate_3_men_piece_boards() #
     boards = Board[]
@@ -137,7 +138,7 @@ function find_desperate_positions!(all_mates::Tablebase, all_desperate_positions
     return unique(desperate_positions)
 end
 
-function find_all_3_men_mates(max_depth)
+function find_all_3_men_mates(max_depth; verbose=true)
     two_piece = generate_3_men_piece_boards()
 
     desperate_positions = find_mate_positions(two_piece)
@@ -149,15 +150,15 @@ function find_all_3_men_mates(max_depth)
     mates = []
     all_mates = Tablebase()
 
-    for i in 1:max_depth
-        @info("Iteration $i:")
+    ProgressMeter.@showprogress for i in 1:max_depth
+        verbose && @info("Iteration $i:")
         for dp in desperate_positions
             @assert all_desperate_positions[dp] == i-1 dp
         end
 
         found_mates = find_mate_position_in_1(desperate_positions)
         l = length(found_mates)
-        @info("Found $l mates.")
+        verbose && @info("Found $l mates.")
         l1 = length(all_mates)
 
         new_mates = Board[]
@@ -170,8 +171,8 @@ function find_all_3_men_mates(max_depth)
         push!(mates, new_mates)
 
         l2 = length(all_mates)
-        @info("New ones: $(l2 - l1)")
-        @info("Currently $l2 mates known.")
+        verbose && @info("New ones: $(l2 - l1)")
+        verbose && @info("Currently $l2 mates known.")
 
         desperate_positions = find_desperate_positions!(all_mates, all_desperate_positions)
         for dp in desperate_positions
@@ -179,11 +180,11 @@ function find_all_3_men_mates(max_depth)
             all_desperate_positions[dp] = i
         end
 
-        @info("Found $(length(desperate_positions)) new desperate positions.")
+        verbose && @info("Found $(length(desperate_positions)) new desperate positions.")
 
-        @info("Currently $(length(all_desperate_positions)) desperate positions known.")
+        verbose && @info("Currently $(length(all_desperate_positions)) desperate positions known.")
 
-        println()
+        verbose && println()
 
         length(desperate_positions) == 0 && break
     end
@@ -198,13 +199,20 @@ function test_consistency(mates, all_mates::Tablebase, all_desperate_positions::
     end
     @assert all(length.(mates) .== counts)
 
-    for (_board, i) in all_mates
+    ProgressMeter.@showprogress for (_board, i) in all_mates
         board = deepcopy(_board)
         best = 10^6
+        moves = Move[]
+        for m in get_moves(board, true)
+            if m.from_piece == m.to_piece || m.to_piece == QUEEN # only queen promotions
+                push!(moves, m)
+            end
+        end
         # from mating position in i there has to be at least one move that leads to a desperate position in i-1
         # but there should also be no move that leads to a desperate position in <i-1
-        for wm in get_moves(board, true)
+        for wm in moves
             undo = make_move!(board, true, wm)
+            board.en_passant = 0 # remove en passant as it is not used in keys
             key = board # normalise_board(board)
             if haskey(all_desperate_positions, key)
                 j = get(all_desperate_positions, key, NaN)
@@ -216,7 +224,7 @@ function test_consistency(mates, all_mates::Tablebase, all_desperate_positions::
         @assert best == i - 1 (board, best, i)
     end
 
-    for (_board, j) in all_desperate_positions
+    ProgressMeter.@showprogress for (_board, j) in all_desperate_positions
         j == 0 && continue # no moves for black (initial mates)
 
         # from a desperate position in j all moves should lead to a mating position in <=j
@@ -238,33 +246,39 @@ end
 
 include("tablebase.jl")
 
-@time mates, all_mates, all_desperate_positions = find_all_3_men_mates(30)
+@info("Generate 3-men table base.")
+@time mates, all_mates, all_desperate_positions = find_all_3_men_mates(30, verbose=false)
 
+n_winning = length(all_mates) + length(all_desperate_positions)
+@info("Found $n_winning winning positions.")
+
+@info("Check consistency.")
 @time test_consistency(mates, all_mates, all_desperate_positions)
 
+@info("Save to endgame/tb3men.jld2.")
 sm, sdp = slimify(all_mates, all_desperate_positions)
 
-# import JLD2
-# JLD2.@save "endgame/tb3men.jld2" mates=sm desperate_positions=sdp
+import JLD2
+JLD2.@save "endgame/tb3men.jld2" mates=sm desperate_positions=sdp
 
 
-board = Board()
-set_piece!(board, Field("e2"), true, PAWN)
-set_piece!(board, Field("e3"), true, KING)
-set_piece!(board, Field("e5"), false, KING)
-print_board(board)
-
-get(all_desperate_positions, board, NaN)
-get(all_mates, board, NaN)
-
-board = Board()
-set_piece!(board, Field("e2"), true, PAWN)
-set_piece!(board, Field("d3"), true, KING)
-set_piece!(board, Field("e5"), false, KING)
-print_board(board)
-
-get(all_desperate_positions, board, NaN)
-get(all_mates, board, NaN)
+# board = Board()
+# set_piece!(board, Field("e2"), true, PAWN)
+# set_piece!(board, Field("e3"), true, KING)
+# set_piece!(board, Field("e5"), false, KING)
+# print_board(board)
+#
+# get(all_desperate_positions, board, NaN)
+# get(all_mates, board, NaN)
+#
+# board = Board()
+# set_piece!(board, Field("e2"), true, PAWN)
+# set_piece!(board, Field("d3"), true, KING)
+# set_piece!(board, Field("e5"), false, KING)
+# print_board(board)
+#
+# get(all_desperate_positions, board, NaN)
+# get(all_mates, board, NaN)
 
 
 #=
