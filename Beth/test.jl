@@ -149,18 +149,12 @@ play_game(board, false, black_player=beth, white_player=beth)
 
 # TODO:
 # quiesce lt function
-# Puzzle 25 rush 31.12.20
-# rename "fast"
 # browser frontend
-# delete old
 # faster AlphaBeta with less memory (only save best move)
-# beth ascii art
-# readme
 # blog entry
 # null move pruning
 # razoring
 # todos scathered throughout repo
-# beth ascii art
 # play forced moves immediately
 
 board = Board("3Q4/3b1p1k/3b4/8/8/1Pq1PN2/P4PrP/1K5R w - - 0 37")
