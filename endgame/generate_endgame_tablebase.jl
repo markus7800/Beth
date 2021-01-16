@@ -1,95 +1,26 @@
-include("../chess/chess.jl")
+include("../fastchess/chess.jl")
 
-function normalise_board(board)
-    king_pos = (-10, -10)
-    # find black king
-    for r in 1:8, f in 1:8
-        if board[r, f, KING] && board[r, f, BLACK]
-            king_pos = (r, f)
-            break
-        end
-    end
+include("reverse_moves.jl")
 
-    rank, file = king_pos
-    new_board = deepcopy(board)
-    if rank > 4
-        # mirror along horizontal axis
-        new_board.position .= [new_board.position[r,f,p] for r in 8:-1:1, f in 1:8, p in 1:8]
-        rank = 8 - rank + 1
-    end
-    if file > 4
-        # mirror along vertical axis
-        new_board.position .= [new_board.position[r,f,p] for r in 1:8, f in 8:-1:1, p in 1:8]
-        file = 8 - file + 1
-    end
-    if rank > file
-        # mirror along diagonal axis
-        new_board.position .= [new_board.position[f,r,p] for r in 1:8, f in 1:8, p in 1:8]
-    end
 
-    return new_board
-end
-
-function is_normalised(board)
-    king_pos = (-10, -10)
-    # find black king
-    for r in 1:8, f in 1:8
-        if board[r, f, KING] && board[r, f, BLACK]
-            king_pos = (r, f)
-            break
-        end
-    end
-    rank, file = king_pos
-
-    return rank ≤ 4 && file ≤ 4 && rank ≤ file
-end
-
-function mirror_horizontally(board::Board)
-    new_board = deepcopy(board)
-    for r in 1:8, f in 1:8, p in 1:8
-        new_board.position[r,f,p] = board.position[8-r+1, f, p]
-    end
-    return new_board
-end
-function mirror_vertically(board::Board)
-    new_board = deepcopy(board)
-    for r in 1:8, f in 1:8, p in 1:8
-        new_board.position[r,f,p] = board.position[r,8-f+1, p]
-    end
-    return new_board
-end
-function mirror_diagonally(board::Board)
-    new_board = deepcopy(board)
-    for r in 1:8, f in 1:8, p in 1:8
-        new_board.position[r,f,p] = board.position[f, r, p]
-    end
-    return new_board
-end
-
-function generate_2_piece_boards() # 69936
+function generate_3_men_piece_boards() #
     boards = Board[]
-    black_king_positions = ["a1", "b1", "c1", "d1", "b2", "c2", "d2", "c3", "d3", "d4"]
 
-    for bk_pos in black_king_positions
-        bk_cart = cartesian(bk_pos)
-        used_positions = [bk_cart]
-
+    for bk_r in 1:8, bk_f in 1:8
+        used_positions = [(bk_r, bk_f)]
         for wk_r in 1:8, wk_f in 1:8
             (wk_r, wk_f) in used_positions && continue
-            max(abs(wk_r - bk_cart[1]), abs(wk_f - bk_cart[2])) ≤ 1 && continue
+            max(abs(wk_r - bk_r), abs(wk_f - bk_f)) ≤ 1 && continue
             push!(used_positions, (wk_r, wk_f))
 
             for p in [ROOK, QUEEN], wp1_r in 1:8, wp1_f in 1:8
                 (wp1_r, wp1_f) in used_positions && continue
 
-                board = Board(false, false)
-                board.position[bk_cart..., [BLACK, KING]] .= 1
-                board.position[wk_r, wk_f, [WHITE, KING]] .= 1
-                board.position[wp1_r, wp1_f, [WHITE, p]] .= 1
-
+                board = Board()
+                set_piece!(board, Field(bk_r, bk_f), false, KING)
+                set_piece!(board, Field(wk_r, wk_f), true, KING)
+                set_piece!(board, Field(wp1_r, wp1_f), true, p)
                 push!(boards, board)
-
-                @assert is_valid(board)
             end
 
             pop!(used_positions)
@@ -104,7 +35,7 @@ end
 function find_mate_positions(boards::Vector{Board})
     mates = Board[]
     for board in boards
-        if is_in_check(board, BLACK) && length(get_moves(board, false)) == 0
+        if is_in_check(board, false) && length(get_moves(board, false)) == 0
             push!(mates, board)
         end
     end
@@ -123,12 +54,21 @@ function find_mate_position_in_1(desperate_position::Vector{Board})
     mate_in_1 = Board[]
 
     for mate in desperate_position
-        rev_moves = get_reverse_moves(mate, true)
+        rev_moves = get_reverse_moves(mate, true, promotions=true)
         for m in rev_moves
             board = deepcopy(mate)
-            undo!(board, true, m[1], m[2], m[3], nothing, nothing, nothing)
-            board = normalise_board(board)
+            undo_move!(board, true, m, NoUndo())
+
+            # safety check
+            # @assert (m in get_moves(board, true)) ("mate in 1: for != back", mate, board, m)
+
+            # board = normalise_board(board
             push!(mate_in_1, board)
+
+            # safety check
+            # _board = deepcopy(board)
+            # move!(_board, true, m[1], m[2], m[3])
+            # @assert _board == mate ("mate in 1: invalid move", mate, _board, m)
         end
     end
     return unique(mate_in_1)
@@ -146,18 +86,19 @@ Tablebase = Dict{Board, Int}
 function find_desperate_positions!(all_mates::Tablebase, all_desperate_positions::Tablebase)
     desperate_positions = Board[]
 
-    for (_mate, i) in all_mates, trafo in [identity, mirror_horizontally, mirror_vertically, mirror_diagonally]
-        mate = trafo(_mate)
-        rev_moves = get_reverse_moves(mate, false)
+    for (_mate, i) in all_mates
+        mate = _mate
+        rev_moves = get_reverse_moves(mate, false, promotions=true) # should be no promotions here since only king
         for rm in rev_moves
             board = deepcopy(mate)
 
             # println(board)
-            undo!(board, false, rm[1], rm[2], rm[3], nothing, nothing, nothing)
-            # println("prev board")
-            # println(board)
+            undo_move!(board, false, rm, NoUndo())
 
-            board = normalise_board(board)
+            # safety check
+            # @assert (rm in get_moves(board, false)) ("desp position: for != back", mate, board, rm)
+
+            # board = normalise_board(board)
 
             if haskey(all_desperate_positions, board)
                 # println("prev board is known mate")
@@ -170,14 +111,15 @@ function find_desperate_positions!(all_mates::Tablebase, all_desperate_positions
             is_desparate = true
             # check if all forward moves lead to known mate
             for m in get_moves(_board, false)
-                move!(_board, false, m[1], m[2], m[3])
+                undo = make_move!(_board, false, m)
 
-                if !haskey(all_mates, normalise_board(_board))
+                # normalise_board(_board)
+                if !haskey(all_mates, _board)
                     is_desparate = false
                     break
                 end
 
-                undo!(_board, false, m[1], m[2], m[3], nothing, nothing, nothing)
+                undo_move!(_board, false, m, undo)
             end
 
             # println("is desperate ", is_desparate)
@@ -185,13 +127,18 @@ function find_desperate_positions!(all_mates::Tablebase, all_desperate_positions
             if is_desparate
                 push!(desperate_positions, board)
             end
+
+            # safety check
+            # _board = deepcopy(board)
+            # move!(_board, false, rm[1], rm[2], rm[3])
+            # @assert _board == mate ("desp position: invalid move", mate, _board, rm)
         end
     end
     return unique(desperate_positions)
 end
 
-function find_all_mates(max_depth=4)
-    two_piece = generate_2_piece_boards()
+function find_all_3_men_mates(max_depth)
+    two_piece = generate_3_men_piece_boards()
 
     desperate_positions = find_mate_positions(two_piece)
     all_desperate_positions = Tablebase()
@@ -204,6 +151,10 @@ function find_all_mates(max_depth=4)
 
     for i in 1:max_depth
         @info("Iteration $i:")
+        for dp in desperate_positions
+            @assert all_desperate_positions[dp] == i-1 dp
+        end
+
         found_mates = find_mate_position_in_1(desperate_positions)
         l = length(found_mates)
         @info("Found $l mates.")
@@ -240,8 +191,6 @@ function find_all_mates(max_depth=4)
     return mates, all_mates, all_desperate_positions
 end
 
-@time mates, all_mates, all_desperate_positions = find_all_mates(20)
-
 function test_consistency(mates, all_mates::Tablebase, all_desperate_positions::Tablebase)
     counts = zeros(Int, length(mates))
     for (board, i) in all_mates
@@ -249,27 +198,20 @@ function test_consistency(mates, all_mates::Tablebase, all_desperate_positions::
     end
     @assert all(length.(mates) .== counts)
 
-    for (board, i) in all_mates
-        @assert is_normalised(board) board
-    end
-    for (board, i) in all_desperate_positions
-        @assert is_normalised(board) board
-    end
-
     for (_board, i) in all_mates
         board = deepcopy(_board)
         best = 10^6
         # from mating position in i there has to be at least one move that leads to a desperate position in i-1
         # but there should also be no move that leads to a desperate position in <i-1
         for wm in get_moves(board, true)
-            move!(board, true, wm[1], wm[2], wm[3])
-            key = normalise_board(board)
+            undo = make_move!(board, true, wm)
+            key = board # normalise_board(board)
             if haskey(all_desperate_positions, key)
-                j = all_desperate_positions[key]
+                j = get(all_desperate_positions, key, NaN)
                 @assert j ≥ i - 1 (board, wm, j, i, _board)
                 best = min(best, j)
             end
-            undo!(board, true, wm[1], wm[2], wm[3], nothing, nothing, nothing)
+            undo_move!(board, true, wm, undo)
         end
         @assert best == i - 1 (board, best, i)
     end
@@ -282,259 +224,252 @@ function test_consistency(mates, all_mates::Tablebase, all_desperate_positions::
         board = deepcopy(_board)
         best = -1
         for bm in get_moves(board, false)
-            move!(board, false, bm[1], bm[2], bm[3])
-            key = normalise_board(board)
+            undo = make_move!(board, false, bm)
+            key = board # normalise_board(board)
             @assert haskey(all_mates, key) (board, bm, i, j, _board)
-            i = all_mates[key]
+            i = get(all_mates, key, NaN)
             @assert i ≤ j
             best = max(best, j)
-            undo!(board, false, bm[1], bm[2], bm[3], nothing, nothing, nothing)
+            undo_move!(board, false, bm, undo)
         end
         @assert best == j (board, best, j)
     end
 end
 
+include("tablebase.jl")
 
-test_consistency(mates, all_mates, all_desperate_positions)
+@time mates, all_mates, all_desperate_positions = find_all_3_men_mates(30)
 
-function test_consistency_with_minimax(mates)
-    bfs = [Inf,Inf,Inf, Inf, Inf, Inf]
-    depth = 2
-    b = Beth(value_heuristic=beth_eval, rank_heuristic=beth_rank_moves, search_args=Dict("depth"=>depth, "branching_factors"=>bfs))
+@time test_consistency(mates, all_mates, all_desperate_positions)
 
+sm, sdp = slimify(all_mates, all_desperate_positions)
 
-    for board in mates[1]
-        root = minimax_search(b, board=board, white=true, verbose=false)
-        @assert root.score == 1000.0 board
-    end
-    @info("Mate in 1 check")
+# import JLD2
+# JLD2.@save "endgame/tb3men.jld2" mates=sm desperate_positions=sdp
 
 
-    @progress for board in mates[2]
-        root = minimax_search(b, board=board, white=true, verbose=false)
-        @assert root.score < 1000.0 board
-    end
+board = Board()
+set_piece!(board, Field("e2"), true, PAWN)
+set_piece!(board, Field("e3"), true, KING)
+set_piece!(board, Field("e5"), false, KING)
+print_board(board)
 
-    @info("Mate in 2 is not Mate in 1 check")
+get(all_desperate_positions, board, NaN)
+get(all_mates, board, NaN)
 
-    b.search_args["depth"] = 4
-    @progress for board in mates[2]
-        root = minimax_search(b, board=board, white=true, verbose=false)
-        @assert root.score == 1000.0 board
-    end
-    @info("Mate in 2 check")
+board = Board()
+set_piece!(board, Field("e2"), true, PAWN)
+set_piece!(board, Field("d3"), true, KING)
+set_piece!(board, Field("e5"), false, KING)
+print_board(board)
 
-    @progress for board in mates[3]
-        root = minimax_search(b, board=board, white=true, verbose=false)
-        if root.score == 1000.0
-            println(board)
-            println()
-            print_tree(root, expand_best=1, has_to_have_children=false)
-        end
-        @assert root.score < 1000.0 board
-    end
-    @info("Mate in 3 is not Mate in 2 check")
-end
+get(all_desperate_positions, board, NaN)
+get(all_mates, board, NaN)
 
-
-
-
-
-
-print_tree(root, expand_best=1, has_to_have_children=false)
-
-sum(map(length, mates))
-map(length, mates)
-
-dp0 = find_mate_positions(two_piece)
-m1 = find_mate_position_in_1(dp0)
-dp1 = find_desperate_positions(m1, dp0)
-m2 = setdiff(find_mate_position_in_1(dp1), m1)
-
-all(is_normalised.(dp0))
-all(is_normalised.(m1))
-all(is_normalised.(dp1))
-all(is_normalised.(m2))
-
-
-board = Board(false, false)
-board.position[1, 1, [KING, BLACK]] .= 1
-board.position[3, 3, [KING, WHITE]] .= 1
-board.position[4, 3, [ROOK, WHITE]] .= 1
-board
-is_normalised(board)
-normalise_board(board) in m2
-
-board = Board(false, false)
-board.position[1, 1, [KING, BLACK]] .= 1
-board.position[3, 3, [KING, WHITE]] .= 1
-board.position[3, 4, [ROOK, WHITE]] .= 1
-board
-is_normalised(board)
-normalise_board(board) in m2
-
-
-#### HERE LIES THE KEY
-board = Board(false, false)
-board.position[1, 1, [KING, BLACK]] .= 1
-board.position[2, 3, [KING, WHITE]] .= 1
-board.position[4, 3, [ROOK, WHITE]] .= 1
-board
-is_normalised(board)
-normalise_board(board) in dp1
-
-board = Board(false, false)
-board.position[1, 1, [KING, BLACK]] .= 1
-board.position[3, 2, [KING, WHITE]] .= 1
-board.position[3, 4, [ROOK, WHITE]] .= 1
-board
-is_normalised(board)
-normalise_board(board) in dp1
-####
-
-board = Board(false, false)
-board.position[2, 1, [KING, BLACK]] .= 1
-board.position[2, 3, [KING, WHITE]] .= 1
-board.position[4, 3, [ROOK, WHITE]] .= 1
-board
-is_normalised(board)
-normalise_board(board)
-normalise_board(board) in m1
-
-
-
-println(get_reverse_moves(normalise_board(board), false))
-
-
-
-board = Board(false, false)
-board.position[1, 1, [KING, BLACK]] .= 1
-board.position[3, 2, [KING, WHITE]] .= 1
-board.position[3, 4, [ROOK, WHITE]] .= 1
-board
-
-
-d = Dict(1=>1, 2=>3)
 
 #=
-[[ Info: Iteration 1:
-[ Info: Found 672 mates.
-[ Info: New ones: 672
-[ Info: Currently 672 mates known.
-[ Info: Found 350 new desperate positions.
-[ Info: Currently 451 desperate positions known.
+[ Info: Iteration 1:
+[ Info: Found 4040 mates.
+[ Info: New ones: 4040
+[ Info: Currently 4040 mates known.
+[ Info: Found 1994 new desperate positions.
+[ Info: Currently 2574 desperate positions known.
 
 [ Info: Iteration 2:
-[ Info: Found 2056 mates.
-[ Info: New ones: 1468
-[ Info: Currently 2140 mates known.
-[ Info: Found 785 new desperate positions.
-[ Info: Currently 1236 desperate positions known.
+[ Info: Found 13238 mates.
+[ Info: New ones: 9878
+[ Info: Currently 13918 mates known.
+[ Info: Found 4948 new desperate positions.
+[ Info: Currently 7522 desperate positions known.
 
 [ Info: Iteration 3:
-[ Info: Found 3755 mates.
-[ Info: New ones: 1884
-[ Info: Currently 4024 mates known.
-[ Info: Found 1317 new desperate positions.
-[ Info: Currently 2553 desperate positions known.
+[ Info: Found 24952 mates.
+[ Info: New ones: 13344
+[ Info: Currently 27262 mates known.
+[ Info: Found 8256 new desperate positions.
+[ Info: Currently 15778 desperate positions known.
 
 [ Info: Iteration 4:
-[ Info: Found 6214 mates.
-[ Info: New ones: 3347
-[ Info: Currently 7371 mates known.
-[ Info: Found 2475 new desperate positions.
-[ Info: Currently 5028 desperate positions known.
+[ Info: Found 41400 mates.
+[ Info: New ones: 22714
+[ Info: Currently 49976 mates known.
+[ Info: Found 16034 new desperate positions.
+[ Info: Currently 31812 desperate positions known.
 
 [ Info: Iteration 5:
-[ Info: Found 10686 mates.
-[ Info: New ones: 4692
-[ Info: Currently 12063 mates known.
-[ Info: Found 4431 new desperate positions.
-[ Info: Currently 9459 desperate positions known.
+[ Info: Found 72876 mates.
+[ Info: New ones: 32848
+[ Info: Currently 82824 mates known.
+[ Info: Found 29916 new desperate positions.
+[ Info: Currently 61728 desperate positions known.
 
 [ Info: Iteration 6:
-[ Info: Found 16715 mates.
-[ Info: New ones: 6372
-[ Info: Currently 18435 mates known.
-[ Info: Found 6923 new desperate positions.
-[ Info: Currently 16382 desperate positions known.
+[ Info: Found 114838 mates.
+[ Info: New ones: 44042
+[ Info: Currently 126866 mates known.
+[ Info: Found 46258 new desperate positions.
+[ Info: Currently 107986 desperate positions known.
 
 [ Info: Iteration 7:
-[ Info: Found 21766 mates.
-[ Info: New ones: 6952
-[ Info: Currently 25387 mates known.
-[ Info: Found 9349 new desperate positions.
-[ Info: Currently 25731 desperate positions known.
+[ Info: Found 151158 mates.
+[ Info: New ones: 49664
+[ Info: Currently 176530 mates known.
+[ Info: Found 63678 new desperate positions.
+[ Info: Currently 171664 desperate positions known.
 
 [ Info: Iteration 8:
-[ Info: Found 23866 mates.
-[ Info: New ones: 5128
-[ Info: Currently 30515 mates known.
-[ Info: Found 8695 new desperate positions.
-[ Info: Currently 34426 desperate positions known.
+[ Info: Found 173668 mates.
+[ Info: New ones: 43466
+[ Info: Currently 219996 mates known.
+[ Info: Found 63700 new desperate positions.
+[ Info: Currently 235364 desperate positions known.
 
 [ Info: Iteration 9:
-[ Info: Found 21616 mates.
-[ Info: New ones: 3279
-[ Info: Currently 33794 mates known.
-[ Info: Found 3903 new desperate positions.
-[ Info: Currently 38329 desperate positions known.
+[ Info: Found 173146 mates.
+[ Info: New ones: 37850
+[ Info: Currently 257846 mates known.
+[ Info: Found 39332 new desperate positions.
+[ Info: Currently 274696 desperate positions known.
 
 [ Info: Iteration 10:
-[ Info: Found 15697 mates.
-[ Info: New ones: 2951
-[ Info: Currently 36745 mates known.
-[ Info: Found 2491 new desperate positions.
-[ Info: Currently 40820 desperate positions known.
+[ Info: Found 145646 mates.
+[ Info: New ones: 35814
+[ Info: Currently 293660 mates known.
+[ Info: Found 31642 new desperate positions.
+[ Info: Currently 306338 desperate positions known.
 
 [ Info: Iteration 11:
-[ Info: Found 12652 mates.
-[ Info: New ones: 2996
-[ Info: Currently 39741 mates known.
-[ Info: Found 3394 new desperate positions.
-[ Info: Currently 44214 desperate positions known.
+[ Info: Found 130206 mates.
+[ Info: New ones: 37678
+[ Info: Currently 331338 mates known.
+[ Info: Found 37218 new desperate positions.
+[ Info: Currently 343556 desperate positions known.
 
 [ Info: Iteration 12:
-[ Info: Found 14926 mates.
-[ Info: New ones: 3135
-[ Info: Currently 42876 mates known.
-[ Info: Found 4225 new desperate positions.
-[ Info: Currently 48439 desperate positions known.
+[ Info: Found 143248 mates.
+[ Info: New ones: 37836
+[ Info: Currently 369174 mates known.
+[ Info: Found 40418 new desperate positions.
+[ Info: Currently 383974 desperate positions known.
 
 [ Info: Iteration 13:
-[ Info: Found 16297 mates.
-[ Info: New ones: 3004
-[ Info: Currently 45880 mates known.
-[ Info: Found 5148 new desperate positions.
-[ Info: Currently 53587 desperate positions known.
+[ Info: Found 144116 mates.
+[ Info: New ones: 31262
+[ Info: Currently 400436 mates known.
+[ Info: Found 41886 new desperate positions.
+[ Info: Currently 425860 desperate positions known.
 
 [ Info: Iteration 14:
-[ Info: Found 17274 mates.
-[ Info: New ones: 2714
-[ Info: Currently 48594 mates known.
-[ Info: Found 5728 new desperate positions.
-[ Info: Currently 59315 desperate positions known.
+[ Info: Found 138276 mates.
+[ Info: New ones: 23794
+[ Info: Currently 424230 mates known.
+[ Info: Found 41374 new desperate positions.
+[ Info: Currently 467234 desperate positions known.
 
 [ Info: Iteration 15:
-[ Info: Found 14587 mates.
-[ Info: New ones: 1005
-[ Info: Currently 49599 mates known.
-[ Info: Found 2931 new desperate positions.
-[ Info: Currently 62246 desperate positions known.
+[ Info: Found 108362 mates.
+[ Info: New ones: 7374
+[ Info: Currently 431604 mates known.
+[ Info: Found 19336 new desperate positions.
+[ Info: Currently 486570 desperate positions known.
 
 [ Info: Iteration 16:
-[ Info: Found 8327 mates.
-[ Info: New ones: 187
-[ Info: Currently 49786 mates known.
-[ Info: Found 534 new desperate positions.
-[ Info: Currently 62780 desperate positions known.
+[ Info: Found 60176 mates.
+[ Info: New ones: 3224
+[ Info: Currently 434828 mates known.
+[ Info: Found 5444 new desperate positions.
+[ Info: Currently 492014 desperate positions known.
 
 [ Info: Iteration 17:
-[ Info: Found 2270 mates.
-[ Info: New ones: 0
-[ Info: Currently 49786 mates known.
-[ Info: Found 0 new desperate positions.
-[ Info: Currently 62780 desperate positions known.
+[ Info: Found 23146 mates.
+[ Info: New ones: 2132
+[ Info: Currently 436960 mates known.
+[ Info: Found 1804 new desperate positions.
+[ Info: Currently 493818 desperate positions known.
 
-467.129298 seconds (1.56 G allocations: 143.366 GiB, 8.41% gc time)
+[ Info: Iteration 18:
+[ Info: Found 7122 mates.
+[ Info: New ones: 1742
+[ Info: Currently 438702 mates known.
+[ Info: Found 1422 new desperate positions.
+[ Info: Currently 495240 desperate positions known.
+
+[ Info: Iteration 19:
+[ Info: Found 5742 mates.
+[ Info: New ones: 1316
+[ Info: Currently 440018 mates known.
+[ Info: Found 1194 new desperate positions.
+[ Info: Currently 496434 desperate positions known.
+
+[ Info: Iteration 20:
+[ Info: Found 4346 mates.
+[ Info: New ones: 1116
+[ Info: Currently 441134 mates known.
+[ Info: Found 872 new desperate positions.
+[ Info: Currently 497306 desperate positions known.
+
+[ Info: Iteration 21:
+[ Info: Found 3446 mates.
+[ Info: New ones: 1212
+[ Info: Currently 442346 mates known.
+[ Info: Found 1130 new desperate positions.
+[ Info: Currently 498436 desperate positions known.
+
+[ Info: Iteration 22:
+[ Info: Found 4032 mates.
+[ Info: New ones: 1124
+[ Info: Currently 443470 mates known.
+[ Info: Found 860 new desperate positions.
+[ Info: Currently 499296 desperate positions known.
+
+[ Info: Iteration 23:
+[ Info: Found 2974 mates.
+[ Info: New ones: 686
+[ Info: Currently 444156 mates known.
+[ Info: Found 584 new desperate positions.
+[ Info: Currently 499880 desperate positions known.
+
+[ Info: Iteration 24:
+[ Info: Found 1812 mates.
+[ Info: New ones: 288
+[ Info: Currently 444444 mates known.
+[ Info: Found 218 new desperate positions.
+[ Info: Currently 500098 desperate positions known.
+
+[ Info: Iteration 25:
+[ Info: Found 746 mates.
+[ Info: New ones: 128
+[ Info: Currently 444572 mates known.
+[ Info: Found 62 new desperate positions.
+[ Info: Currently 500160 desperate positions known.
+
+[ Info: Iteration 26:
+[ Info: Found 238 mates.
+[ Info: New ones: 38
+[ Info: Currently 444610 mates known.
+[ Info: Found 28 new desperate positions.
+[ Info: Currently 500188 desperate positions known.
+
+[ Info: Iteration 27:
+[ Info: Found 136 mates.
+[ Info: New ones: 14
+[ Info: Currently 444624 mates known.
+[ Info: Found 8 new desperate positions.
+[ Info: Currently 500196 desperate positions known.
+
+[ Info: Iteration 28:
+[ Info: Found 36 mates.
+[ Info: New ones: 6
+[ Info: Currently 444630 mates known.
+[ Info: Found 4 new desperate positions.
+[ Info: Currently 500200 desperate positions known.
+
+[ Info: Iteration 29:
+[ Info: Found 16 mates.
+[ Info: New ones: 0
+[ Info: Currently 444630 mates known.
+[ Info: Found 0 new desperate positions.
+[ Info: Currently 500200 desperate positions known.
+
+1191.028092 seconds (4.22 G allocations: 205.816 GiB, 5.43% gc time)
 =#

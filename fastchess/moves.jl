@@ -13,6 +13,10 @@ function Move(piece::Piece, from::Field, to::Field)
     return Move(piece, tonumber(from), tonumber(to), piece)
 end
 
+function Move(from_piece::Piece, from::Field, to::Field, to_piece::Piece)
+    return Move(from_piece, tonumber(from), tonumber(to), to_piece)
+end
+
 function Move(piece::Piece, from::Int, to::Int)
     return Move(piece, from, to, piece)
 end
