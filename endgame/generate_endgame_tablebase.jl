@@ -1,4 +1,4 @@
-include("../fastchess/chess.jl")
+include("../chess/chess.jl")
 
 include("reverse_moves.jl")
 

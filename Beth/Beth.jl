@@ -1,4 +1,4 @@
-include("../fastchess/chess.jl")
+include("../chess/chess.jl")
 include("evaluation.jl")
 include("../endgame/tablebase.jl")
 include("../opening/opening_book.jl")
