@@ -7,7 +7,7 @@ import JSON: json
 
 using Printf
 
-include("../fastbeth/Beth.jl")
+include("Beth/Beth.jl")
 
 mutable struct Game
     history::Vector{Ply}

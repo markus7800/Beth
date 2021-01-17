@@ -1,0 +1,86 @@
+lost. blundered mate
+
+1. Pd2d4 Ng8f6
+2. Pe2e4 Pe7e6
+3. Bf1d3 Pd7d5
+4. Pe4e5 Nf6d7
+5. Ng1f3 Pc7c5
+6. O-O Nb8c6
+7. Pc2c3 Pc5c4
+8. Bd3e2 Bf8e7
+9. Bc1e3 O-O
+10. Nb1d2 Pb7b5
+11. Pa2a4 Bc8a6
+12. Pa4b5 Ba6b5
+13. Pb2b3 Nd7b6
+14. Pb3c4 Nb6c4
+15. Be2c4 Bb5c4
+16. Nd2c4 Pd5c4
+17. Nf3d2 Qd8d5
+18. Pf2f3 Rf8b8
+19. Pg2g3 Rb8b2
+20. Qd1a4 Nc6e5
+21. Pd4e5 Rb2d2
+22. Be3d2 Qd5d2
+23. Qa4c6 Ra8b8
+24. Qc6c4 Rb8b2
+25. Qc4c8 Be7f8
+26. Qc8f8 Kg8f8
+27. Ra1a7 Qd2h2
+
+
+'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+'rnbqkbnr/pppppppp/8/8/3P4/8/PPP1PPPP/RNBQKBNR b KQkq - 0 1',
+'rnbqkb1r/pppppppp/5n2/8/3P4/8/PPP1PPPP/RNBQKBNR w KQkq - 0 2',
+'rnbqkb1r/pppppppp/5n2/8/3PP3/8/PPP2PPP/RNBQKBNR b KQkq - 0 2',
+'rnbqkb1r/pppp1ppp/4pn2/8/3PP3/8/PPP2PPP/RNBQKBNR w KQkq - 0 3',
+'rnbqkb1r/pppp1ppp/4pn2/8/3PP3/3B4/PPP2PPP/RNBQK1NR b KQkq - 0 3',
+'rnbqkb1r/ppp2ppp/4pn2/3p4/3PP3/3B4/PPP2PPP/RNBQK1NR w KQkq - 0 4',
+'rnbqkb1r/ppp2ppp/4pn2/3pP3/3P4/3B4/PPP2PPP/RNBQK1NR b KQkq - 0 4',
+'rnbqkb1r/pppn1ppp/4p3/3pP3/3P4/3B4/PPP2PPP/RNBQK1NR w KQkq - 0 5',
+'rnbqkb1r/pppn1ppp/4p3/3pP3/3P4/3B1N2/PPP2PPP/RNBQK2R b KQkq - 0 5',
+'rnbqkb1r/pp1n1ppp/4p3/2ppP3/3P4/3B1N2/PPP2PPP/RNBQK2R w KQkq - 0 6',
+'rnbqkb1r/pp1n1ppp/4p3/2ppP3/3P4/3B1N2/PPP2PPP/RNBQ1RK1 b kq - 0 6',
+'r1bqkb1r/pp1n1ppp/2n1p3/2ppP3/3P4/3B1N2/PPP2PPP/RNBQ1RK1 w kq - 0 7',
+'r1bqkb1r/pp1n1ppp/2n1p3/2ppP3/3P4/2PB1N2/PP3PPP/RNBQ1RK1 b kq - 0 7',
+'r1bqkb1r/pp1n1ppp/2n1p3/3pP3/2pP4/2PB1N2/PP3PPP/RNBQ1RK1 w kq - 0 8',
+'r1bqkb1r/pp1n1ppp/2n1p3/3pP3/2pP4/2P2N2/PP2BPPP/RNBQ1RK1 b kq - 0 8',
+'r1bqk2r/pp1nbppp/2n1p3/3pP3/2pP4/2P2N2/PP2BPPP/RNBQ1RK1 w kq - 0 9',
+'r1bqk2r/pp1nbppp/2n1p3/3pP3/2pP4/2P1BN2/PP2BPPP/RN1Q1RK1 b kq - 0 9',
+'r1bq1rk1/pp1nbppp/2n1p3/3pP3/2pP4/2P1BN2/PP2BPPP/RN1Q1RK1 w - - 0 10',
+'r1bq1rk1/pp1nbppp/2n1p3/3pP3/2pP4/2P1BN2/PP1NBPPP/R2Q1RK1 b - - 0 10',
+'r1bq1rk1/p2nbppp/2n1p3/1p1pP3/2pP4/2P1BN2/PP1NBPPP/R2Q1RK1 w - - 0 11',
+'r1bq1rk1/p2nbppp/2n1p3/1p1pP3/P1pP4/2P1BN2/1P1NBPPP/R2Q1RK1 b - - 0 11',
+'r2q1rk1/p2nbppp/b1n1p3/1p1pP3/P1pP4/2P1BN2/1P1NBPPP/R2Q1RK1 w - - 0 12',
+'r2q1rk1/p2nbppp/b1n1p3/1P1pP3/2pP4/2P1BN2/1P1NBPPP/R2Q1RK1 b - - 0 12',
+'r2q1rk1/p2nbppp/2n1p3/1b1pP3/2pP4/2P1BN2/1P1NBPPP/R2Q1RK1 w - - 0 13',
+'r2q1rk1/p2nbppp/2n1p3/1b1pP3/2pP4/1PP1BN2/3NBPPP/R2Q1RK1 b - - 0 13',
+'r2q1rk1/p3bppp/1nn1p3/1b1pP3/2pP4/1PP1BN2/3NBPPP/R2Q1RK1 w - - 0 14',
+'r2q1rk1/p3bppp/1nn1p3/1b1pP3/2PP4/2P1BN2/3NBPPP/R2Q1RK1 b - - 0 14',
+'r2q1rk1/p3bppp/2n1p3/1b1pP3/2nP4/2P1BN2/3NBPPP/R2Q1RK1 w - - 0 15',
+'r2q1rk1/p3bppp/2n1p3/1b1pP3/2BP4/2P1BN2/3N1PPP/R2Q1RK1 b - - 0 15',
+'r2q1rk1/p3bppp/2n1p3/3pP3/2bP4/2P1BN2/3N1PPP/R2Q1RK1 w - - 0 16',
+'r2q1rk1/p3bppp/2n1p3/3pP3/2NP4/2P1BN2/5PPP/R2Q1RK1 b - - 0 16',
+'r2q1rk1/p3bppp/2n1p3/4P3/2pP4/2P1BN2/5PPP/R2Q1RK1 w - - 0 17',
+'r2q1rk1/p3bppp/2n1p3/4P3/2pP4/2P1B3/3N1PPP/R2Q1RK1 b - - 0 17',
+'r4rk1/p3bppp/2n1p3/3qP3/2pP4/2P1B3/3N1PPP/R2Q1RK1 w - - 0 18',
+'r4rk1/p3bppp/2n1p3/3qP3/2pP4/2P1BP2/3N2PP/R2Q1RK1 b - - 0 18',
+'rr4k1/p3bppp/2n1p3/3qP3/2pP4/2P1BP2/3N2PP/R2Q1RK1 w - - 0 19',
+'rr4k1/p3bppp/2n1p3/3qP3/2pP4/2P1BPP1/3N3P/R2Q1RK1 b - - 0 19',
+'r5k1/p3bppp/2n1p3/3qP3/2pP4/2P1BPP1/1r1N3P/R2Q1RK1 w - - 0 20',
+'r5k1/p3bppp/2n1p3/3qP3/Q1pP4/2P1BPP1/1r1N3P/R4RK1 b - - 0 20',
+'r5k1/p3bppp/4p3/3qn3/Q1pP4/2P1BPP1/1r1N3P/R4RK1 w - - 0 21',
+'r5k1/p3bppp/4p3/3qP3/Q1p5/2P1BPP1/1r1N3P/R4RK1 b - - 0 21',
+'r5k1/p3bppp/4p3/3qP3/Q1p5/2P1BPP1/3r3P/R4RK1 w - - 0 22',
+'r5k1/p3bppp/4p3/3qP3/Q1p5/2P2PP1/3B3P/R4RK1 b - - 0 22',
+'r5k1/p3bppp/4p3/4P3/Q1p5/2P2PP1/3q3P/R4RK1 w - - 0 23',
+'r5k1/p3bppp/2Q1p3/4P3/2p5/2P2PP1/3q3P/R4RK1 b - - 0 23',
+'1r4k1/p3bppp/2Q1p3/4P3/2p5/2P2PP1/3q3P/R4RK1 w - - 0 24',
+'1r4k1/p3bppp/4p3/4P3/2Q5/2P2PP1/3q3P/R4RK1 b - - 0 24',
+'6k1/p3bppp/4p3/4P3/2Q5/2P2PP1/1r1q3P/R4RK1 w - - 0 25',
+'2Q3k1/p3bppp/4p3/4P3/8/2P2PP1/1r1q3P/R4RK1 b - - 0 25',
+'2Q2bk1/p4ppp/4p3/4P3/8/2P2PP1/1r1q3P/R4RK1 w - - 0 26',
+'5Qk1/p4ppp/4p3/4P3/8/2P2PP1/1r1q3P/R4RK1 b - - 0 26',
+'5k2/p4ppp/4p3/4P3/8/2P2PP1/1r1q3P/R4RK1 w - - 0 27',
+'5k2/R4ppp/4p3/4P3/8/2P2PP1/1r1q3P/5RK1 b - - 0 27',
+'5k2/R4ppp/4p3/4P3/8/2P2PP1/1r5q/5RK1 w - - 0 28'
