@@ -47,6 +47,22 @@ function perft(board::Board, white::Bool, depth::Int)
     end
 end
 
+function count_nodes(board::Board, white::Bool, depth::Int)
+    ms = get_moves(board, white)
+
+    if depth == 1
+        return length(ms)
+    else
+        nodes = 1
+        for m in ms
+            undo = make_move!(board, white, m)
+            nodes += count_nodes(board, !white, depth-1)
+            undo_move!(board, white, m, undo)
+        end
+        return nodes
+    end
+end
+
 function divide(board::Board, white::Bool, depth::Int)
     println("Divide")
     ms = get_moves(board, white)

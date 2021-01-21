@@ -17,7 +17,7 @@ The command
 > julia play.jl
 ```
 will start a server at `localhost:8000` where you can play against the default engine which takes about 10-20 seconds to move.
-It is on par with chess.com engines of expert level strength.
+It is on par with chess.com engines of advanced to expert level strength.
 For now the search configuration can only be changed un `play.jl`
 
 ### About
@@ -30,7 +30,7 @@ As search function MTD(f) with iterative deepening is used.
 A bit of bookkeeping (close to transposition tables) is done to speed up search.
 At the leaf nodes quiescence search is performed where all capture moves are tried out.
 
-For comparions:  
+For comparison:  
 From `r2qkb1r/1Q3pp1/pN1p3p/3P1P2/3pP3/4n3/PP4PP/1R3RK1 w - -` there are can be 872,389,934 positions reached after six plies which takes me 7.7 seconds to generate.
 AlphaBeta searches 832,634 positions in 1.092s, MTD(f) searches 658,447 positions in 850ms and MTD(f) with iterative deepening searches only 518,774 in 626ms. That's only 0.06 % of all possible positions.
 

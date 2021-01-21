@@ -120,6 +120,18 @@ key_3_men(board, false)
 tb_3_men_lookup(beth.tb_3_men_mates, beth.tb_3_men_desperate_positions, board, true)
 tb_3_men_lookup(beth.tb_3_men_mates, beth.tb_3_men_desperate_positions, board, false)
 
+board = Board()
+set_piece!(board, Field("e2"), true, PAWN)
+set_piece!(board, Field("d3"), true, KING)
+set_piece!(board, Field("e5"), false, KING)
+print_board(board)
+
+key_3_men(board, true)
+key_3_men(board, false)
+
+tb_3_men_lookup(beth.tb_3_men_mates, beth.tb_3_men_desperate_positions, board, true)
+tb_3_men_lookup(beth.tb_3_men_mates, beth.tb_3_men_desperate_positions, board, false)
+
 beth = Beth(
     value_heuristic=evaluation,
     rank_heuristic=rank_moves_by_eval,
@@ -144,7 +156,19 @@ beth = Beth(
 
 beth(board, true)
 
-play_game(board, false, black_player=beth, white_player=beth)
+history = play_game(board, true, black_player=beth, white_player=beth)
+
+function print_fens(history)
+    out = ""
+    for (i,ply) in enumerate(history)
+        n_move = (i-1) ÷ 2 + 1
+        out *= string("'" ,FEN(ply.board, ply.white, n_move), "'")
+        if i < length(history)
+            out *= ",\n"
+        end
+    end
+    println(out)
+end
 
 
 # TODO:
@@ -156,7 +180,15 @@ play_game(board, false, black_player=beth, white_player=beth)
 # razoring
 # todos scathered throughout repo
 # play forced moves immediately
-# penalize early king move to "safety"
+# penalize early king move to "safety", maybe assert development first
+# full opening book?
+# pawn endgame tablebase to avaid wrong simplifications
+# fast principal variation search instead of alphabeta
+# faster move order
+# last position eval used in next guess
+# keep search tree throughout game
+# fix move by rep blunders
+# improve quiesce: rethink not forcing captures
 
 board = Board("3Q4/3b1p1k/3b4/8/8/1Pq1PN2/P4PrP/1K5R w - - 0 37")
 board = Board("8/3b1pk1/3b4/8/7Q/1Pq1PN2/P4PrP/1K5R w - - 2 38")

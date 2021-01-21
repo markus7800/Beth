@@ -40,6 +40,9 @@ using BenchmarkTools
 # 7.694 s (41859037 allocations: 1.25 GiB)
 @btime perft_mem(pz.board, pz.white_to_move, 6)
 
+# 873_377_600
+count_nodes(pz.board, pz.white_to_move, 6)
+
 # ALPHA BETA PRUNING
 
 beth = Beth(
