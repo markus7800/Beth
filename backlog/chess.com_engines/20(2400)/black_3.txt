@@ -1,0 +1,201 @@
+lost. fought hard blundered endgame
+
+1. Pe2e4 Pd7d5
+2. Pe4d5 Qd8d5
+3. Nb1c3 Qd5e6
+4. Bf1e2 Qe6g6
+5. Ng1f3 Qg6g2
+6. Rh1g1 Qg2h3
+7. Pd2d4 Pe7e6
+8. Nc3b5 Nb8a6
+9. Bc1f4 Pc7c6
+10. Nb5d6 Bf8d6
+11. Bf4d6 Qh3h6
+12. Qd1d2 Qh6d2
+13. Nf3d2 Ng8h6
+14. Be2d3 Nh6f5
+15. Bd3f5 Pe6f5
+16. Rg1g7 Bc8e6
+17. Pc2c3 O-O-O
+18. Bd6f4 Rd8g8
+19. Rg7g8 Rh8g8
+20. Ke1e2 Pf7f6
+21. Ph2h3 Ph7h5
+22. Pa2a4 Be6d5
+23. Ke2e3 Bd5g2
+24. Ph3h4 Rg8e8
+25. Ke3d3 Bg2e4
+26. Nd2e4 Re8e4
+27. Bf4g3 Re4g4
+28. Kd3e3 Na6c7
+29. Bg3d6 Rg4h4
+30. Ra1g1 Nc7d5
+31. Ke3f3 Rh4g4
+32. Rg1g4 Pf5g4
+33. Kf3g3 Kc8d7
+34. Bd6b8 Kd7c8
+35. Bb8a7 Kc8c7
+36. Pc3c4 Nd5b4
+37. Pa4a5 Nb4d3
+38. Ba7b6 Kc7d6
+39. Pb2b3 Kd6e6
+40. Bb6d8 Nd3c1
+41. Pb3b4 Nc1e2
+42. Kg3h4 Ne2d4
+43. Kh4h5 Pf6f5
+44. Bd8c7 Nd4c2
+45. Pb4b5 Nc2b4
+46. Pa5a6 Pb7a6
+47. Pb5b6 Ke6d7
+48. Kh5g5 Nb4d3
+49. Kg5f5 Pc6c5
+50. Kf5e4 Nd3f2
+51. Ke4d5 Nf2d3
+52. Bc7d6 Nd3b4
+53. Kd5c5 Pg4g3
+54. Bd6g3 Nb4d3
+55. Kc5d4 Nd3b4
+56. Pb6b7 Nb4c6
+57. Kd4c5 Nc6d8
+58. Pb7b8Q Nd8e6
+59. Kc5d5 Ne6d4
+60. Kd5d4 Kd7e7
+61. Pc4c5 Pa6a5
+62. Pc5c6 Pa5a4
+63. Pc6c7 Pa4a3
+64. Pc7c8Q Pa3a2
+65. Qc8f8 Ke7e6
+66. Qb8d6
+
+'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+'rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1',
+'rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2',
+'rnbqkbnr/ppp1pppp/8/3P4/8/8/PPPP1PPP/RNBQKBNR b KQkq - 0 2',
+'rnb1kbnr/ppp1pppp/8/3q4/8/8/PPPP1PPP/RNBQKBNR w KQkq - 0 3',
+'rnb1kbnr/ppp1pppp/8/3q4/8/2N5/PPPP1PPP/R1BQKBNR b KQkq - 0 3',
+'rnb1kbnr/ppp1pppp/4q3/8/8/2N5/PPPP1PPP/R1BQKBNR w KQkq - 0 4',
+'rnb1kbnr/ppp1pppp/4q3/8/8/2N5/PPPPBPPP/R1BQK1NR b KQkq - 0 4',
+'rnb1kbnr/ppp1pppp/6q1/8/8/2N5/PPPPBPPP/R1BQK1NR w KQkq - 0 5',
+'rnb1kbnr/ppp1pppp/6q1/8/8/2N2N2/PPPPBPPP/R1BQK2R b KQkq - 0 5',
+'rnb1kbnr/ppp1pppp/8/8/8/2N2N2/PPPPBPqP/R1BQK2R w KQkq - 0 6',
+'rnb1kbnr/ppp1pppp/8/8/8/2N2N2/PPPPBPqP/R1BQK1R1 b Qkq - 0 6',
+'rnb1kbnr/ppp1pppp/8/8/8/2N2N1q/PPPPBP1P/R1BQK1R1 w Qkq - 0 7',
+'rnb1kbnr/ppp1pppp/8/8/3P4/2N2N1q/PPP1BP1P/R1BQK1R1 b Qkq - 0 7',
+'rnb1kbnr/ppp2ppp/4p3/8/3P4/2N2N1q/PPP1BP1P/R1BQK1R1 w Qkq - 0 8',
+'rnb1kbnr/ppp2ppp/4p3/1N6/3P4/5N1q/PPP1BP1P/R1BQK1R1 b Qkq - 0 8',
+'r1b1kbnr/ppp2ppp/n3p3/1N6/3P4/5N1q/PPP1BP1P/R1BQK1R1 w Qkq - 0 9',
+'r1b1kbnr/ppp2ppp/n3p3/1N6/3P1B2/5N1q/PPP1BP1P/R2QK1R1 b Qkq - 0 9',
+'r1b1kbnr/pp3ppp/n1p1p3/1N6/3P1B2/5N1q/PPP1BP1P/R2QK1R1 w Qkq - 0 10',
+'r1b1kbnr/pp3ppp/n1pNp3/8/3P1B2/5N1q/PPP1BP1P/R2QK1R1 b Qkq - 0 10',
+'r1b1k1nr/pp3ppp/n1pbp3/8/3P1B2/5N1q/PPP1BP1P/R2QK1R1 w Qkq - 0 11',
+'r1b1k1nr/pp3ppp/n1pBp3/8/3P4/5N1q/PPP1BP1P/R2QK1R1 b Qkq - 0 11',
+'r1b1k1nr/pp3ppp/n1pBp2q/8/3P4/5N2/PPP1BP1P/R2QK1R1 w Qkq - 0 12',
+'r1b1k1nr/pp3ppp/n1pBp2q/8/3P4/5N2/PPPQBP1P/R3K1R1 b Qkq - 0 12',
+'r1b1k1nr/pp3ppp/n1pBp3/8/3P4/5N2/PPPqBP1P/R3K1R1 w Qkq - 0 13',
+'r1b1k1nr/pp3ppp/n1pBp3/8/3P4/8/PPPNBP1P/R3K1R1 b Qkq - 0 13',
+'r1b1k2r/pp3ppp/n1pBp2n/8/3P4/8/PPPNBP1P/R3K1R1 w Qkq - 0 14',
+'r1b1k2r/pp3ppp/n1pBp2n/8/3P4/3B4/PPPN1P1P/R3K1R1 b Qkq - 0 14',
+'r1b1k2r/pp3ppp/n1pBp3/5n2/3P4/3B4/PPPN1P1P/R3K1R1 w Qkq - 0 15',
+'r1b1k2r/pp3ppp/n1pBp3/5B2/3P4/8/PPPN1P1P/R3K1R1 b Qkq - 0 15',
+'r1b1k2r/pp3ppp/n1pB4/5p2/3P4/8/PPPN1P1P/R3K1R1 w Qkq - 0 16',
+'r1b1k2r/pp3pRp/n1pB4/5p2/3P4/8/PPPN1P1P/R3K3 b Qkq - 0 16',
+'r3k2r/pp3pRp/n1pBb3/5p2/3P4/8/PPPN1P1P/R3K3 w Qkq - 0 17',
+'r3k2r/pp3pRp/n1pBb3/5p2/3P4/2P5/PP1N1P1P/R3K3 b Qkq - 0 17',
+'2kr3r/pp3pRp/n1pBb3/5p2/3P4/2P5/PP1N1P1P/R3K3 w Q - 0 18',
+'2kr3r/pp3pRp/n1p1b3/5p2/3P1B2/2P5/PP1N1P1P/R3K3 b Q - 0 18',
+'2k3rr/pp3pRp/n1p1b3/5p2/3P1B2/2P5/PP1N1P1P/R3K3 w Q - 0 19',
+'2k3Rr/pp3p1p/n1p1b3/5p2/3P1B2/2P5/PP1N1P1P/R3K3 b Q - 0 19',
+'2k3r1/pp3p1p/n1p1b3/5p2/3P1B2/2P5/PP1N1P1P/R3K3 w Q - 0 20',
+'2k3r1/pp3p1p/n1p1b3/5p2/3P1B2/2P5/PP1NKP1P/R7 b - - 0 20',
+'2k3r1/pp5p/n1p1bp2/5p2/3P1B2/2P5/PP1NKP1P/R7 w - - 0 21',
+'2k3r1/pp5p/n1p1bp2/5p2/3P1B2/2P4P/PP1NKP2/R7 b - - 0 21',
+'2k3r1/pp6/n1p1bp2/5p1p/3P1B2/2P4P/PP1NKP2/R7 w - - 0 22',
+'2k3r1/pp6/n1p1bp2/5p1p/P2P1B2/2P4P/1P1NKP2/R7 b - - 0 22',
+'2k3r1/pp6/n1p2p2/3b1p1p/P2P1B2/2P4P/1P1NKP2/R7 w - - 0 23',
+'2k3r1/pp6/n1p2p2/3b1p1p/P2P1B2/2P1K2P/1P1N1P2/R7 b - - 0 23',
+'2k3r1/pp6/n1p2p2/5p1p/P2P1B2/2P1K2P/1P1N1Pb1/R7 w - - 0 24',
+'2k3r1/pp6/n1p2p2/5p1p/P2P1B1P/2P1K3/1P1N1Pb1/R7 b - - 0 24',
+'2k1r3/pp6/n1p2p2/5p1p/P2P1B1P/2P1K3/1P1N1Pb1/R7 w - - 0 25',
+'2k1r3/pp6/n1p2p2/5p1p/P2P1B1P/2PK4/1P1N1Pb1/R7 b - - 0 25',
+'2k1r3/pp6/n1p2p2/5p1p/P2PbB1P/2PK4/1P1N1P2/R7 w - - 0 26',
+'2k1r3/pp6/n1p2p2/5p1p/P2PNB1P/2PK4/1P3P2/R7 b - - 0 26',
+'2k5/pp6/n1p2p2/5p1p/P2PrB1P/2PK4/1P3P2/R7 w - - 0 27',
+'2k5/pp6/n1p2p2/5p1p/P2Pr2P/2PK2B1/1P3P2/R7 b - - 0 27',
+'2k5/pp6/n1p2p2/5p1p/P2P2rP/2PK2B1/1P3P2/R7 w - - 0 28',
+'2k5/pp6/n1p2p2/5p1p/P2P2rP/2P1K1B1/1P3P2/R7 b - - 0 28',
+'2k5/ppn5/2p2p2/5p1p/P2P2rP/2P1K1B1/1P3P2/R7 w - - 0 29',
+'2k5/ppn5/2pB1p2/5p1p/P2P2rP/2P1K3/1P3P2/R7 b - - 0 29',
+'2k5/ppn5/2pB1p2/5p1p/P2P3r/2P1K3/1P3P2/R7 w - - 0 30',
+'2k5/ppn5/2pB1p2/5p1p/P2P3r/2P1K3/1P3P2/6R1 b - - 0 30',
+'2k5/pp6/2pB1p2/3n1p1p/P2P3r/2P1K3/1P3P2/6R1 w - - 0 31',
+'2k5/pp6/2pB1p2/3n1p1p/P2P3r/2P2K2/1P3P2/6R1 b - - 0 31',
+'2k5/pp6/2pB1p2/3n1p1p/P2P2r1/2P2K2/1P3P2/6R1 w - - 0 32',
+'2k5/pp6/2pB1p2/3n1p1p/P2P2R1/2P2K2/1P3P2/8 b - - 0 32',
+'2k5/pp6/2pB1p2/3n3p/P2P2p1/2P2K2/1P3P2/8 w - - 0 33',
+'2k5/pp6/2pB1p2/3n3p/P2P2p1/2P3K1/1P3P2/8 b - - 0 33',
+'8/pp1k4/2pB1p2/3n3p/P2P2p1/2P3K1/1P3P2/8 w - - 0 34',
+'1B6/pp1k4/2p2p2/3n3p/P2P2p1/2P3K1/1P3P2/8 b - - 0 34',
+'1Bk5/pp6/2p2p2/3n3p/P2P2p1/2P3K1/1P3P2/8 w - - 0 35',
+'2k5/Bp6/2p2p2/3n3p/P2P2p1/2P3K1/1P3P2/8 b - - 0 35',
+'8/Bpk5/2p2p2/3n3p/P2P2p1/2P3K1/1P3P2/8 w - - 0 36',
+'8/Bpk5/2p2p2/3n3p/P1PP2p1/6K1/1P3P2/8 b - - 0 36',
+'8/Bpk5/2p2p2/7p/PnPP2p1/6K1/1P3P2/8 w - - 0 37',
+'8/Bpk5/2p2p2/P6p/1nPP2p1/6K1/1P3P2/8 b - - 0 37',
+'8/Bpk5/2p2p2/P6p/2PP2p1/3n2K1/1P3P2/8 w - - 0 38',
+'8/1pk5/1Bp2p2/P6p/2PP2p1/3n2K1/1P3P2/8 b - - 0 38',
+'8/1p6/1Bpk1p2/P6p/2PP2p1/3n2K1/1P3P2/8 w - - 0 39',
+'8/1p6/1Bpk1p2/P6p/2PP2p1/1P1n2K1/5P2/8 b - - 0 39',
+'8/1p6/1Bp1kp2/P6p/2PP2p1/1P1n2K1/5P2/8 w - - 0 40',
+'3B4/1p6/2p1kp2/P6p/2PP2p1/1P1n2K1/5P2/8 b - - 0 40',
+'3B4/1p6/2p1kp2/P6p/2PP2p1/1P4K1/5P2/2n5 w - - 0 41',
+'3B4/1p6/2p1kp2/P6p/1PPP2p1/6K1/5P2/2n5 b - - 0 41',
+'3B4/1p6/2p1kp2/P6p/1PPP2p1/6K1/4nP2/8 w - - 0 42',
+'3B4/1p6/2p1kp2/P6p/1PPP2pK/8/4nP2/8 b - - 0 42',
+'3B4/1p6/2p1kp2/P6p/1PPn2pK/8/5P2/8 w - - 0 43',
+'3B4/1p6/2p1kp2/P6K/1PPn2p1/8/5P2/8 b - - 0 43',
+'3B4/1p6/2p1k3/P4p1K/1PPn2p1/8/5P2/8 w - - 0 44',
+'8/1pB5/2p1k3/P4p1K/1PPn2p1/8/5P2/8 b - - 0 44',
+'8/1pB5/2p1k3/P4p1K/1PP3p1/8/2n2P2/8 w - - 0 45',
+'8/1pB5/2p1k3/PP3p1K/2P3p1/8/2n2P2/8 b - - 0 45',
+'8/1pB5/2p1k3/PP3p1K/1nP3p1/8/5P2/8 w - - 0 46',
+'8/1pB5/P1p1k3/1P3p1K/1nP3p1/8/5P2/8 b - - 0 46',
+'8/2B5/p1p1k3/1P3p1K/1nP3p1/8/5P2/8 w - - 0 47',
+'8/2B5/pPp1k3/5p1K/1nP3p1/8/5P2/8 b - - 0 47',
+'8/2Bk4/pPp5/5p1K/1nP3p1/8/5P2/8 w - - 0 48',
+'8/2Bk4/pPp5/5pK1/1nP3p1/8/5P2/8 b - - 0 48',
+'8/2Bk4/pPp5/5pK1/2P3p1/3n4/5P2/8 w - - 0 49',
+'8/2Bk4/pPp5/5K2/2P3p1/3n4/5P2/8 b - - 0 49',
+'8/2Bk4/pP6/2p2K2/2P3p1/3n4/5P2/8 w - - 0 50',
+'8/2Bk4/pP6/2p5/2P1K1p1/3n4/5P2/8 b - - 0 50',
+'8/2Bk4/pP6/2p5/2P1K1p1/8/5n2/8 w - - 0 51',
+'8/2Bk4/pP6/2pK4/2P3p1/8/5n2/8 b - - 0 51',
+'8/2Bk4/pP6/2pK4/2P3p1/3n4/8/8 w - - 0 52',
+'8/3k4/pP1B4/2pK4/2P3p1/3n4/8/8 b - - 0 52',
+'8/3k4/pP1B4/2pK4/1nP3p1/8/8/8 w - - 0 53',
+'8/3k4/pP1B4/2K5/1nP3p1/8/8/8 b - - 0 53',
+'8/3k4/pP1B4/2K5/1nP5/6p1/8/8 w - - 0 54',
+'8/3k4/pP6/2K5/1nP5/6B1/8/8 b - - 0 54',
+'8/3k4/pP6/2K5/2P5/3n2B1/8/8 w - - 0 55',
+'8/3k4/pP6/8/2PK4/3n2B1/8/8 b - - 0 55',
+'8/3k4/pP6/8/1nPK4/6B1/8/8 w - - 0 56',
+'8/1P1k4/p7/8/1nPK4/6B1/8/8 b - - 0 56',
+'8/1P1k4/p1n5/8/2PK4/6B1/8/8 w - - 0 57',
+'8/1P1k4/p1n5/2K5/2P5/6B1/8/8 b - - 0 57',
+'3n4/1P1k4/p7/2K5/2P5/6B1/8/8 w - - 0 58',
+'1Q1n4/3k4/p7/2K5/2P5/6B1/8/8 b - - 0 58',
+'1Q6/3k4/p3n3/2K5/2P5/6B1/8/8 w - - 0 59',
+'1Q6/3k4/p3n3/3K4/2P5/6B1/8/8 b - - 0 59',
+'1Q6/3k4/p7/3K4/2Pn4/6B1/8/8 w - - 0 60',
+'1Q6/3k4/p7/8/2PK4/6B1/8/8 b - - 0 60',
+'1Q6/4k3/p7/8/2PK4/6B1/8/8 w - - 0 61',
+'1Q6/4k3/p7/2P5/3K4/6B1/8/8 b - - 0 61',
+'1Q6/4k3/8/p1P5/3K4/6B1/8/8 w - - 0 62',
+'1Q6/4k3/2P5/p7/3K4/6B1/8/8 b - - 0 62',
+'1Q6/4k3/2P5/8/p2K4/6B1/8/8 w - - 0 63',
+'1Q6/2P1k3/8/8/p2K4/6B1/8/8 b - - 0 63',
+'1Q6/2P1k3/8/8/3K4/p5B1/8/8 w - - 0 64',
+'1QQ5/4k3/8/8/3K4/p5B1/8/8 b - - 0 64',
+'1QQ5/4k3/8/8/3K4/6B1/p7/8 w - - 0 65',
+'1Q3Q2/4k3/8/8/3K4/6B1/p7/8 b - - 0 65',
+'1Q3Q2/8/4k3/8/3K4/6B1/p7/8 w - - 0 66',
+'5Q2/8/3Qk3/8/3K4/6B1/p7/8 b - - 0 66'
