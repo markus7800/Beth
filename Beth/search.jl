@@ -329,7 +329,7 @@ function MTDF(beth::Beth; depth::Int, do_quiesce::Bool, quiesce_depth::Int, verb
         end
         if verbose
             best_move = root.children[root.best_child_index].move
-            @info(@sprintf "\tmove: %s, value: %.2f, alpha: %.2f, beta: %.2f, lower: %.2f, upper: %.2f" best_move value/100 β-1/100 β/100 lower/100 upper/100)
+            @info(@sprintf "\tmove: %s, value: %.2f, alpha: %.2f, beta: %.2f, lower: %.2f, upper: %.2f" best_move value/100 (β-1)/100 β/100 lower/100 upper/100)
         end
 
         if lower ≥ upper
@@ -348,7 +348,7 @@ function MTDF(beth::Beth; depth::Int, do_quiesce::Bool, quiesce_depth::Int, verb
             q_perc = beth.n_quiesce_nodes/beth.n_explored_nodes*100
             @info(@sprintf "%d quiesce nodes (%.2f%%), %d/%d depth reached" beth.n_quiesce_nodes q_perc beth.max_quiesce_depth quiesce_depth)
         end
-        @info(@sprintf "number of tree nodes: %d (%.2f MB)" count_nodes(root) Base.summarysize(root) / 10^6)
+        # @info(@sprintf "number of tree nodes: %d (%.2f MB)" count_nodes(root) Base.summarysize(root) / 10^6)
     end
 
     return value, root.children[root.best_child_index].move, finished

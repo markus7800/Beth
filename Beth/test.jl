@@ -195,3 +195,18 @@ board = Board("8/3b1pk1/3b4/8/7Q/1Pq1PN2/P4PrP/1K5R w - - 2 38")
 board = Board("8/3b1pk1/3b4/8/3Q4/1Pq1PN2/P4PrP/1K5R b - - 3 38")
 
 beth(board, true)
+
+
+board = Board("r3k1r1/5b2/2pQqb1p/p1B2p2/P3p3/5B2/5PPP/3RR1K1 w - - 0 1")
+
+beth = Beth(
+    value_heuristic=evaluation,
+    rank_heuristic=rank_moves_by_eval,
+    search_algorithm=IterativeMTDF,
+    search_args=Dict(
+        "max_depth" => 20,
+        "do_quiesce" => false,
+        "verbose" => 3
+    ))
+
+beth(board, true)
