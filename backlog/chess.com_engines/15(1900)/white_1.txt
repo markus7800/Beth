@@ -1,4 +1,6 @@
-lost. blundered mate
+Result: lost.
+
+blundered mate
 
 1. Pd2d4 Ng8f6
 2. Pe2e4 Pe7e6

@@ -1,4 +1,4 @@
-won.
+Result: won.
 
 make precise queen moves until opponent breaks. then sac queen
 

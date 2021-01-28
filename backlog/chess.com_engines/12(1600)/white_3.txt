@@ -1,3 +1,5 @@
+Result: won.
+
 1. Pd2d4 Ng8f6
 2. Pe2e4 Pd7d5
 3. Pe4d5 Nf6d5

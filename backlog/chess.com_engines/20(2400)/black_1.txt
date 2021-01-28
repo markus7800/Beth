@@ -1,4 +1,6 @@
-won. I dont care, make your queen.
+Result: won.
+
+I dont care, make your queen.
 
 1. Ng1f3 Pe7e5
 2. Nf3e5 Ng8f6

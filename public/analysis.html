@@ -1,0 +1,117 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <title>Explore Beth</title>
+  <link rel="stylesheet"
+      href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css"
+      integrity="sha384-q94+BZtLrkL1/ohfjR8c6L+A6qzNH9R2hBLwyoAfu3i/WCvQjzL2RQJ3uNHDISdU"
+      crossorigin="anonymous">
+  <link rel="stylesheet" type="text/css" href="style.css">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+  <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"
+        integrity="sha384-8Vi8VHwn3vjQ9eUHUxex3JSN/NFqUg3QbPyX8kWyb93+8AC/pPWTzj+nHtbC5bxD"
+        crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="main">
+  <div id="myBoard" style="width: 600px"></div>
+  <div id="button_div">
+    <button onclick="undo()" id="undo">Undo</button>
+    <button onclick="flip()" id="flip">Flip</button>
+  </div>
+  <div id="button_div">
+    <input type="text" style="width:400px" id="fen_input">
+    <button onclick="loadFen()">Load FEN</button>
+    </div>
+  </div>
+  <p id="message"></p>
+<script>
+
+var board = Chessboard('myBoard', {
+  draggable: true,
+  moveSpeed: 'medium',
+  snapbackSpeed: 500,
+  snapSpeed: 100,
+  position: 'start',
+  pieceTheme: 'img/chesspieces/wikipedia/{piece}.png',
+  onDrop: onDrop
+})
+
+onDrop("a1", "a1", 'x')
+
+
+function onDrop(source, target, piece) {
+  $( "#message" ).text("")
+
+  var promotion = piece.toLowerCase().charAt(1) == 'p' && (parseInt(target.charAt(1)) == 8 || parseInt(target.charAt(1)) == 1);
+  console.log(source, target, piece, promotion)
+  board.draggable = false
+  $( "#message" ).text("")
+
+  $.get('/move', {'from': source, 'to': target, 'promotion': promotion}, function(response) {
+    r = JSON.parse(response)
+    console.log(r.fen)
+    console.log(r.message)
+    board.position(r.fen)
+    board.draggable = true
+    $( "#message" ).text(r.message)
+  });
+}
+
+function flip() {
+  $( "#message" ).text("")
+  console.log("current orientation", board.orientation())
+  white = board.orientation() == 'white'
+  if (!white) {
+    board.orientation('white')
+  } else {
+    board.draggable = false
+    board.orientation('black')
+  }
+
+  $.get('/flip', {'white': !white}, function(response) {
+    r = JSON.parse(response)
+    console.log(r.fen)
+    console.log(r.message)
+    board.position(r.fen)
+    board.draggable = true
+    $( "#message" ).text(r.message)
+  });
+}
+
+function undo() {
+  $( "#message" ).text("")
+  console.log("undo")
+
+  $.get('/undo', function(response) {
+    r = JSON.parse(response)
+    console.log(r.fen)
+    console.log(r.message)
+    board.position(r.fen)
+    board.draggable = true
+    $( "#message" ).text(r.message)
+  });
+}
+
+function loadFen() {
+  console.log("load fen")
+  fen = $( "#fen_input" ).val()
+  console.log(fen);
+  $.get('/load', {'fen': fen}, function(response) {
+    r = JSON.parse(response)
+    console.log(r.fen)
+    console.log(r.message)
+    board.position(r.fen)
+    board.draggable = true
+    $( "#message" ).text(r.message)
+  });
+}
+
+
+</script>
+</body>
+</html>

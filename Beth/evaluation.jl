@@ -134,7 +134,7 @@ function evaluation(board::Board, white::Bool; check_value::Int=0, no_moves::Boo
 
     # king endgame
     if white
-        if black_piece_count - black_n_pawns == 0
+        if black_piece_count - black_n_pawns == 0 # TODO check if white has pieces
             if white_piece_count ≤ 1 && count_pieces((board.rooks | board.queens) & board.whites) == 0
                 return 0 # theoretical draw
             end

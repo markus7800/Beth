@@ -1,4 +1,5 @@
-won. finding KRK checkmate on the fly
+Result: won.
+finding KRK checkmate on the fly
 
 1. Pd2d4 Pd7d5
 2. Pc2c4 Pd5c4

@@ -1,4 +1,6 @@
-lost crazy game
+Result: lost.
+
+ crazy game
 
 1. Pd2d4 Pd7d5
 2. Pc2c4 Pd5c4

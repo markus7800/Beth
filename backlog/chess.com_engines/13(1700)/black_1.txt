@@ -1,4 +1,6 @@
-won comeback from rook down
+Result: won.
+
+comeback from rook down
 TODO: debug draw by rep
 
 1. c4 Nf6

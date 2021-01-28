@@ -189,6 +189,7 @@ end
 # keep search tree throughout game
 # fix move by rep blunders
 # improve quiesce: rethink not forcing captures
+# move white into board
 
 board = Board("3Q4/3b1p1k/3b4/8/8/1Pq1PN2/P4PrP/1K5R w - - 0 37")
 board = Board("8/3b1pk1/3b4/8/7Q/1Pq1PN2/P4PrP/1K5R w - - 2 38")

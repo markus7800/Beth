@@ -1,0 +1,50 @@
+Result: lost.
+
+completely blundered
+
+1. Pc2c4 Ng8f6
+2. Nb1c3 Pe7e6
+3. Ng1f3 Bf8b4
+4. Qd1c2 O-O
+5. Pa2a3 Bb4c3
+6. Pd2c3 Pd7d5
+7. Bc1g5 Pd5c4
+8. Ra1d1 Bc8d7
+9. Pe2e4 Pb7b5
+10. Pe4e5 Ph7h6
+11. Bg5h4 Pc7c6
+12. Pe5f6 Pg7g5
+13. Bh4g5 Ph6g5
+14. Nf3g5 Qd8f6
+15. Qc2h7
+
+'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+'rnbqkbnr/pppppppp/8/8/2P5/8/PP1PPPPP/RNBQKBNR b KQkq - 0 1',
+'rnbqkb1r/pppppppp/5n2/8/2P5/8/PP1PPPPP/RNBQKBNR w KQkq - 0 2',
+'rnbqkb1r/pppppppp/5n2/8/2P5/2N5/PP1PPPPP/R1BQKBNR b KQkq - 0 2',
+'rnbqkb1r/pppp1ppp/4pn2/8/2P5/2N5/PP1PPPPP/R1BQKBNR w KQkq - 0 3',
+'rnbqkb1r/pppp1ppp/4pn2/8/2P5/2N2N2/PP1PPPPP/R1BQKB1R b KQkq - 0 3',
+'rnbqk2r/pppp1ppp/4pn2/8/1bP5/2N2N2/PP1PPPPP/R1BQKB1R w KQkq - 0 4',
+'rnbqk2r/pppp1ppp/4pn2/8/1bP5/2N2N2/PPQPPPPP/R1B1KB1R b KQkq - 0 4',
+'rnbq1rk1/pppp1ppp/4pn2/8/1bP5/2N2N2/PPQPPPPP/R1B1KB1R w KQ - 0 5',
+'rnbq1rk1/pppp1ppp/4pn2/8/1bP5/P1N2N2/1PQPPPPP/R1B1KB1R b KQ - 0 5',
+'rnbq1rk1/pppp1ppp/4pn2/8/2P5/P1b2N2/1PQPPPPP/R1B1KB1R w KQ - 0 6',
+'rnbq1rk1/pppp1ppp/4pn2/8/2P5/P1P2N2/1PQ1PPPP/R1B1KB1R b KQ - 0 6',
+'rnbq1rk1/ppp2ppp/4pn2/3p4/2P5/P1P2N2/1PQ1PPPP/R1B1KB1R w KQ - 0 7',
+'rnbq1rk1/ppp2ppp/4pn2/3p2B1/2P5/P1P2N2/1PQ1PPPP/R3KB1R b KQ - 0 7',
+'rnbq1rk1/ppp2ppp/4pn2/6B1/2p5/P1P2N2/1PQ1PPPP/R3KB1R w KQ - 0 8',
+'rnbq1rk1/ppp2ppp/4pn2/6B1/2p5/P1P2N2/1PQ1PPPP/3RKB1R b K - 0 8',
+'rn1q1rk1/pppb1ppp/4pn2/6B1/2p5/P1P2N2/1PQ1PPPP/3RKB1R w K - 0 9',
+'rn1q1rk1/pppb1ppp/4pn2/6B1/2p1P3/P1P2N2/1PQ2PPP/3RKB1R b K - 0 9',
+'rn1q1rk1/p1pb1ppp/4pn2/1p4B1/2p1P3/P1P2N2/1PQ2PPP/3RKB1R w K - 0 10',
+'rn1q1rk1/p1pb1ppp/4pn2/1p2P1B1/2p5/P1P2N2/1PQ2PPP/3RKB1R b K - 0 10',
+'rn1q1rk1/p1pb1pp1/4pn1p/1p2P1B1/2p5/P1P2N2/1PQ2PPP/3RKB1R w K - 0 11',
+'rn1q1rk1/p1pb1pp1/4pn1p/1p2P3/2p4B/P1P2N2/1PQ2PPP/3RKB1R b K - 0 11',
+'rn1q1rk1/p2b1pp1/2p1pn1p/1p2P3/2p4B/P1P2N2/1PQ2PPP/3RKB1R w K - 0 12',
+'rn1q1rk1/p2b1pp1/2p1pP1p/1p6/2p4B/P1P2N2/1PQ2PPP/3RKB1R b K - 0 12',
+'rn1q1rk1/p2b1p2/2p1pP1p/1p4p1/2p4B/P1P2N2/1PQ2PPP/3RKB1R w K - 0 13',
+'rn1q1rk1/p2b1p2/2p1pP1p/1p4B1/2p5/P1P2N2/1PQ2PPP/3RKB1R b K - 0 13',
+'rn1q1rk1/p2b1p2/2p1pP2/1p4p1/2p5/P1P2N2/1PQ2PPP/3RKB1R w K - 0 14',
+'rn1q1rk1/p2b1p2/2p1pP2/1p4N1/2p5/P1P5/1PQ2PPP/3RKB1R b K - 0 14',
+'rn3rk1/p2b1p2/2p1pq2/1p4N1/2p5/P1P5/1PQ2PPP/3RKB1R w K - 0 15',
+'rn3rk1/p2b1p1Q/2p1pq2/1p4N1/2p5/P1P5/1P3PPP/3RKB1R b K - 0 15'

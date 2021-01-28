@@ -22,6 +22,8 @@ For now the search configuration can only be changed un `play.jl`
 
 ### About
 
+For a detailed description see my [blog post](https://markus7800.github.io/blog/AI/chess_engine.html).
+
 Move generation and board logic can be found in the `chess` folder.
 It can generate up to 100 million board positions per second on a Intel i5@3.5GHz single threaded.
 At its core eight unsigned 64-bit integer represent the board with additional flags for en-passant and castling rights.

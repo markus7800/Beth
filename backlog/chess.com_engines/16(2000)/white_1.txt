@@ -1,4 +1,6 @@
-won. promotion endgame, simplification to KRK 3-men
+Result: won.
+
+promotion endgame, simplification to KRK 3-men
 
 1. Pd2d4 Ng8f6
 2. Pe2e4 Nf6e4

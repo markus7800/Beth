@@ -1,4 +1,6 @@
-won. recovered from opening king blunder
+Result: won.
+
+recovered from opening king blunder
 
 1. Pd2d4 Pd7d5
 2. Pc2c4 Pc7c6

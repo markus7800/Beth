@@ -1,4 +1,5 @@
-won.
+Result: won.
+
 Almost blundered mate. Nice comeback in midgame.
 Blundered simplification. Opponent blundered KQK+ win
 TODO: debug endgame eval with this
