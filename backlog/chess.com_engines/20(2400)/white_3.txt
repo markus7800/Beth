@@ -1,4 +1,5 @@
-lost
+Result: lost.
+
 TODO: sacs pieces even though did not see mate yet
 
 1. Pd2d4 Pb7b6

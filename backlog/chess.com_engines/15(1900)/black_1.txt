@@ -1,4 +1,6 @@
-won. simplification to 3-men
+Result: won.
+
+simplification to 3-men
 
 1. Pe2e4 Pd7d5
 2. Pe4d5 Qd8d5

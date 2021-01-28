@@ -1,4 +1,6 @@
-draw krkn endgame
+Result: draw.
+
+ krkn endgame
 
 1. Pd2d4 Pg7g6
 2. Pe2e4 Bf8g7

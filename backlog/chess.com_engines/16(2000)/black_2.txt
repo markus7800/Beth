@@ -1,4 +1,5 @@
-won
+Result: won.
+
 knight and rook sac mate
 
 1. Pe2e4 Pd7d5

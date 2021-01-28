@@ -1,4 +1,4 @@
-lost
+Result: lost.
 
 1. Pd2d4 Pd7d5
 2. Pc2c4 Pe7e6

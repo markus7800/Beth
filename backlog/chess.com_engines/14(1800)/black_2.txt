@@ -1,4 +1,4 @@
-won
+Result: won.
 
 1. Pd2d4 Pd7d5
 2. Bc1f4 Pe7e6

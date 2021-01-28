@@ -1,3 +1,5 @@
+Result: won.
+
 1. Nf3 e5
 2. d4 e4
 3. Ne5 d6
