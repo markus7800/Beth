@@ -83,7 +83,7 @@ function play_puzzle(puzzle::Puzzle, player=user_input)
         print_board(board, white=white)
         println()
 
-        m = player(board, white)
+        m,  = player(board, white)
         if m == "abort"
             return false
         end
@@ -106,7 +106,7 @@ function play_puzzle(puzzle::Puzzle, player=user_input)
             @info "Move was correct!"
             make_move!(board, white, m)
         else
-            @info "Puzzle failed! (Difficulty: $(puzzle.difficulty))"
+            @info "Puzzle failed! (Difficulty: $(puzzle.difficulty), played: $m, correct$(m´))"
             return false
         end
 

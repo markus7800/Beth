@@ -91,8 +91,10 @@ beth = Beth(
 @time beth(pz.board, pz.white_to_move)
 
 puzzle_rush(rush_20_12_31, beth, print_solution=true)
+puzzle_rush(rush_21_02_02, beth, print_solution=true)
 
 play_puzzle(rush_20_12_31[13], beth)
+
 
 play_game(black_player=user_input, white_player=beth)
 
