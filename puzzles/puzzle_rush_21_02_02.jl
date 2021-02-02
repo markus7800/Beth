@@ -51,8 +51,8 @@ push!(rush_21_02_02, puzzle)
 
 puzzle = PuzzleFEN(
     FEN="3r2k1/p4p1p/1p6/1Q6/2p5/2P2nP1/P3q2P/2B2RK1 w - - 0 1",
-    solution="Qh2",
-    firstmove="Kh1",
+    solution="Rd1",
+    firstmove="Rf3",
     difficulty=504)
 push!(rush_21_02_02, puzzle)
 
@@ -114,8 +114,8 @@ push!(rush_21_02_02, puzzle)
 
 puzzle = PuzzleFEN(
     FEN="5b2/1p3pkp/pq1Rbnp1/2p1N1B1/PnP5/1QN5/1P2BPPP/6K1 b - - 0 1",
-    solution="Bf6 Kf6 Nd7 Kg7 Nb6",
-    firstmove="Bd6",
+    solution="Bf6 Kf6 Ne4 Kg7 Nd6",
+    firstmove="Qd6",
     difficulty=987)
 push!(rush_21_02_02, puzzle)
 
