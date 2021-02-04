@@ -1,10 +1,16 @@
 
+include("../chess/chess.jl")
 
 board = Board("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1")
 
 # board = Board("6k1/1p4bp/3p4/1q1P1pN1/1r2p3/4B2P/r4PP1/3Q1RK1 w - - 0 1")
 # board = Board("r2qkbnr/ppp2ppp/2n1p1b1/3p4/4PP2/3P1N2/PPPN2PP/R1BQKB1R w KQkq - 0 1")
 
+board = Board("r2qkb1r/1Q3pp1/pN1p3p/3P1P2/3pP3/4n3/PP4PP/1R3RK1 w - -")
+
+@time perft(board, true, 6)
+@time count_nodes(board, true, 6) - 1
+@time perft_mem(board, true, 6)
 
 beth = Beth(
     value_heuristic=evaluation,
