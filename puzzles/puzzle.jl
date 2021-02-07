@@ -114,7 +114,7 @@ function play_puzzle(puzzle::Puzzle, player=user_input)
         i > n_moves && break
 
         m = short_to_long(board, !white, puzzle.solution[i])
-        @info "Computer says $(puzzle.solution[i])!"
+        @info "Puzzle says $(puzzle.solution[i])!"
         make_move!(board, !white, m)
 
         i += 1
