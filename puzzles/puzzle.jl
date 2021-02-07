@@ -160,3 +160,9 @@ function puzzle_rush(rush::Vector{Puzzle}, player; print_solution=false)
 
     @info @sprintf "Solved %d out of %d." sum(solveds) length(rush)
 end
+
+
+include("puzzle_rush_20_12_13.jl")
+include("puzzle_rush_20_12_30.jl")
+include("puzzle_rush_20_12_31.jl")
+include("puzzle_rush_21_02_02.jl")

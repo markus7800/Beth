@@ -74,9 +74,5 @@ end
 
 include("search.jl")
 
-
-include("../puzzles/puzzle.jl")
-include("../puzzles/puzzle_rush_20_12_13.jl")
-include("../puzzles/puzzle_rush_20_12_30.jl")
-include("../puzzles/puzzle_rush_20_12_31.jl")
-include("../puzzles/puzzle_rush_21_02_02.jl")
+# include("ponder.jl")
+# println("Beth ready.")
