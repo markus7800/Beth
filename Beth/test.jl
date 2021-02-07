@@ -103,6 +103,7 @@ puzzle_rush(rush_21_02_02, beth, print_solution=true)
 
 play_puzzle(rush_20_12_31[13], beth)
 
+play_puzzle(staircase, beth)
 
 play_game(black_player=user_input, white_player=beth)
 
