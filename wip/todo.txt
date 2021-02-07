@@ -1,0 +1,6 @@
+Keep tree.
+Promote played node to root. (no empty root nodes, -> use for draw by rep)
+Prune siblings.
+All in background.
+Think while opponent thinks. Opponent moves -> + 5s
+After time over: Decide if move from finished depth or move from further unfinished depth
