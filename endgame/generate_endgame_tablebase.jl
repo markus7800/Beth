@@ -4,7 +4,9 @@ include("reverse_moves.jl")
 
 import ProgressMeter
 
-function generate_3_men_piece_boards() #
+const Tablebase = Dict{Board, Int}
+
+function generate_3_men_piece_boards() # longest 28
     boards = Board[]
 
     for bk_r in 1:8, bk_f in 1:8
@@ -22,6 +24,89 @@ function generate_3_men_piece_boards() #
                 set_piece!(board, Field(wk_r, wk_f), true, KING)
                 set_piece!(board, Field(wp1_r, wp1_f), true, p)
                 push!(boards, board)
+            end
+
+            pop!(used_positions)
+        end
+    end
+
+    return boards
+end
+
+function generate_2w_mates(P1::Piece, P2::Piece)
+    boards = Board[]
+    counter = 0
+
+    @progress for bk_r in 1:8, bk_f in 1:8
+        used_positions = [(bk_r, bk_f)]
+        for wk_r in 1:8, wk_f in 1:8
+            (wk_r, wk_f) in used_positions && continue
+            max(abs(wk_r - bk_r), abs(wk_f - bk_f)) ≤ 1 && continue
+            push!(used_positions, (wk_r, wk_f))
+
+            for w1_r in 1:8, w1_f in 1:8
+                (w1_r, w1_f) in used_positions && continue
+                push!(used_positions, (w1_r, w1_f))
+
+                for w2_r in 1:8, w2_f in 1:8
+                    (w2_r, w2_f) in used_positions && continue
+                    counter += 1
+
+                    board = Board()
+                    set_piece!(board, Field(bk_r, bk_f), false, KING)
+                    set_piece!(board, Field(wk_r, wk_f), true, KING)
+                    set_piece!(board, Field(w1_r, w1_f), true, P1)
+                    set_piece!(board, Field(w2_r, w2_f), true, P2)
+
+                    # check if black king is in checkmate
+                    if is_in_check(board, false) && length(get_moves(board, false)) == 0
+                        push!(boards, board)
+                    end
+                end
+
+                pop!(used_positions)
+            end
+
+            pop!(used_positions)
+        end
+    end
+
+    return boards
+end
+
+function generate_1v1_mates(P1::Piece, P2::Piece)
+    boards = Board[]
+    counter = 0
+
+    @progress for bk_r in 1:8, bk_f in 1:8
+        used_positions = [(bk_r, bk_f)]
+        for wk_r in 1:8, wk_f in 1:8
+            (wk_r, wk_f) in used_positions && continue
+            max(abs(wk_r - bk_r), abs(wk_f - bk_f)) ≤ 1 && continue
+            push!(used_positions, (wk_r, wk_f))
+
+            for w1_r in 1:8, w1_f in 1:8
+                (w1_r, w1_f) in used_positions && continue
+                push!(used_positions, (w1_r, w1_f))
+
+                for b2_r in 1:8, b2_f in 1:8
+                    (b2_r, b2_f) in used_positions && continue
+                    counter += 1
+
+                    board = Board()
+                    set_piece!(board, Field(bk_r, bk_f), false, KING)
+                    set_piece!(board, Field(wk_r, wk_f), true, KING)
+                    set_piece!(board, Field(w1_r, w1_f), true, P1)
+                    set_piece!(board, Field(b2_r, b2_f), false, P2)
+
+                    # check if black king is in checkmate
+                    if is_in_check(board, false) && length(get_moves(board, false)) == 0
+                        push!(boards, board)
+                        continue
+                    end
+                end
+
+                pop!(used_positions)
             end
 
             pop!(used_positions)
@@ -74,9 +159,6 @@ function find_mate_position_in_1(desperate_position::Vector{Board})
     end
     return unique(mate_in_1)
 end
-
-
-Tablebase = Dict{Board, Int}
 
 # finds all position where all moves lead to a known mate (where white is to move)
 # for all known mates go one move backward and collect all positions
@@ -138,19 +220,16 @@ function find_desperate_positions!(all_mates::Tablebase, all_desperate_positions
     return unique(desperate_positions)
 end
 
-function find_all_3_men_mates(max_depth; verbose=true)
-    two_piece = generate_3_men_piece_boards()
-
-    desperate_positions = find_mate_positions(two_piece)
+function find_all_mates(max_depth, initial_mates; all_mates = Tablebase(), verbose=true)
+    desperate_positions = initial_mates
     all_desperate_positions = Tablebase()
     for dp in desperate_positions
         all_desperate_positions[dp] = 0
     end
 
     mates = []
-    all_mates = Tablebase()
 
-    ProgressMeter.@showprogress for i in 1:max_depth
+    @progress for i in 1:max_depth
         verbose && @info("Iteration $i:")
         for dp in desperate_positions
             @assert all_desperate_positions[dp] == i-1 dp
@@ -192,12 +271,19 @@ function find_all_3_men_mates(max_depth; verbose=true)
     return mates, all_mates, all_desperate_positions
 end
 
+function find_all_3_men_mates(max_depth; verbose=true)
+    two_piece = generate_3_men_piece_boards()
+    initial_mates = find_mate_positions(two_piece)
+
+    find_all_mates(max_depth, initial_mates; verbose = verbose)
+end
+
 function test_consistency(mates, all_mates::Tablebase, all_desperate_positions::Tablebase)
-    counts = zeros(Int, length(mates))
-    for (board, i) in all_mates
-        counts[i] += 1
-    end
-    @assert all(length.(mates) .== counts)
+    # counts = zeros(Int, length(mates))
+    # for (board, i) in all_mates
+    #     counts[i] += 1
+    # end
+    # @assert all(length.(mates) .== counts)
 
     ProgressMeter.@showprogress for (_board, i) in all_mates
         board = deepcopy(_board)
@@ -247,21 +333,39 @@ end
 include("tablebase.jl")
 
 @info("Generate 3-men table base.")
-@time mates, all_mates, all_desperate_positions = find_all_3_men_mates(30, verbose=false)
+# 28
+@time mates_3_men, all_mates_3_men, all_desperate_positions_3_men = find_all_3_men_mates(30, verbose=true)
 
-n_winning = length(all_mates) + length(all_desperate_positions)
+n_winning = length(all_mates_3_men) + length(all_desperate_positions_3_men)
 @info("Found $n_winning winning positions.")
 
 @info("Check consistency.")
-@time test_consistency(mates, all_mates, all_desperate_positions)
+@time test_consistency(mates_3_men, all_mates_3_men, all_desperate_positions_3_men)
 
 @info("Save to endgame/tb3men.jld2.")
-sm, sdp = slimify(all_mates, all_desperate_positions)
+sm, sdp = slimify(all_mates_3_men, all_desperate_positions_3_men)
 
 import JLD2
 JLD2.@save "endgame/tb3men.jld2" mates=sm desperate_positions=sdp
 
+# 33
+KB_mates = generate_2w_mates(KNIGHT, BISHOP)
+@time mates, all_mates, all_desperate_positions = find_all_mates(35, KB_mates, verbose=true)
+test_consistency(mates, all_mates, all_desperate_positions)
 
+# 19, 1500s
+BB_mates = generate_2w_mates(BISHOP, BISHOP)
+@time mates, all_mates, all_desperate_positions = find_all_mates(20, BB_mates, verbose=true)
+test_consistency(mates, all_mates, all_desperate_positions)
+
+
+QvR_mates = generate_1v1_mates(QUEEN, ROOK)
+# TODO: make consistent, do I also need desperate positions??
+mates, all_mates, all_desperate_positions = find_all_mates(4, QvR_mates, all_mates=deepcopy(all_mates_3_men), verbose=true)
+test_consistency(mates, all_mates, all_desperate_positions)
+
+mates[1][20]
+""
 # board = Board()
 # set_piece!(board, Field("e2"), true, PAWN)
 # set_piece!(board, Field("e3"), true, KING)
@@ -282,6 +386,7 @@ JLD2.@save "endgame/tb3men.jld2" mates=sm desperate_positions=sdp
 
 
 #=
+3 men
 [ Info: Iteration 1:
 [ Info: Found 4040 mates.
 [ Info: New ones: 4040
