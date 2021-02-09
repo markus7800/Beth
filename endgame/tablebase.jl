@@ -50,18 +50,84 @@ function key_3_men(board::Board, white::Bool)
     return key, true
 end
 
-function slimify(all_mates, all_desperate_positions)
+function key_4_men(board::Board, white::Bool)
+    white_count = n_pieces(board, true)
+    black_count = n_pieces(board, false)
+
+    if white_count + black_count != 4
+        return "", false
+    end
+
+    player = white
+    opponent = !white
+
+    player_king = ""
+    opponent_king = ""
+    player_piece = String[]
+    opponent_piece = String[]
+
+    for rank in 1:8, file in 1:8
+        _rank = black_count == 2 ? 8 - rank + 1 : rank # flip rank to get blacks perspective
+        field = Field(rank, file)
+        _field = Field(_rank, file)
+
+        if is_occupied(board, player, field)
+            p = get_piece(board, field)
+
+            if p == KING
+                player_king = 'K' * tostring(_field)
+            else
+                s = PIECE_SYMBOLS[p]
+                push!(player_piece, s * tostring(_field))
+            end
+        elseif is_occupied(board, opponent, field)
+            p = get_piece(board, field)
+
+            if p == KING
+                opponent_king = 'K' * tostring(_field)
+            else
+                s = PIECE_SYMBOLS[p]
+                push!(opponent_piece, s * tostring(_field))
+            end
+        end
+    end
+
+    player_piece_str = join(sort(player_piece))
+    opponent_piece_str =join(sort(opponent_piece))
+
+    key = player_king * player_piece_str * opponent_king * opponent_piece_str
+    return key, true
+end
+
+import CSV
+using DataFrames
+function write_to_CSV(filename::String, mates::Tablebase, desperate_positions::Tablebase, keyf::Function)
+    append = false
+    @progress for (mate, i) in mates
+        k, b = keyf(mate, true)
+        CSV.write(filename*"_mates.csv", DataFrame("key"=>k, "in"=>i), append=append)
+        append = true
+    end
+    append = false
+    @progress for (dp, i) in desperate_positions
+        k, b = keyf(dp, false)
+        CSV.write(filename*"_dps.csv", DataFrame("key"=>k, "in"=>i), append=append)
+        append = true
+    end
+end
+
+function slimify(all_mates, all_desperate_positions, keyf)
     slim_mates = Dict{String, Int}()
-    for (mate, i) in all_mates
-        key, is_3_men = key_3_men(mate, true) # white to move
-        @assert is_3_men
+    @progress for (mate, i) in all_mates
+        key, b = keyf(mate, true) # white to move
+        @assert b
         slim_mates[key] = i
     end
 
     slim_desperate_positions = Dict{String, Int}()
-    for (mate, i) in all_desperate_positions
-        key, is_3_men = key_3_men(mate, false) # black to move
-        @assert is_3_men
+    @progress for (mate, i) in all_desperate_positions
+        key, b = keyf(mate, false) # black to move
+        @assert b
         slim_desperate_positions[key] = i
     end
 
