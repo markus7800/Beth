@@ -123,6 +123,27 @@ function generate_1v1_mates(P1::Piece, P2::Piece)
     return boards
 end
 
+# mate in i -> move -> dp in i-1
+function gen_cap_piece_mate_position_in_1(simpler_dps::Tablebase, piece::Piece, captured::Piece)
+    all_mates = Tablebase()
+    ProgressMeter.@showprogress for (board, i) in simpler_dps
+        if count_pieces(board, true, piece) == 1
+            for move in get_reverse_moves(board, true)
+                new_mate = deepcopy(board)
+                undo_move!(new_mate, true, move, NoUndo())
+                set_piece!(new_mate, tofield(move.to), false, captured)
+                if haskey(all_mates, new_mate)
+                    # king can also capture
+                    all_mates[new_mate] = min(i+1, all_mates[new_mate])
+                else
+                    all_mates[new_mate] = i+1
+                end
+            end
+        end
+    end
+    return all_mates
+end
+
 # finds all positions where black king is mated
 # input are normalised boards
 function find_mate_positions(boards::Vector{Board})
@@ -143,7 +164,7 @@ end
 # find all moves which lead to a position that is a known mate (desperate position for black)
 # the initial mates are the first desperate positions for black
 # it is sufficient to only pass in newly found desperate positions
-function find_mate_position_in_1(desperate_position::Vector{Board})
+function find_mate_position_in_1(desperate_position::Vector{Board})::Vector{Board}
     mate_in_1 = Board[]
 
     for mate in desperate_position
@@ -173,22 +194,16 @@ end
 #
 # Have to pass in all mates, not only new mates
 # maybe a mate in 1 is avoidable but a mate in 2 not ...
-function find_desperate_positions!(all_mates::Tablebase, all_desperate_positions::Tablebase, known_mates::Tablebase)
+function find_desperate_positions!(all_mates::Tablebase, all_desperate_positions::Tablebase, known_mates::Tablebase)::Vector{Board}
     desperate_positions = Board[]
 
-    for (_mate, i) in all_mates
+    ProgressMeter.@showprogress for (_mate, i) in all_mates
         mate = _mate
         rev_moves = get_reverse_moves(mate, false, promotions=true) # should be no promotions here since only king
         for rm in rev_moves
             board = deepcopy(mate)
 
-            # println(board)
             undo_move!(board, false, rm, NoUndo())
-
-            # safety check
-            # @assert (rm in get_moves(board, false)) ("desp position: for != back", mate, board, rm)
-
-            # board = normalise_board(board)
 
             if haskey(all_desperate_positions, board)
                 # println("prev board is known mate")
@@ -212,16 +227,10 @@ function find_desperate_positions!(all_mates::Tablebase, all_desperate_positions
                 undo_move!(_board, false, m, undo)
             end
 
-            # println("is desperate ", is_desparate)
 
             if is_desparate
                 push!(desperate_positions, board)
             end
-
-            # safety check
-            # _board = deepcopy(board)
-            # move!(_board, false, rm[1], rm[2], rm[3])
-            # @assert _board == mate ("desp position: invalid move", mate, _board, rm)
         end
     end
     return unique(desperate_positions)
@@ -230,14 +239,15 @@ end
 # known mates allow mate check when simplification through capture
 # mate in i -> move -> dp in i-1
 # dp in i -> move -> mate in i
-function find_all_mates(max_depth, initial_mates; known_mates=Tablebase(), known_dps=Tablebase(), verbose=true)
+function find_all_mates(max_depth, initial_mates;
+    all_mates = Tablebase(), known_mates=Tablebase(), known_dps=Tablebase(), verbose=true)
+
     desperate_positions = initial_mates
     all_desperate_positions = Tablebase()
     for dp in desperate_positions
         all_desperate_positions[dp] = 0
     end
 
-    all_mates = Tablebase()
     mates = []
 
     m_ts = []
@@ -248,44 +258,20 @@ function find_all_mates(max_depth, initial_mates; known_mates=Tablebase(), known
 
     @progress for i in 1:max_depth
         verbose && @info("Iteration $i:")
-        if length(known_dps) == 0
-            for dp in desperate_positions
-                @assert all_desperate_positions[dp] == i-1 dp
-            end
-        end # else we adjust manually below
+        for dp in desperate_positions
+            @assert all_desperate_positions[dp] == i-1 dp
+        end
 
-        found_mates, t = @timed find_mate_position_in_1(desperate_positions)
+        found_mates, t = @timed find_mate_position_in_1(desperate_positions) # ::Vector{Board}
         l = length(found_mates)
         l1 = length(all_mates)
 
 
         new_mates = Board[]
-        if length(known_dps) > 0
-            # i can be lowered if a simplification leads to faster mate
-            for mate in found_mates
-                if !haskey(all_mates, mate)
-                    j = i
-                    for move in get_moves(mate, true)
-                        undo = make_move!(mate, true, move)
-                        if haskey(known_dps, mate)
-                            # move should be capture
-                            j = min(j, known_dps[mate]+1)
-                        end
-                        if haskey(all_desperate_positions, mate)
-                            j = min(j, all_desperate_positions[mate]+1)
-                        end
-                        undo_move!(mate, true, move, undo)
-                    end
-                    all_mates[mate] = j
-                    push!(new_mates, mate)
-                end
-            end
-        else
-            for mate in found_mates
-                if !haskey(all_mates, mate)
-                    all_mates[mate] = i
-                    push!(new_mates, mate)
-                end
+        for mate in found_mates
+            if !haskey(all_mates, mate)
+                all_mates[mate] = i
+                push!(new_mates, mate)
             end
         end
         push!(mates, new_mates)
@@ -296,30 +282,13 @@ function find_all_mates(max_depth, initial_mates; known_mates=Tablebase(), known
         push!(m_ts, t)
         push!(m_counts, l2)
 
-        desperate_positions, t = @timed find_desperate_positions!(all_mates, all_desperate_positions, known_mates)
-        if length(known_dps) > 0
-            # i can be lowered if a simplification after black move leads to faster mate
-            # cannot be a simplification here as black moves (-> all_mates)
-            # basically adjusting here if move leads to adjusted mate from above
-            for dp in desperate_positions
-                j = -1
-                for move in get_moves(dp, false)
-                    undo = make_move!(dp, false, move)
-                    if haskey(all_mates, dp)
-                        j = max(j, all_mates[dp])
-                    end
-                    undo_move!(dp, false, move, undo)
-                end
-                @assert j != -1
-                all_desperate_positions[dp] = j
-            end
-        else
-            for dp in desperate_positions
-                @assert !haskey(all_desperate_positions, dp)
-                all_desperate_positions[dp] = i
-            end
+        # known mates assert that a mate is found were one could simplify
+        # at this point the counters (mate in ..) are false (can be lower)
+        desperate_positions, t = @timed find_desperate_positions!(all_mates, all_desperate_positions, known_mates) # ::Vector{Board}
+        for dp in desperate_positions
+            @assert !haskey(all_desperate_positions, dp)
+            all_desperate_positions[dp] = i
         end
-
 
         verbose && @info("Found $(length(desperate_positions)) new desperate positions in $t seconds.")
         verbose && @info("Currently $(length(all_desperate_positions)) desperate positions known.")
@@ -331,7 +300,65 @@ function find_all_mates(max_depth, initial_mates; known_mates=Tablebase(), known
         length(desperate_positions) == 0 && break
     end
 
+    if length(known_dps) > 0
+         make_consistent(all_mates, all_desperate_positions, known_mates, known_dps, max_depth)
+    end
+
     return mates, all_mates, all_desperate_positions, m_ts, m_counts, dp_ts, dp_counts
+end
+
+function make_consistent(all_mates, all_desperate_positions, known_mates, known_dps, max_depth)
+    did_change = true
+    counter = 0
+    while did_change # call multiple times to propagate
+        counter += 1
+        println("Loop $counter")
+        did_change = false
+
+        # i can be lowered if a simplification leads to faster mate
+        for (mate, i) in all_mates
+            j = 100
+            for move in get_moves(mate, true)
+                undo = make_move!(mate, true, move)
+                if haskey(known_dps, mate)
+                    # move should be capture
+                    j = min(j, known_dps[mate]+1)
+                end
+                if haskey(all_desperate_positions, mate)
+                    j = min(j, all_desperate_positions[mate]+1)
+                end
+                undo_move!(mate, true, move, undo)
+            end
+            if j != i
+                did_change = true
+            end
+            all_mates[mate] = j
+        end
+
+        # i can be lowered if a simplification after black move leads to faster mate
+        # cannot be a simplification here as black moves (-> all_mates)
+        # basically adjusting here if move leads to adjusted mate from above
+        for (dp, i) in all_desperate_positions
+            j = 0
+            for move in get_moves(dp, false)
+                undo = make_move!(dp, false, move)
+                if haskey(all_mates, dp)
+                    j = max(j, all_mates[dp])
+                end
+                if haskey(known_mates, dp)
+                    j = max(j, known_mates[dp])
+                end
+                undo_move!(dp, false, move, undo)
+            end
+            if j == 0
+                @assert is_in_check(dp, false) dp
+            end
+            if j != i
+                did_change = true
+            end
+            all_desperate_positions[dp] = j
+        end
+    end
 end
 
 function find_all_3_men_mates(max_depth; verbose=true)
@@ -439,10 +466,17 @@ test_consistency(mates, all_mates, all_desperate_positions)
 
 
 QvR_mates = generate_1v1_mates(QUEEN, ROOK)
-mates, all_mates, all_desperate_positions = find_all_mates(36, QvR_mates, known_mates=all_mates_3_men, known_dps=all_desperate_positions_3_men, verbose=true)
+simplification_mates = gen_cap_piece_mate_position_in_1(all_desperate_positions_3_men, QUEEN, ROOK)
+mates, all_mates, all_desperate_positions = find_all_mates(10,
+    QvR_mates,
+    all_mates=simplification_mates,
+    known_mates=all_mates_3_men,
+    known_dps=all_desperate_positions_3_men,
+    verbose=true)
+
 test_consistency(mates, all_mates, all_desperate_positions, all_mates_3_men, all_desperate_positions_3_men)
 
-
+all_desperate_positions
 
 #=
 KNB_K KBB_K KQ_KN KQ_KB KQ_KR KQ_KQ KR_KN KR_KB KR_KQ KR_KR

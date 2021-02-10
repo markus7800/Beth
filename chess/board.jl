@@ -226,3 +226,19 @@ end
 function count_pieces(fields::Fields)
     return count_ones(fields)
 end
+
+function count_pieces(board::Board, white::Bool, piece::Piece)
+    if piece == PAWN
+        return n_pawns(board, white)
+    elseif piece == BISHOP
+        return n_bishops(board, white)
+    elseif piece == KNIGHT
+        return n_knights(board, white)
+    elseif piece == ROOK
+        return n_rooks(board, white)
+    elseif piece == QUEEN
+        return n_queens(board, white)
+    elseif piece == KING
+        return 1
+    end
+end
