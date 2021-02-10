@@ -2,10 +2,6 @@ function NoUndo()
     Undo(0, 0, 0, 0, 0)
 end
 
-function chebyshev_distance(f1::Int, rank, file)
-    c1 = rankfile(f1)
-    return max(abs(c1[1] - rank), abs(c1[2] - file))
-end
 
 # checks if opponent would be in check if player undid move
 function would_be_check(board::Board, white::Bool, move::Move)
@@ -18,109 +14,137 @@ function would_be_check(board::Board, white::Bool, move::Move)
     return b
 end
 
-const revDIAG = [(-1,-1), (1,-1), (-1, 1), (1, 1)]
-const revCROSS = [(0,1), (0,-1), (1,0), (-1,0)]
-const revKNIGHTMOVES = [
-        (1,2), (1,-2), (-1,2), (-1,-2),
-        (2,1), (2,-1), (-2,1), (-2,-1)
-        ]
-const revDIAGCROSS = vcat(revDIAG, revCROSS)
-
-function reverse_direction_moves(board, piece, rank, file, directions, max_multiple)
-    moves = Move[]
-    for dir in directions
-        for i in 1:max_multiple
-
-            r2, f2 = (rank, file) .+ i .* dir
-
-            if r2 < 1 || r2 > 8 || f2 < 1 || f2 > 8
-                # direction out of bounds
-                break # direction finished
-            end
-
-            if !is_occupied(board, Field(r2, f2))
-                # free tile
-                push!(moves, Move(piece, Field(r2, f2), Field(rank, file)))
-            else
-                # direction blocked by own piece or opponent piece
-                break # direction finished
-            end
-        end
-    end
-    return moves
-end
-
-function king_pos(board::Board, white::Bool)
-    if white
-        return rankfile(board.kings & board.whites)
-    else
-        return rankfile(board.kings & board.blacks)
-    end
-end
-
 function get_reverse_moves(board::Board, white::Bool; promotions=false)
-    moves = Move[]
-    king_moves = Move[]
+    movelist = Move[]
 
     if is_in_check(board, white)
         # cant do move that leads to being in check
-        return moves
+        return moveslist
     end
 
-    for rank in 1:8, file in 1:8
-        piece = get_piece(board, Field(rank, file), white)
+    player = white ? board.whites : board.blacks
+    opponent = white ? board.blacks : board.whites
+    occupied = player | opponent
 
-        piece == NO_PIECE && continue
+    get_rev_pawn_moves!(board, white, player, movelist)
+    get_rev_knight_moves!(board, player, occupied, movelist)
+    get_rev_bishop_moves!(board, player, occupied, movelist)
+    get_rev_rook_moves!(board, player, occupied, movelist)
+    get_rev_queen_moves!(board, white, player, occupied, promotions, movelist)
+    get_rev_king_moves!(board, white, player, opponent, occupied, movelist)
 
-        if piece == PAWN
-            if white
-                if rank > 2 && !is_occupied(board, Field(rank-1, file))
-                    push!(moves, Move(PAWN, Field(rank-1, file), Field(rank, file)))
-                end
-                if rank == 4 && !is_occupied(board, Field(rank-2, file)) && !is_occupied(board, Field(rank-1, file))
-                    push!(moves, Move(PAWN, Field(rank-2, file), Field(rank, file)))
-                end
-            else
-                if rank < 7 && !is_occupied(board, Field(rank+1, file))
-                    push!(moves, Move(PAWN, Field(rank+1, file), Field(rank, file)))
-                end
-                if rank == 5 && !is_occupied(board, Field(rank+2, file)) && !is_occupied(board, Field(rank+1, file))
-                    push!(moves, Move(PAWN, Field(rank+2, file), Field(rank, file)))
-                end
+    # opponent king can not have been in check when player was to move
+    filter!(m -> !would_be_check(board, white, m), movelist)
+
+    return movelist
+end
+
+function get_rev_pawn_moves!(board::Board, white::Bool, player::Fields, movelist::Vector{Move})
+    for field_number in board.pawns & player
+        rank, file = rankfile(field_number)
+        if white
+            if rank > 2 && !is_occupied(board, Field(rank-1, file))
+                push!(movelist, Move(PAWN, Field(rank-1, file), Field(rank, file)))
             end
-        elseif piece == BISHOP
-            append!(moves, reverse_direction_moves(board,BISHOP,rank,file,revDIAG,8))
+            if rank == 4 && !is_occupied(board, Field(rank-2, file)) && !is_occupied(board, Field(rank-1, file))
+                push!(movelist, Move(PAWN, Field(rank-2, file), Field(rank, file)))
+            end
+        else
+            if rank < 7 && !is_occupied(board, Field(rank+1, file))
+                push!(movelist, Move(PAWN, Field(rank+1, file), Field(rank, file)))
+            end
+            if rank == 5 && !is_occupied(board, Field(rank+2, file)) && !is_occupied(board, Field(rank+1, file))
+                push!(movelist, Move(PAWN, Field(rank+2, file), Field(rank, file)))
+            end
+        end
+    end
+end
 
-        elseif piece == KNIGHT
-            append!(moves, reverse_direction_moves(board,KNIGHT,rank,file,revKNIGHTMOVES,1))
+function get_rev_knight_moves!(board::Board, player::Fields, occupied::Fields, movelist::Vector{Move})
+    for field_number in board.knights & player
+        moves = knight_move_empty(field_number)
+        moves &= ~occupied
+        for n in moves
+            push!(movelist, Move(KNIGHT, n, field_number))
+        end
+        # print_fields(moves)
+    end
+end
 
-        elseif piece == ROOK
-            append!(moves, reverse_direction_moves(board,ROOK,rank,file,revCROSS,8))
+function get_rev_bishop_moves!(board::Board, player::Fields, occupied::Fields, movelist::Vector{Move})
+    for field_number in board.bishops & player
+        moves = bishop_move_empty(field_number)
+        occupied_moves = moves & occupied
+        for n in occupied_moves
+            moves &= ~shadow(field_number, n) # remove fields behind closest pieces
+        end
+        moves &= ~occupied
+        # print_fields(moves)
 
-        elseif piece == QUEEN
-            append!(moves, reverse_direction_moves(board,QUEEN,rank,file,revDIAGCROSS,8))
-            if promotions
+        for n in moves
+            push!(movelist, Move(BISHOP, n, field_number))
+        end
+
+    end
+end
+
+function get_rev_rook_moves!(board::Board, player::Fields, occupied::Fields, movelist::Vector{Move})
+    for field_number in board.rooks & player
+        moves = rook_move_empty(field_number)
+        occupied_moves = moves & occupied
+        for n in occupied_moves
+            moves &= ~shadow(field_number, n) # remove fields behind closest pieces
+        end
+        moves &= ~occupied
+        # print_fields(moves)
+
+        for n in moves
+            push!(movelist, Move(ROOK, n, field_number))
+        end
+    end
+end
+
+function get_rev_queen_moves!(board::Board, white::Bool, player::Fields, occupied::Fields, promotions::Bool, movelist::Vector{Move})
+    for field_number in board.queens & player
+        moves = queen_move_empty(field_number)
+        occupied_moves = moves & occupied
+        for n in occupied_moves
+            moves &= ~shadow(field_number, n) # remove fields behind closest pieces
+        end
+        moves &= ~occupied
+        # print_fields(moves)
+
+        for n in moves
+            push!(movelist, Move(QUEEN, n, field_number))
+        end
+        if promotions
+            field = tofield(field_number)
+            promote = white ? (field & RANK_8 > 0) : (field & RANK_1 > 0)
+            if promote
+                rank, file = rankfile(field_number)
                 if white
                     if rank == 8 && !is_occupied(board, Field(rank-1, file))
-                        push!(moves, Move(PAWN, Field(rank-1, file), Field(rank, file), QUEEN))
+                        push!(movelist, Move(PAWN, Field(rank-1, file), Field(rank, file), QUEEN))
                     end
                 else
                     if rank == 1 && !is_occupied(board, Field(rank+1, file))
-                        push!(moves, Move(PAWN, Field(rank+1, file), Field(rank, file), QUEEN))
+                        push!(movelist, Move(PAWN, Field(rank+1, file), Field(rank, file), QUEEN))
                     end
                 end
             end
-        elseif piece == KING
-            king_moves = reverse_direction_moves(board,KING,rank,file,revDIAGCROSS,1)
         end
     end
-    opponent_kingpos = king_pos(board, !white)
-    filter!(m -> chebyshev_distance(m.from, opponent_kingpos...) > 1, king_moves)
+end
 
-    append!(moves, king_moves)
+function get_rev_king_moves!(board::Board, white::Bool, player::Fields, opponent::Fields, occupied::Fields, movelist::Vector{Move})
+    king_field = board.kings & player
+    king_field_number = tonumber(king_field)
+    moves = king_move_empty(king_field_number) & ~occupied
 
-    # opponent king can not have been in check when player was to move
-    filter!(m -> !would_be_check(board, white, m), moves)
-
-    return moves
+    for n in moves
+        # move back in check is allowed (but no check from oppponent king)
+        if !is_attacked(board, white, player, opponent & board.kings, occupied, n)
+            push!(movelist, Move(KING, n, king_field_number))
+        end
+    end
 end
