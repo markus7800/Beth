@@ -19,7 +19,7 @@ function get_reverse_moves(board::Board, white::Bool; promotions=false)
 
     if is_in_check(board, white)
         # cant do move that leads to being in check
-        return moveslist
+        return movelist
     end
 
     player = white ? board.whites : board.blacks

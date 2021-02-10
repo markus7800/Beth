@@ -178,6 +178,21 @@ function remove_piece!(board::Board, field::Field)
     board.kings &= ~field
 end
 
+function remove_pieces!(board::Board)
+    board.pawns = 0
+    board.bishops = 0
+    board.knights = 0
+    board.rooks = 0
+    board.queens = 0
+    board.kings = 0
+
+    board.whites = 0
+    board.blacks = 0
+
+    board.en_passant = 0
+    board.castle = 0
+end
+
 function is_occupied(board::Board, fields::UInt64)
     (board.whites | board.blacks) & fields > 0
 end
