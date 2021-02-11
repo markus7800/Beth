@@ -1,6 +1,6 @@
 include("../../chess/chess.jl")
 include("reverse_moves.jl")
-import ProgressMeter
+using ProgressMeter
 
 # tables are from whites perspective
 # one for white to move / one for black to move
@@ -47,13 +47,34 @@ function length(tb::Table)
     sum(tb.d .!= -1)
 end
 
+import Base.size
+function size(tb::Table)
+    prod(size(tb.d))
+end
+
 import Base.CartesianIndices
 CartesianIndices(tb::Table) = CartesianIndices(tb.d)
 
+function get_mate(tb::TableBase, board::Board)
+    tb.mates[tb.key(board)]
+end
+
+function get_desperate_position(tb::TableBase, board::Board)
+    tb.desperate_positions[tb.key(board)]
+end
+
 function three_men_key(board::Board)::CartesianIndex
+    if count_pieces(board.whites) != 2 || count_pieces(board.blacks) != 1
+        return CartesianIndex(0)
+    end
     a = tonumber(board.kings & board.whites)
     b = tonumber((board.pawns | board.queens | board.rooks) & board.whites)
     c = tonumber(board.kings & board.blacks)
+
+    if b == 65
+        return CartesianIndex(0)
+    end
+
     p = 0
     if board.queens & board.whites > 0
         p = 1
@@ -111,6 +132,10 @@ end
 
 function four_men_2v0_key(piece1::Piece, piece2::Piece)
     function key(board::Board)::CartesianIndex
+        if count_pieces(board.whites) != 3 || count_pieces(board.blacks) != 1
+            return CartesianIndex(0)
+        end
+
         a = tonumber(board.kings & board.whites)
         local b
         local c
@@ -152,6 +177,82 @@ function FourMenTB2v0(piece1::Piece, piece2::Piece)
         )
 end
 
+
+function four_men_1v1_key(wpiece::Piece, bpiece::Piece)
+    function key(board::Board)::CartesianIndex
+        a = tonumber(board.kings & board.whites)
+        b = tonumber(occupied_by(board, wpiece) & board.whites)
+        c = tonumber(board.kings & board.blacks)
+        d = tonumber(occupied_by(board, bpiece) & board.blacks)
+        if b == 65 || d == 65 || count_pieces(board.whites | board.blacks) != 4
+            return CartesianIndex(0)
+        end
+
+        return CartesianIndex(a, b, c, d)
+    end
+end
+
+function four_men_1v1_fromkey!(wpiece::Piece, bpiece::Piece)
+    function fromkey!(board::Board, key::CartesianIndex)
+        remove_pieces!(board)
+        set_piece!(board, tofield(key[1]), true, KING)
+        set_piece!(board, tofield(key[2]), true, wpiece)
+        set_piece!(board, tofield(key[3]), false, KING)
+        set_piece!(board, tofield(key[4]), false, bpiece)
+    end
+end
+
+function four_men_1v1_wp_key(wpiece::Piece, bpiece::Piece)
+    function key(board::Board)::CartesianIndex
+        if count_pieces(board.whites) != 2 || count_pieces(board.blacks) != 2
+            return CartesianIndex(0)
+        end
+
+        a = tonumber(board.kings & board.whites)
+        b = tonumber((occupied_by(board, wpiece) | board.pawns) & board.whites)
+        c = tonumber(board.kings & board.blacks)
+        d = tonumber(occupied_by(board, bpiece) & board.blacks)
+        e = Int(n_pawns(board, true) > 0) + 1
+        if b == 65 || d == 65 || count_pieces(board.whites | board.blacks) != 4
+            return CartesianIndex(0)
+        end
+
+        return CartesianIndex(a, b, c, d, e)
+    end
+end
+
+function four_men_1v1_wp_fromkey!(wpiece::Piece, bpiece::Piece)
+    function fromkey!(board::Board, key::CartesianIndex)
+        remove_pieces!(board)
+        set_piece!(board, tofield(key[1]), true, KING)
+        if key[5] == 1
+            set_piece!(board, tofield(key[2]), true, wpiece)
+        else
+            set_piece!(board, tofield(key[2]), true, PAWN)
+        end
+        set_piece!(board, tofield(key[3]), false, KING)
+        set_piece!(board, tofield(key[4]), false, bpiece)
+    end
+end
+
+function FourMenTB1v1(wpiece::Piece, bpiece::Piece, promotions::Bool=false)
+    if promotions
+        return TableBase(
+            Table(64, 64, 64, 64, 2),
+            Table(64, 64, 64, 64, 2),
+            four_men_1v1_wp_key(wpiece, bpiece),
+            four_men_1v1_wp_fromkey!(wpiece, bpiece)
+            )
+    else
+        return TableBase(
+            Table(64, 64, 64, 64),
+            Table(64, 64, 64, 64),
+            four_men_1v1_key(wpiece, bpiece),
+            four_men_1v1_fromkey!(wpiece, bpiece)
+            )
+    end
+end
+
 function generate_3_men_piece_boards() # longest 28
     boards = Board[]
     counter = 0
@@ -189,7 +290,7 @@ function generate_2w_mates(P1::Piece, P2::Piece)
     boards = Board[]
     counter = 0
 
-    @progress for bk_r in 1:8, bk_f in 1:8
+    for bk_r in 1:8, bk_f in 1:8
         used_positions = [(bk_r, bk_f)]
         for wk_r in 1:8, wk_f in 1:8
             (wk_r, wk_f) in used_positions && continue
@@ -228,6 +329,81 @@ function generate_2w_mates(P1::Piece, P2::Piece)
     return boards
 end
 
+function generate_1v1_mates(P1::Piece, P2::Piece)
+    boards = Board[]
+    counter = 0
+
+    @showprogress "Generate initial mates " for bk_r in 1:8, bk_f in 1:8
+        used_positions = [(bk_r, bk_f)]
+        for wk_r in 1:8, wk_f in 1:8
+            (wk_r, wk_f) in used_positions && continue
+            max(abs(wk_r - bk_r), abs(wk_f - bk_f)) ≤ 1 && continue
+            push!(used_positions, (wk_r, wk_f))
+
+            for w1_r in 1:8, w1_f in 1:8
+                (w1_r, w1_f) in used_positions && continue
+                push!(used_positions, (w1_r, w1_f))
+
+                for b2_r in 1:8, b2_f in 1:8
+                    (b2_r, b2_f) in used_positions && continue
+                    counter += 1
+
+                    board = Board()
+                    set_piece!(board, Field(bk_r, bk_f), false, KING)
+                    set_piece!(board, Field(wk_r, wk_f), true, KING)
+                    set_piece!(board, Field(w1_r, w1_f), true, P1)
+                    set_piece!(board, Field(b2_r, b2_f), false, P2)
+
+                    # check if black king is in checkmate
+                    if is_in_check(board, false) && !is_in_check(board, true) && length(get_moves(board, false)) == 0
+                        push!(boards, board)
+                        continue
+                    end
+                end
+
+                pop!(used_positions)
+            end
+
+            pop!(used_positions)
+        end
+    end
+
+    @info "$counter total positions."
+
+    return boards
+end
+
+# mate in i -> move -> dp in i-1
+function gen_cap_piece_mate_position_in_1!(tb::TableBase, known_tb::TableBase, piece::Piece, captured::Piece, max_iter::Int)
+    board = Board()
+    @showprogress "Generate simplification mates " for dp_key in CartesianIndices(known_tb.desperate_positions)
+        !haskey(known_tb.desperate_positions, dp_key) && continue
+
+        known_tb.fromkey!(board, dp_key)
+        i = known_tb.desperate_positions[dp_key]
+        !(i+1 ≤ max_iter) && continue
+
+        if count_pieces(board, true, piece) == 1
+            for move in get_reverse_moves(board, true)
+                new_mate = Board()
+                known_tb.fromkey!(new_mate, dp_key)
+
+                undo_move!(new_mate, true, move, NoUndo())
+                set_piece!(new_mate, tofield(move.to), false, captured)
+
+                new_mate_key = tb.key(new_mate)
+
+                if haskey(tb.mates, new_mate_key)
+                    # king can also capture
+                    tb.mates[new_mate_key] = min(i+1, tb.mates[new_mate_key])
+                else
+                    tb.mates[new_mate_key] = i+1
+                end
+            end
+        end
+    end
+end
+
 # finds all positions where black king is mated
 # input are normalised boards
 function find_mate_positions(boards::Vector{Board})::Vector{Board}
@@ -248,7 +424,7 @@ function find_mate_position_in_1(tb::TableBase, new_desperate_positions::Vector{
     board = Board()
     mate_in_1 = CartesianIndex[]
 
-    ProgressMeter.@showprogress for mate in new_desperate_positions
+    @showprogress for mate in new_desperate_positions
         tb.fromkey!(board, mate)
         rev_moves = get_reverse_moves(board, true, promotions=true)
         for m in rev_moves
@@ -267,15 +443,15 @@ end
 #
 # Have to pass in all mates, not only new mates
 # maybe a mate in 1 is avoidable but a mate in 2 not ...
-function find_desperate_positions(tb::TableBase)::Vector{<:CartesianIndex}
+function find_desperate_positions(tb::TableBase, i::Int, known_tb)::Vector{<:CartesianIndex}
     new_desperate_positions = CartesianIndex[]
     board = Board()
 
-    ProgressMeter.@showprogress for mate in CartesianIndices(tb.mates)
+    @showprogress for mate in CartesianIndices(tb.mates)
         !haskey(tb.mates, mate) && continue
 
         tb.fromkey!(board, mate)
-        rev_moves = get_reverse_moves(board, false, promotions=true)
+        rev_moves = get_reverse_moves(board, false, promotions=false)
         for rm in rev_moves
             tb.fromkey!(board, mate)
 
@@ -292,10 +468,19 @@ function find_desperate_positions(tb::TableBase)::Vector{<:CartesianIndex}
                 undo = make_move!(board, false, m)
                 mate_key = tb.key(board)
 
-                if !haskey(tb.mates, mate_key) # && !haskey(known_mates, mate_key)
-                    is_desperate = false
-                    break
+                if !haskey(tb.mates, mate_key) || tb.mates[mate_key] > i
+                    if !isnothing(known_tb)
+                        known_mate_key = known_tb.key(board)
+                        if !haskey(known_tb.mates, known_mate_key) || known_tb.mates[known_mate_key] > i # && !haskey(known_mates, mate_key)
+                            is_desperate = false
+                            break
+                        end
+                    else
+                        is_desperate = false
+                        break
+                    end
                 end
+
 
                 undo_move!(board, false, m, undo)
             end
@@ -313,14 +498,12 @@ end
 # known mates allow mate check when simplification through capture
 # mate in i -> move -> dp in i-1
 # dp in i -> move -> mate in i
-function find_all_mates(tb::TableBase, max_depth, initial_mates::Vector{Board}; verbose=true)
+function find_all_mates(tb::TableBase, max_depth::Int, initial_mates::Vector{Board}, known_tb=nothing; verbose=true)
     new_desperate_positions = tb.key.(initial_mates)
 
     for dp_key in new_desperate_positions
         tb.desperate_positions[dp_key] = 0
     end
-
-    mates = []
 
     for i in 1:max_depth
         verbose && @info("Iteration $i:")
@@ -337,15 +520,19 @@ function find_all_mates(tb::TableBase, max_depth, initial_mates::Vector{Board}; 
             if !haskey(tb.mates, mate_key)
                 tb.mates[mate_key] = i
                 push!(new_mates, mate_key)
+            else
+                # if initial mate is created from simpler tb then a mate
+                # can be reached faster with new piece
+                # 8/8/8/8/8/4K3/Q7/r4k2 w - - 0 1
+                tb.mates[mate_key] = min(tb.mates[mate_key], i)
             end
         end
-        push!(mates, new_mates)
 
         l2 = length(tb.mates)
         verbose && @info("Found $(l2 - l1) new mates in $t seconds.")
         verbose && @info("Currently $l2 mates known.")
 
-        new_desperate_positions, t = @timed find_desperate_positions(tb)
+        new_desperate_positions, t = @timed find_desperate_positions(tb, i, known_tb)
         for dp_key in new_desperate_positions
             @assert !haskey(tb.desperate_positions, dp_key)
             tb.desperate_positions[dp_key] = i
@@ -358,34 +545,116 @@ function find_all_mates(tb::TableBase, max_depth, initial_mates::Vector{Board}; 
         length(new_desperate_positions) == 0 && break
     end
 
-    return mates, tb
+    return tb
+end
+
+function test_consistency(tb::TableBase, known_tb=nothing)
+    board = Board()
+    @showprogress for mate_key in CartesianIndices(tb.mates)
+        !haskey(tb.mates, mate_key) && continue
+
+        tb.fromkey!(board, mate_key)
+        i = tb.mates[mate_key]
+
+        _board = deepcopy(board)
+
+        best = 10^6
+        moves = Move[]
+        for m in get_moves(board, true)
+            if m.from_piece == m.to_piece || m.to_piece == QUEEN # only queen promotions
+                push!(moves, m)
+            end
+        end
+        # from mating position in i there has to be at least one move that leads to a desperate position in i-1
+        # but there should also be no move that leads to a desperate position in <i-1
+        for wm in moves
+            undo = make_move!(board, true, wm)
+            board.en_passant = 0 # remove en passant as it is not used in keys
+            key = tb.key(board)
+            if haskey(tb.desperate_positions, key)
+                j = tb.desperate_positions[key]
+                @assert j ≥ i - 1 (_board, i, wm, j, board)
+                best = min(best, j)
+            end
+            if !isnothing(known_tb)
+                known_key = known_tb.key(board)
+                if haskey(known_tb.desperate_positions, known_key)
+                    j = known_tb.desperate_positions[known_key]
+                    @assert j ≥ i - 1 (_board, i, wm, j, board)
+                    best = min(best, j)
+                end
+            end
+            undo_move!(board, true, wm, undo)
+        end
+        @assert best == i - 1 (_board, best, i)
+    end
+
+    @showprogress for dp_key in CartesianIndices(tb.desperate_positions)
+        !haskey(tb.desperate_positions, dp_key) && continue
+
+        tb.fromkey!(board, dp_key)
+        j = tb.desperate_positions[dp_key]
+        j == 0 && continue # no moves for black (initial mates)
+
+        _board = deepcopy(board)
+
+        # from a desperate position in j all moves should lead to a mating position in <=j
+        # there should be at least one move that leads to a mating position in j
+        best = -1
+        for bm in get_moves(board, false)
+            undo = make_move!(board, false, bm)
+            key = tb.key(board)
+            i = -1
+            if haskey(tb.mates, key)
+                i = tb.mates[key]
+            elseif !isnothing(known_tb)
+                known_key = known_tb.key(board)
+                if haskey(known_tb.mates, known_key)
+                    i = known_tb.mates[known_key]
+                end
+            end
+            @assert i != -1 (_board, j, bm, i, board)
+
+            @assert i ≤ j
+            best = max(best, i)
+            undo_move!(board, false, bm, undo)
+        end
+        # also guarantees that no stalemate (black has moves that lead to mate)
+        @assert best == j (_board, best, j)
+    end
 end
 
 function gen_3_men_TB(verbose=true)
     initial_mates = generate_3_men_mates()
+    @info "$(length(initial_mates)) initial mates."
     tb = ThreeMenTB()
-    mates, tb = find_all_mates(tb, 100, initial_mates, verbose=verbose)
+    tb = find_all_mates(tb, 100, initial_mates, verbose=verbose)
     return tb
 end
 
 function gen_4_men_2v0_TB(piece1::Piece, piece2::Piece, verbose=true)
     initial_mates = generate_2w_mates(piece1, piece2)
+    @info "$(length(initial_mates)) initial mates."
     tb = FourMenTB2v0(piece1, piece2)
-    mates, tb = find_all_mates(tb, 100, initial_mates, verbose=verbose)
+    tb = find_all_mates(tb, 100, initial_mates, verbose=verbose)
     return tb
 end
 
-include("tablebase.jl")
+function gen_4_men_1v1_TB(player_piece::Piece, opponent_piece::Piece, known_tb::TableBase; max_iter=100, verbose=true)
+    initial_mates = generate_1v1_mates(player_piece, opponent_piece)
+    @info "$(length(initial_mates)) initial mates."
+    promotions = player_piece == QUEEN
+    tb = FourMenTB1v1(player_piece, opponent_piece, promotions)
+    gen_cap_piece_mate_position_in_1!(tb, known_tb, player_piece, opponent_piece, max_iter)
 
-@info("Generate 3-men table base.")
-# 28, 50s
-@time gen_3_men_TB()
+    tb = find_all_mates(tb, max_iter, initial_mates, known_tb, verbose=verbose)
+    return tb
+end
 
-n_winning = length(all_mates_3_men) + length(all_desperate_positions_3_men)
-@info("Found $n_winning winning positions.")
+# 28, 60s
+@time three_men_tb = gen_3_men_TB()
 
-@info("Check consistency.")
-@time test_consistency(mates_3_men, all_mates_3_men, all_desperate_positions_3_men)
+@time test_consistency(three_men_tb)
 
 import JLD2
 JLD2.@save "endgame/tb3men.jld2" mates=sm desperate_positions=sdp
@@ -396,18 +665,49 @@ JLD2.@save "endgame/tb3men.jld2" mates=sm desperate_positions=sdp
 # 19, 340s
 @time gen_4_men_2v0_TB(BISHOP, BISHOP)
 
-QvR_mates = generate_1v1_mates(QUEEN, ROOK)
-simplification_mates = gen_cap_piece_mate_position_in_1(all_desperate_positions_3_men, QUEEN, ROOK)
-mates, all_mates, all_desperate_positions = find_all_mates(4,
-    QvR_mates,
-    all_mates=simplification_mates,
-    known_mates=all_mates_3_men,
-    known_dps=all_desperate_positions_3_men,
-    verbose=true)
 
-test_consistency(mates, all_mates, all_desperate_positions, all_mates_3_men, all_desperate_positions_3_men)
+# 35,
+@time tb = gen_4_men_1v1_TB(QUEEN, ROOK, three_men_tb, max_iter=4)
+@time test_consistency(tb, three_men_tb)
 
-all_desperate_positions
+
+initial_mates = generate_1v1_mates(QUEEN, ROOK)
+@info "$(length(initial_mates)) initial mates."
+tb = FourMenTB1v1(QUEEN, ROOK, true)
+dp0 = tb.key.(initial_mates)
+for dp in dp0
+    tb.desperate_positions[dp] = 0
+end
+
+gen_cap_piece_mate_position_in_1!(tb, three_men_tb, QUEEN, ROOK, 1)
+
+length(tb.mates)
+get_mate(tb, board)
+
+mp1 = find_mate_position_in_1(tb, dp0)
+
+filter(mp -> mp == CartesianIndex(0), mp1)
+
+tb = find_all_mates(tb, 100, initial_mates, three_men_tb, verbose=true)
+
+test_consistency(tb)
+
+
+for move in get_moves(board, false)
+    println(move)
+    _board = deepcopy(board)
+    make_move!(_board, false, move)
+    try
+        println("qr: ", get_desperate_position(tb, _board))
+    catch
+    end
+    try
+        println("3m: ", get_desperate_position(three_men_tb, _board))
+    catch
+    end
+end
+
+
 
 #=
 KNB_K KBB_K KQ_KN KQ_KB KQ_KR KQ_KQ KR_KN KR_KB KR_KQ KR_KR
