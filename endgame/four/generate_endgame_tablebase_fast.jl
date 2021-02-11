@@ -1,14 +1,15 @@
 include("../../chess/chess.jl")
-
 include("reverse_moves.jl")
-
 import ProgressMeter
 
 # tables are from whites perspective
 # one for white to move / one for black to move
-
 struct Table
     d::Array{Int}
+end
+
+function Table(size...)
+    return Table(fill(-1, size...))
 end
 
 struct TableBase
@@ -82,16 +83,74 @@ function three_men_fromkey!(board::Board, key::CartesianIndex)
     set_piece!(board, tofield(key[4]), false, KING)
 end
 
-function ThreeMenTableBase()
+function ThreeMenTB()
     return TableBase(
-        Table(fill(-1, 3, 64, 64, 64)),
-        Table(fill(-1, 3, 64, 64, 64)),
+        Table(3, 64, 64, 64),
+        Table(3, 64, 64, 64),
         three_men_key,
         three_men_fromkey!
         )
 end
 
+function occupied_by(board::Board, piece::Piece)
+    if piece == KING
+        return board.kings
+    elseif piece == PAWN
+        return board.pawns
+    elseif piece == BISHOP
+        return board.bishops
+    elseif piece == KNIGHT
+        return board.knights
+    elseif piece == ROOK
+        return board.rooks
+    elseif piece == QUEEN
+        return board.queens
+    end
+end
 
+
+function four_men_2v0_key(piece1::Piece, piece2::Piece)
+    function key(board::Board)::CartesianIndex
+        a = tonumber(board.kings & board.whites)
+        local b
+        local c
+        fs_1 = occupied_by(board, piece1) & board.whites
+        fs_2 = occupied_by(board, piece2) & board.whites
+        if piece1 == piece2
+            b = first(fs_1)
+            fs_1 = removefirst(fs_1)
+            c = first(fs_1)
+        else
+            b = tonumber(fs_1)
+            c = tonumber(fs_2)
+        end
+        d = tonumber(board.kings & board.blacks)
+        if b == 65 || c == 65 || count_pieces(fs_1 | fs_2 | board.kings) != 4
+            return CartesianIndex(0)
+        end
+
+        return CartesianIndex(a, b, c, d)
+    end
+end
+
+function four_men_2v0_fromkey!(piece1::Piece, piece2::Piece)
+    function fromkey!(board::Board, key::CartesianIndex)
+        remove_pieces!(board)
+        set_piece!(board, tofield(key[1]), true, KING)
+        set_piece!(board, tofield(key[2]), true, piece1)
+        set_piece!(board, tofield(key[3]), true, piece2)
+        set_piece!(board, tofield(key[4]), false, KING)
+    end
+end
+
+function FourMenTB2v0(piece1::Piece, piece2::Piece)
+    return TableBase(
+        Table(64, 64, 64, 64),
+        Table(64, 64, 64, 64),
+        four_men_2v0_key(piece1, piece2),
+        four_men_2v0_fromkey!(piece1, piece2)
+        )
+end
 
 function generate_3_men_piece_boards() # longest 28
     boards = Board[]
@@ -123,6 +182,51 @@ function generate_3_men_piece_boards() # longest 28
     return boards
 end
 
+generate_3_men_mates() = find_mate_positions(generate_3_men_piece_boards())
+
+
+function generate_2w_mates(P1::Piece, P2::Piece)
+    boards = Board[]
+    counter = 0
+
+    @progress for bk_r in 1:8, bk_f in 1:8
+        used_positions = [(bk_r, bk_f)]
+        for wk_r in 1:8, wk_f in 1:8
+            (wk_r, wk_f) in used_positions && continue
+            max(abs(wk_r - bk_r), abs(wk_f - bk_f)) ≤ 1 && continue
+            push!(used_positions, (wk_r, wk_f))
+
+            for w1_r in 1:8, w1_f in 1:8
+                (w1_r, w1_f) in used_positions && continue
+                push!(used_positions, (w1_r, w1_f))
+
+                for w2_r in 1:8, w2_f in 1:8
+                    (w2_r, w2_f) in used_positions && continue
+                    counter += 1
+
+                    board = Board()
+                    set_piece!(board, Field(bk_r, bk_f), false, KING)
+                    set_piece!(board, Field(wk_r, wk_f), true, KING)
+                    set_piece!(board, Field(w1_r, w1_f), true, P1)
+                    set_piece!(board, Field(w2_r, w2_f), true, P2)
+
+                    # check if black king is in checkmate
+                    if is_in_check(board, false) && length(get_moves(board, false)) == 0
+                        push!(boards, board)
+                    end
+                end
+
+                pop!(used_positions)
+            end
+
+            pop!(used_positions)
+        end
+    end
+
+    @info "$counter total positions."
+
+    return boards
+end
 
 # finds all positions where black king is mated
 # input are normalised boards
@@ -144,7 +248,7 @@ function find_mate_position_in_1(tb::TableBase, new_desperate_positions::Vector{
     board = Board()
     mate_in_1 = CartesianIndex[]
 
-    for mate in new_desperate_positions
+    ProgressMeter.@showprogress for mate in new_desperate_positions
         tb.fromkey!(board, mate)
         rev_moves = get_reverse_moves(board, true, promotions=true)
         for m in rev_moves
@@ -209,10 +313,8 @@ end
 # known mates allow mate check when simplification through capture
 # mate in i -> move -> dp in i-1
 # dp in i -> move -> mate in i
-function find_all_mates(max_depth; verbose=true)
-
-    tb = ThreeMenTableBase()
-    new_desperate_positions = tb.key.(find_mate_positions(generate_3_men_piece_boards()))
+function find_all_mates(tb::TableBase, max_depth, initial_mates::Vector{Board}; verbose=true)
+    new_desperate_positions = tb.key.(initial_mates)
 
     for dp_key in new_desperate_positions
         tb.desperate_positions[dp_key] = 0
@@ -220,13 +322,7 @@ function find_all_mates(max_depth; verbose=true)
 
     mates = []
 
-    m_ts = []
-    m_counts = []
-    dp_ts = []
-    dp_counts = []
-
-
-    @progress for i in 1:max_depth
+    for i in 1:max_depth
         verbose && @info("Iteration $i:")
         for dp_key in new_desperate_positions
             @assert tb.desperate_positions[dp_key] == i-1 dp
@@ -248,8 +344,6 @@ function find_all_mates(max_depth; verbose=true)
         l2 = length(tb.mates)
         verbose && @info("Found $(l2 - l1) new mates in $t seconds.")
         verbose && @info("Currently $l2 mates known.")
-        push!(m_ts, t)
-        push!(m_counts, l2)
 
         new_desperate_positions, t = @timed find_desperate_positions(tb)
         for dp_key in new_desperate_positions
@@ -261,28 +355,31 @@ function find_all_mates(max_depth; verbose=true)
         verbose && @info("Currently $(length(tb.desperate_positions)) desperate positions known.")
         verbose && println()
 
-        push!(dp_ts, t)
-        push!(dp_counts, length(tb.desperate_positions))
-
         length(new_desperate_positions) == 0 && break
     end
 
-    return mates, tb, m_ts, m_counts, dp_ts, dp_counts
+    return mates, tb
 end
 
-tb = ThreeMenTableBase()
-dp0 = tb.key.(find_mate_positions(generate_3_men_piece_boards()))
-for dp_key in dp0
-    tb.desperate_positions[dp_key] = 0
+function gen_3_men_TB(verbose=true)
+    initial_mates = generate_3_men_mates()
+    tb = ThreeMenTB()
+    mates, tb = find_all_mates(tb, 100, initial_mates, verbose=verbose)
+    return tb
 end
 
-mp1 = find_mate_position_in_1(tb, dp0)
+function gen_4_men_2v0_TB(piece1::Piece, piece2::Piece, verbose=true)
+    initial_mates = generate_2w_mates(piece1, piece2)
+    tb = FourMenTB2v0(piece1, piece2)
+    mates, tb = find_all_mates(tb, 100, initial_mates, verbose=verbose)
+    return tb
+end
 
 include("tablebase.jl")
 
 @info("Generate 3-men table base.")
-# 28, 450s
-@time mates_3_men, tb, m_ts, m_counts, dp_ts, dp_counts = find_all_mates(30, verbose=true)
+# 28, 50s
+@time gen_3_men_TB()
 
 n_winning = length(all_mates_3_men) + length(all_desperate_positions_3_men)
 @info("Found $n_winning winning positions.")
@@ -290,25 +387,14 @@ n_winning = length(all_mates_3_men) + length(all_desperate_positions_3_men)
 @info("Check consistency.")
 @time test_consistency(mates_3_men, all_mates_3_men, all_desperate_positions_3_men)
 
-@info("Save to endgame/tb3men.jld2.")
-sm, sdp = slimify(all_mates_3_men, all_desperate_positions_3_men, key_3_men)
-
 import JLD2
 JLD2.@save "endgame/tb3men.jld2" mates=sm desperate_positions=sdp
 
-# 33, 9000s
-KB_mates = generate_2w_mates(KNIGHT, BISHOP)
-@time mates, all_mates, all_desperate_positions, = find_all_mates(35, KB_mates, verbose=true)
-test_consistency(mates, all_mates, all_desperate_positions)
-sm, sdp = slimify(all_mates, all_desperate_positions, key_4_men)
+# 33, 1700s
+@time gen_4_men_2v0_TB(BISHOP, KNIGHT)
 
-@time CSV.write("test.csv", sm)
-
-# 19, 1500s
-BB_mates = generate_2w_mates(BISHOP, BISHOP)
-@time mates, all_mates, all_desperate_positions, m_ts, m_counts, dp_ts, dp_counts = find_all_mates(20, BB_mates, verbose=true)
-test_consistency(mates, all_mates, all_desperate_positions)
-
+# 19, 340s
+@time gen_4_men_2v0_TB(BISHOP, BISHOP)
 
 QvR_mates = generate_1v1_mates(QUEEN, ROOK)
 simplification_mates = gen_cap_piece_mate_position_in_1(all_desperate_positions_3_men, QUEEN, ROOK)
