@@ -472,7 +472,7 @@ include("tablebase.jl")
 
 @info("Generate 3-men table base.")
 # 28, 450s
-@time mates_3_men, all_mates_3_men, all_desperate_positions_3_men, m_ts, m_counts, dp_ts, dp_counts = find_all_3_men_mates(30, verbose=true)
+@time mates_3_men, all_mates_3_men, all_desperate_positions_3_men, m_ts, m_counts, dp_ts, dp_counts = find_all_3_men_mates(5, verbose=true)
 
 n_winning = length(all_mates_3_men) + length(all_desperate_positions_3_men)
 @info("Found $n_winning winning positions.")
