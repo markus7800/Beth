@@ -39,6 +39,28 @@ function get_reverse_moves(board::Board, white::Bool; promotions=false)
     return movelist
 end
 
+function get_pseudo_reverse_capture_moves(board::Board, white::Bool; promotions=false)
+    movelist = Move[]
+
+    if is_in_check(board, white)
+        # cant do move that leads to being in check
+        return movelist
+    end
+
+    player = white ? board.whites : board.blacks
+    opponent = white ? board.blacks : board.whites
+    occupied = player | opponent
+
+    get_rev_pawn_capture_moves!(board, white, player, movelist)
+    get_rev_knight_moves!(board, player, occupied, movelist)
+    get_rev_bishop_moves!(board, player, occupied, movelist)
+    get_rev_rook_moves!(board, player, occupied, movelist)
+    get_rev_queen_capture_moves!(board, white, player, occupied, promotions, movelist)
+    get_rev_king_moves!(board, white, player, opponent, occupied, movelist)
+
+    return movelist
+end
+
 function get_rev_pawn_moves!(board::Board, white::Bool, player::Fields, movelist::Vector{Move})
     for field_number in board.pawns & player
         rank, file = rankfile(field_number)
@@ -55,6 +77,27 @@ function get_rev_pawn_moves!(board::Board, white::Bool, player::Fields, movelist
             end
             if rank == 5 && !is_occupied(board, Field(rank+2, file)) && !is_occupied(board, Field(rank+1, file))
                 push!(movelist, Move(PAWN, Field(rank+2, file), Field(rank, file)))
+            end
+        end
+    end
+end
+
+function get_rev_pawn_capture_moves!(board::Board, white::Bool, player::Fields, movelist::Vector{Move})
+    for field_number in board.pawns & player
+        rank, file = rankfile(field_number)
+        if white
+            if rank > 2 && file-1 ≥ 1 && !is_occupied(board, Field(rank-1, file-1))
+                push!(movelist, Move(PAWN, Field(rank-1, file-1), Field(rank, file)))
+            end
+            if rank > 2 && file+1 ≤ 8 && !is_occupied(board, Field(rank-1, file+1))
+                push!(movelist, Move(PAWN, Field(rank-1, file+1), Field(rank, file)))
+            end
+        else
+            if rank < 7 && file-1 ≥ 1 && !is_occupied(board, Field(rank+1, file-1))
+                push!(movelist, Move(PAWN, Field(rank+1, file-1), Field(rank, file)))
+            end
+            if rank < 7 && file+1 ≤ 8 && !is_occupied(board, Field(rank+1, file+1))
+                push!(movelist, Move(PAWN, Field(rank+1, file+1), Field(rank, file)))
             end
         end
     end
@@ -129,6 +172,44 @@ function get_rev_queen_moves!(board::Board, white::Bool, player::Fields, occupie
                 else
                     if rank == 1 && !is_occupied(board, Field(rank+1, file))
                         push!(movelist, Move(PAWN, Field(rank+1, file), Field(rank, file), QUEEN))
+                    end
+                end
+            end
+        end
+    end
+end
+
+function get_rev_queen_capture_moves!(board::Board, white::Bool, player::Fields, occupied::Fields, promotions::Bool, movelist::Vector{Move})
+    for field_number in board.queens & player
+        moves = queen_move_empty(field_number)
+        occupied_moves = moves & occupied
+        for n in occupied_moves
+            moves &= ~shadow(field_number, n) # remove fields behind closest pieces
+        end
+        moves &= ~occupied
+        # print_fields(moves)
+
+        for n in moves
+            push!(movelist, Move(QUEEN, n, field_number))
+        end
+        if promotions
+            field = tofield(field_number)
+            promote = white ? (field & RANK_8 > 0) : (field & RANK_1 > 0)
+            if promote
+                rank, file = rankfile(field_number)
+                if white
+                    if rank > 2 && file-1 ≥ 1 && !is_occupied(board, Field(rank-1, file-1))
+                        push!(movelist, Move(PAWN, Field(rank-1, file-1), Field(rank, file), QUEEN))
+                    end
+                    if rank > 2 && file+1 ≤ 8 && !is_occupied(board, Field(rank-1, file+1))
+                        push!(movelist, Move(PAWN, Field(rank-1, file+1), Field(rank, file), QUEEN))
+                    end
+                else
+                    if rank < 7 && file-1 ≥ 1 && !is_occupied(board, Field(rank+1, file-1))
+                        push!(movelist, Move(PAWN, Field(rank+1, file-1), Field(rank, file), QUEEN))
+                    end
+                    if rank < 7 && file+1 ≤ 8 && !is_occupied(board, Field(rank+1, file+1))
+                        push!(movelist, Move(PAWN, Field(rank+1, file+1), Field(rank, file), QUEEN))
                     end
                 end
             end

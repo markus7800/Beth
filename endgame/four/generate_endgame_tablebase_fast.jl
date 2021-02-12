@@ -383,13 +383,19 @@ function gen_cap_piece_mate_position_in_1!(tb::TableBase, known_tb::TableBase, p
         i = known_tb.desperate_positions[dp_key]
         !(i+1 ≤ max_iter) && continue
 
-        if count_pieces(board, true, piece) == 1
-            for move in get_reverse_moves(board, true)
+        if count_pieces(board, true, piece) == 1 || count_pieces(board, true, PAWN) == 1
+            # allow the opponent king to be in check and be blocked with new piece
+            for move in get_pseudo_reverse_capture_moves(board, true, promotions=true)
+
                 new_mate = Board()
                 known_tb.fromkey!(new_mate, dp_key)
 
                 undo_move!(new_mate, true, move, NoUndo())
                 set_piece!(new_mate, tofield(move.to), false, captured)
+
+                if is_in_check(new_mate, false)
+                    continue
+                end
 
                 new_mate_key = tb.key(new_mate)
 
@@ -667,8 +673,8 @@ JLD2.@save "endgame/tb3men.jld2" mates=sm desperate_positions=sdp
 
 
 # 35,
-@time tb = gen_4_men_1v1_TB(QUEEN, ROOK, three_men_tb, max_iter=4)
-@time test_consistency(tb, three_men_tb)
+@time qr_tb = gen_4_men_1v1_TB(QUEEN, ROOK, three_men_tb, max_iter=8)
+@time test_consistency(qr_tb, three_men_tb)
 
 
 initial_mates = generate_1v1_mates(QUEEN, ROOK)
@@ -689,8 +695,6 @@ mp1 = find_mate_position_in_1(tb, dp0)
 filter(mp -> mp == CartesianIndex(0), mp1)
 
 tb = find_all_mates(tb, 100, initial_mates, three_men_tb, verbose=true)
-
-test_consistency(tb)
 
 
 for move in get_moves(board, false)
