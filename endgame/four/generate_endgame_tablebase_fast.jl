@@ -63,6 +63,54 @@ function get_desperate_position(tb::TableBase, board::Board)
     tb.desperate_positions[tb.key(board)]
 end
 
+function get_mate_line(tb::TableBase, board::Board; verbose=false)
+    line = Move[]
+    i = tb.mates[tb.key(board)]
+    j = i-1
+    _board = deepcopy(board)
+    counter = 1
+    while true
+        # mate in i -> move -> dp in i-1
+        wms = get_moves(_board, true)
+        for move in wms
+            undo = make_move!(_board, true, move)
+            dp_key = tb.key(_board)
+            if haskey(tb.desperate_positions, dp_key)
+                j = tb.desperate_positions[dp_key]
+                if j == i - 1
+                    verbose && print("$counter. $move\t")
+                    push!(line, move)
+                    break
+                end
+            end
+            undo_move!(_board, true, move, undo)
+        end
+
+        # dp in i -> move -> mate in i
+        bms = get_moves(_board, false)
+        if length(bms) == 0
+            verbose && println("#")
+            break
+        end
+        for move in bms
+            undo = make_move!(_board, false, move)
+            mate_key = tb.key(_board)
+            if haskey(tb.mates, mate_key)
+                i = tb.mates[mate_key]
+                if i == j
+                    verbose && println(move)
+                    push!(line, move)
+                    break
+                end
+            end
+            undo_move!(_board, false, move, undo)
+        end
+        counter += 1
+    end
+
+    return line
+end
+
 function three_men_key(board::Board)::CartesianIndex
     if count_pieces(board.whites) != 2 || count_pieces(board.blacks) != 1
         return CartesianIndex(0)
@@ -665,6 +713,7 @@ test_consistency(three_men_tb)
 
 m28 = Board("8/8/8/1k6/8/8/K5P1/8 w - - 0 1")
 get_mate(three_men_tb, m28)
+get_mate_line(three_men_tb, m28, verbose = true)
 m10 = Board("8/8/8/5k2/8/8/1Q6/K7 w - - 0 1")
 get_mate(three_men_tb, m10)
 m16 = Board("8/8/8/8/8/2k5/1R6/K7 w - - 0 1")
@@ -698,10 +747,56 @@ test_consistency(qr_tb, three_men_tb)
 
 m35 = Board("8/8/8/8/2r5/8/2k5/K6Q w - - 0 1")
 get_mate(qr_tb, m35)
-m43 = Board("8/5k2/2PK4/5r2/8/8/8/8 w - - 0 1")
+m43 = Board("")
 get_mate(qr_tb, m43)
 
 
+# 29, 1500s
+@time qk_tb = gen_4_men_1v1_TB(QUEEN, KNIGHT, three_men_tb)
+test_consistency(qk_tb, three_men_tb)
+
+m29 = Board("8/8/8/k7/8/n7/K5P1/8 w - - 0 1")
+get_mate(qk_tb, m29)
+
+# 29,
+@time qb_tb = gen_4_men_1v1_TB(QUEEN, BISHOP, three_men_tb)
+test_consistency(qb_tb, three_men_tb)
+
+m29 = Board("8/8/8/k7/8/b7/K5P1/8 w - - 0 1")
+get_mate(qb_tb, m29)
+
+@time qq_tb = gen_4_men_1v1_TB(QUEEN, QUEEN, three_men_tb)
+test_consistency(qq_tb, three_men_tb)
+
+m29 = Board("8/8/8/k7/8/q7/K5P1/8 w - - 0 1")
+get_mate(qq_tb, m29)
+
+# 19,
+@time rq_tb = gen_4_men_1v1_TB(ROOK, QUEEN, three_men_tb)
+test_consistency(rq_tb, three_men_tb)
+
+m19 = Board("8/8/8/8/8/1R6/6q1/K1k5 w - - 0 1")
+get_mate(rq_tb, m19)
+
+@time rk_tb = gen_4_men_1v1_TB(ROOK, KNIGHT, three_men_tb)
+test_consistency(rk_tb, three_men_tb)
+
+m40 = Board("8/2R5/8/8/7k/3K4/8/4n3 w - - 0 1")
+get_mate(rk_tb, m40)
+
+
+@time rb_tb = gen_4_men_1v1_TB(ROOK, BISHOP, three_men_tb)
+test_consistency(rb_tb, three_men_tb)
+
+m29 = Board("8/8/8/8/8/2R5/8/3K1bk1 w - - 0 1")
+get_mate(rb_tb, m29)
+
+
+@time rr_tb = gen_4_men_1v1_TB(ROOK, ROOK, three_men_tb)
+test_consistency(rr_tb, three_men_tb)
+
+m19 = Board("8/8/8/8/8/1R6/6r1/K1k5 w - - 0 1")
+get_mate(rr_tb, m19)
 
 #=
 KNB_K KBB_K KQ_KN KQ_KB KQ_KR KQ_KQ KR_KN KR_KB KR_KQ KR_KR
