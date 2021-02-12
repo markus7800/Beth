@@ -447,14 +447,16 @@ end
 # for all known mates go one move backward and collect all positions
 # where all moves lead to a known mates
 #
-# Have to pass in all mates, not only new mates
-# maybe a mate in 1 is avoidable but a mate in 2 not ...
+# Have to consider only new mates
+# if position is dp in i then there has to be a move that leads to mate in i
+# and all other moves lead to mate in <i (here all mates have to be checked)
 function find_desperate_positions(tb::TableBase, i::Int, known_tb)::Vector{<:CartesianIndex}
     new_desperate_positions = CartesianIndex[]
     board = Board()
 
     @showprogress for mate in CartesianIndices(tb.mates)
         !haskey(tb.mates, mate) && continue
+        tb.mates[mate] != i && continue
 
         tb.fromkey!(board, mate)
         rev_moves = get_reverse_moves(board, false, promotions=false)
@@ -657,59 +659,47 @@ function gen_4_men_1v1_TB(player_piece::Piece, opponent_piece::Piece, known_tb::
     return tb
 end
 
-# 28, 60s
+# 28, 30s
 @time three_men_tb = gen_3_men_TB()
+test_consistency(three_men_tb)
 
-@time test_consistency(three_men_tb)
+m28 = Board("8/8/8/1k6/8/8/K5P1/8 w - - 0 1")
+get_mate(three_men_tb, m28)
+m10 = Board("8/8/8/5k2/8/8/1Q6/K7 w - - 0 1")
+get_mate(three_men_tb, m10)
+m16 = Board("8/8/8/8/8/2k5/1R6/K7 w - - 0 1")
+get_mate(three_men_tb, m16)
 
-import JLD2
-JLD2.@save "endgame/tb3men.jld2" mates=sm desperate_positions=sdp
+dp_not_m = Board("8/8/8/4k3/8/4K3/4P3/8 w - - 0 1")
+get_mate(three_men_tb, dp_not_m)
+get_desperate_position(three_men_tb, dp_not_m)
 
-# 33, 1700s
-@time gen_4_men_2v0_TB(BISHOP, KNIGHT)
+m_not_dp = Board("8/8/8/4k3/8/3K4/4P3/8 w - - 0 1")
+get_mate(three_men_tb, m_not_dp)
+get_desperate_position(three_men_tb, m_not_dp)
 
-# 19, 340s
-@time gen_4_men_2v0_TB(BISHOP, BISHOP)
+# 19, 240s
+@time bb_tb = gen_4_men_2v0_TB(BISHOP, BISHOP)
+test_consistency(bb_tb)
 
+m19 = Board("8/8/8/8/7B/8/3k4/K2B4 w - - 0 1")
+get_mate(bb_tb, m19)
 
-# 35,
-@time qr_tb = gen_4_men_1v1_TB(QUEEN, ROOK, three_men_tb, max_iter=8)
-@time test_consistency(qr_tb, three_men_tb)
+# 33, 750s
+@time bk_tb = gen_4_men_2v0_TB(BISHOP, KNIGHT)
+test_consistency(bk_tb)
 
+m33 = Board("8/8/7N/8/8/8/8/K1k1B3 w - - 0 1")
+get_mate(bk_tb, m33)
 
-initial_mates = generate_1v1_mates(QUEEN, ROOK)
-@info "$(length(initial_mates)) initial mates."
-tb = FourMenTB1v1(QUEEN, ROOK, true)
-dp0 = tb.key.(initial_mates)
-for dp in dp0
-    tb.desperate_positions[dp] = 0
-end
+# 43, 1500s
+@time qr_tb = gen_4_men_1v1_TB(QUEEN, ROOK, three_men_tb)
+test_consistency(qr_tb, three_men_tb)
 
-gen_cap_piece_mate_position_in_1!(tb, three_men_tb, QUEEN, ROOK, 1)
-
-length(tb.mates)
-get_mate(tb, board)
-
-mp1 = find_mate_position_in_1(tb, dp0)
-
-filter(mp -> mp == CartesianIndex(0), mp1)
-
-tb = find_all_mates(tb, 100, initial_mates, three_men_tb, verbose=true)
-
-
-for move in get_moves(board, false)
-    println(move)
-    _board = deepcopy(board)
-    make_move!(_board, false, move)
-    try
-        println("qr: ", get_desperate_position(tb, _board))
-    catch
-    end
-    try
-        println("3m: ", get_desperate_position(three_men_tb, _board))
-    catch
-    end
-end
+m35 = Board("8/8/8/8/2r5/8/2k5/K6Q w - - 0 1")
+get_mate(qr_tb, m35)
+m43 = Board("8/5k2/2PK4/5r2/8/8/8/8 w - - 0 1")
+get_mate(qr_tb, m43)
 
 
 
@@ -720,26 +710,6 @@ KNB_K KBB_K KQ_KN KQ_KB KQ_KR KQ_KQ KR_KN KR_KB KR_KQ KR_KR
 KQB_K KQN_K KRB_K KRN_K KRR_K
   8     9    16    16     7
 =#
-
-board = mates[4][2]
-
-board = Board()
-set_piece!(board, Field("e2"), true, PAWN)
-set_piece!(board, Field("e3"), true, KING)
-set_piece!(board, Field("e5"), false, KING)
-print_board(board)
-
-get(all_desperate_positions_3_men, board, NaN)
-get(all_mates_3_men, board, NaN)
-
-board = Board()
-set_piece!(board, Field("e2"), true, PAWN)
-set_piece!(board, Field("d3"), true, KING)
-set_piece!(board, Field("e5"), false, KING)
-print_board(board)
-
-get(all_desperate_positions_3_men, board, NaN)
-get(all_mates_3_men, board, NaN)
 
 
 #=
