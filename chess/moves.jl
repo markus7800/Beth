@@ -42,6 +42,14 @@ function Base.show(io::IO, move::Move)
     end
 end
 
+function toPGNformat(move::Move)
+    if move.from_piece == move.to_piece
+        return "$(PIECE_SYMBOLS[move.from_piece])$(tostring(move.from))$(tostring(move.to))"
+    else
+        return "$(PIECE_SYMBOLS[move.from_piece])$(tostring(move.from))$(tostring(move.to))=$(PIECE_SYMBOLS[move.to_piece])"
+    end
+end
+
 mutable struct Undo
     captured::Piece
     capture_field::Field # field number
