@@ -273,9 +273,11 @@ function four_men_1v1_wp_key(wpiece::Piece, bpiece::Piece)
         a = tonumber(board.kings & board.whites)
         b = tonumber((occupied_by(board, wpiece) | board.pawns) & board.whites)
         c = tonumber(board.kings & board.blacks)
-        d = tonumber(occupied_by(board, bpiece) & board.blacks)
+        d = tonumber((occupied_by(board, bpiece) | board.pawns) & board.blacks)
         e = Int(n_pawns(board, true) + n_pawns(board, false) > 0) + 1
-        if b == 65 || d == 65 || count_pieces(board.whites | board.blacks) != 4
+        if b == 65 || d == 65 || count_pieces(board.whites | board.blacks) != 4 ||
+            n_pawns(board, true) + n_pawns(board, false) > 1
+
             return CartesianIndex(0)
         end
 

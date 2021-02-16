@@ -3,6 +3,7 @@ include("reverse_moves.jl")
 using ProgressMeter
 include("table.jl")
 import JLD2
+import FileIO
 
 function generate_3_men_piece_boards() # longest 28
     boards = Board[]
@@ -157,8 +158,8 @@ function gen_cap_piece_mate_position_in_1!(tb::TableBase, known_tb::TableBase, p
 
                 new_mate_key = tb.key(new_mate)
                 if new_mate_key == CartesianIndex(0)
-                    print_board(board)
-                    print_board(new_mate)
+                    println(board)
+                    println(new_mate)
                     println(move)
                 end
 
@@ -450,7 +451,7 @@ test_consistency(three_men_tb)
 
 m28 = Board("8/8/8/1k6/8/8/K5P1/8 w - - 0 1")
 get_mate(three_men_tb, m28)
-get_mate_line(three_men_tb, m28, verbose = true)
+get_mate_line(three_men_tb, m28, printPGN = true)
 m10 = Board("8/8/8/5k2/8/8/1Q6/K7 w - - 0 1")
 get_mate(three_men_tb, m10)
 m16 = Board("8/8/8/8/8/2k5/1R6/K7 w - - 0 1")
@@ -464,7 +465,7 @@ m_not_dp = Board("8/8/8/4k3/8/3K4/4P3/8 w - - 0 1")
 get_mate(three_men_tb, m_not_dp)
 get_desperate_position(three_men_tb, m_not_dp)
 
-JLD2.@save "endgame/four/tb/tb_3men.jld2" tb=three_men_tb
+JLD2.@save "endgame/four/tb/tb_3men.jld2" mates=three_men_tb.mates dps=three_men_tb.desperate_positions
 
 # 19, 150s
 @time bb_tb = gen_4_men_2v0_TB(BISHOP, BISHOP)
@@ -473,7 +474,7 @@ test_consistency(bb_tb)
 m19 = Board("8/8/8/8/7B/8/3k4/K2B4 w - - 0 1")
 get_mate(bb_tb, m19)
 
-JLD2.@save "endgame/four/tb/tb_kbbk.jld2" tb=bb_tb
+JLD2.@save "endgame/four/tb/tb_kbbk.jld2" mates=bb_tb.mates dps=bb_tb.desperate_positions
 
 
 # 33, 650s
@@ -482,40 +483,45 @@ test_consistency(bk_tb)
 
 m33 = Board("8/8/7N/8/8/8/8/K1k1B3 w - - 0 1")
 get_mate(bk_tb, m33)
+get_mate_line(bk_tb, m33, printPGN=true)
 
-JLD2.@save "endgame/four/tb/tb_kbnk.jld2" tb=bk_tb
+JLD2.@save "endgame/four/tb/tb_kbnk.jld2" mates=bk_tb.mates dps=bk_tb.desperate_positions
 
 # 43, 1200s
 @time qr_tb = gen_4_men_1v1_TB(QUEEN, ROOK, three_men_tb)
 test_consistency(qr_tb, three_men_tb)
 
-m35 = Board("8/8/8/8/2r5/8/2k5/K6Q w - - 0 1")
+m35 = Board("8/8/8/8/2r5/8/2k5/K6Q w - - 0 1") # QvR
 get_mate(qr_tb, m35)
-m43 = Board("8/5k2/2PK4/5r2/8/8/8/8 w - - 0 1")
+m43 = Board("8/5k2/2PK4/5r2/8/8/8/8 w - - 0 1") # PvR
 get_mate(qr_tb, m43)
-get_mate_line(qr_tb, m43, three_men_tb, verbose=true)
+get_mate_line(qr_tb, m43, three_men_tb, printPGN=true)
 
-JLD2.@save "endgame/four/tb/tb_kqkr.jld2" tb=qr_tb
+JLD2.@save "endgame/four/tb/tb_kqkr.jld2" mates=qr_tb.mates dps=qr_tb.desperate_positions
 
 # 29 (21), 1000s
 @time qk_tb = gen_4_men_1v1_TB(QUEEN, KNIGHT, three_men_tb)
 test_consistency(qk_tb, three_men_tb)
 
-m29 = Board("8/8/8/k7/8/n7/K5P1/8 w - - 0 1")
+m29 = Board("8/8/8/k7/8/n7/K5P1/8 w - - 0 1") # PvN
 get_mate(qk_tb, m29)
-m21 = Board("8/8/8/8/8/2k5/2n5/KQ6 w - - 0 1")
+m21 = Board("8/8/8/8/8/2k5/2n5/KQ6 w - - 0 1") # QvN
 get_mate(qk_tb, m21)
 
-JLD2.@save "endgame/four/tb/tb_kqkn.jld2" tb=qk_tb
+JLD2.@save "endgame/four/tb/tb_kqkn.jld2" mates=qk_tb.mates dps=qk_tb.desperate_positions
 
-# 29 (17),
+# 29 (17), 1100s
 @time qb_tb = gen_4_men_1v1_TB(QUEEN, BISHOP, three_men_tb)
 test_consistency(qb_tb, three_men_tb)
 
-m29 = Board("8/8/8/k7/8/b7/K5P1/8 w - - 0 1")
+m29 = Board("8/8/8/k7/8/b7/K5P1/8 w - - 0 1") # PvB
 get_mate(qb_tb, m29)
-m17 = Board("8/6Q1/8/4b3/3k4/8/8/K7 w - - 0 1")
+m17 = Board("8/6Q1/8/4b3/3k4/8/8/K7 w - - 0 1") # QvB
 get_mate(qb_tb, m17)
+get_mate_line(qb_tb, m17, three_men_tb, printPGN=true)
+
+JLD2.@save "endgame/four/tb/tb_kqkb.jld2" mates=qb_tb.mates dps=qb_tb.desperate_positions
+
 
 # 29 (13), 1200s
 @time qq_tb = gen_4_men_1v1_TB(QUEEN, QUEEN, three_men_tb)
@@ -534,15 +540,19 @@ get_mate(qq_tb, m10)
 
 get_mate_line(qq_tb, m33, three_men_tb, printPGN=true)
 
-JLD2.@save "endgame/four/tb/tb_kqkq.jld2" tb=qq_tb
+JLD2.@save "endgame/four/tb/tb_kqkq.jld2" mates=qq_tb.mates dps=qq_tb.desperate_positions
 
-# 19, 170s
-# KRKP 26 8/8/K7/3p4/8/3k4/4R3/8 w - - 0 1
+# 19 (26), 600s
 @time rq_tb = gen_4_men_1v1_TB(ROOK, QUEEN, three_men_tb)
 test_consistency(rq_tb, three_men_tb)
 
-m19 = Board("8/8/8/8/8/1R6/6q1/K1k5 w - - 0 1")
+m19 = Board("8/8/8/8/8/1R6/6q1/K1k5 w - - 0 1") # RvQ
 get_mate(rq_tb, m19)
+
+m26 = Board("8/8/K7/3p4/8/3k4/4R3/8 w - - 0 1") # RvP
+get_mate(rq_tb, m26)
+
+JLD2.@save "endgame/four/tb/tb_krkq.jld2" mates=rq_tb.mates dps=rq_tb.desperate_positions
 
 # 40, 470s
 @time rk_tb = gen_4_men_1v1_TB(ROOK, KNIGHT, three_men_tb)
@@ -550,16 +560,25 @@ test_consistency(rk_tb, three_men_tb)
 
 m40 = Board("8/2R5/8/8/7k/3K4/8/4n3 w - - 0 1")
 get_mate(rk_tb, m40)
+get_mate_line(rk_tb, m40, three_men_tb, printPGN=true)
 
+JLD2.@save "endgame/four/tb/tb_krkn.jld2" mates=rk_tb.mates dps=rk_tb.desperate_positions
+
+
+# 29, 220s
 @time rb_tb = gen_4_men_1v1_TB(ROOK, BISHOP, three_men_tb)
 test_consistency(rb_tb, three_men_tb)
 
 m29 = Board("8/8/8/8/8/2R5/8/3K1bk1 w - - 0 1")
 get_mate(rb_tb, m29)
 
+JLD2.@save "endgame/four/tb/tb_krkb.jld2" mates=rb_tb.mates dps=rb_tb.desperate_positions
 
+# 19, 170
 @time rr_tb = gen_4_men_1v1_TB(ROOK, ROOK, three_men_tb)
 test_consistency(rr_tb, three_men_tb)
 
 m19 = Board("8/8/8/8/8/1R6/6r1/K1k5 w - - 0 1")
 get_mate(rr_tb, m19)
+
+JLD2.@save "endgame/four/tb/tb_krkr.jld2" mates=rr_tb.mates dps=rr_tb.desperate_positions
