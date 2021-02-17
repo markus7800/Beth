@@ -1,3 +1,5 @@
+import JLD2
+import FileIO
 
 # tables are from whites perspective
 # one for white to move / one for black to move
@@ -7,6 +9,11 @@ end
 
 function Table(size...)
     return Table(fill(-1, size...))
+end
+
+import Base.show
+function Base.show(io::IO, tb::Table)
+    print(io, "Table ", size(tb.d))
 end
 
 struct TableBase
@@ -23,10 +30,6 @@ function haskey(tb::Table, key::CartesianIndex)::Bool
     end
     tb.d[key] != -1
 end
-
-# function haskey(tb::Table, key::Int)::Bool
-#     tb.d[key] != -1
-# end
 
 import Base.getindex
 function getindex(tb::Table, key::CartesianIndex)
@@ -166,10 +169,10 @@ function three_men_fromkey!(board::Board, key::CartesianIndex)
     set_piece!(board, tofield(key[4]), false, KING)
 end
 
-function ThreeMenTB()
+function ThreeMenTB(mates=Table(3, 64, 64, 64), desperate_positions=Table(3, 64, 64, 64))
     return TableBase(
-        Table(3, 64, 64, 64),
-        Table(3, 64, 64, 64),
+        mates,
+        desperate_positions,
         three_men_key,
         three_men_fromkey!
         )
@@ -230,10 +233,11 @@ function four_men_2v0_fromkey!(piece1::Piece, piece2::Piece)
     end
 end
 
-function FourMenTB2v0(piece1::Piece, piece2::Piece)
+function FourMenTB2v0(piece1::Piece, piece2::Piece,
+    mates=Table(64, 64, 64, 64), depeserate_positions=Table(64, 64, 64, 64))
     return TableBase(
-        Table(64, 64, 64, 64),
-        Table(64, 64, 64, 64),
+        mates,
+        depeserate_positions,
         four_men_2v0_key(piece1, piece2),
         four_men_2v0_fromkey!(piece1, piece2)
         )
@@ -370,6 +374,35 @@ function FourMenTB1v1(wpiece::Piece, bpiece::Piece)
     return TableBase(
         Table(64, 64, 64, 64),
         Table(64, 64, 64, 64),
+        four_men_1v1_key(wpiece, bpiece),
+        four_men_1v1_fromkey!(wpiece, bpiece)
+        )
+
+end
+
+function FourMenTB1v1(wpiece::Piece, bpiece::Piece, mates::Table, desperate_positions::Table)
+    wpromo = wpiece == QUEEN
+    bpromo = bpiece == QUEEN
+    if wpromo && bpromo
+            return TableBase(
+                mates,
+                desperate_positions,
+                four_men_1v1_wp_bp_key(wpiece, bpiece),
+                four_men_1v1_wp_bp_fromkey!(wpiece, bpiece)
+                )
+    end
+    if wpromo || bpromo
+        return TableBase(
+            mates,
+            desperate_positions,
+            four_men_1v1_wp_key(wpiece, bpiece),
+            four_men_1v1_wp_fromkey!(wpiece, bpiece)
+            )
+    end
+
+    return TableBase(
+        mates,
+        desperate_positions,
         four_men_1v1_key(wpiece, bpiece),
         four_men_1v1_fromkey!(wpiece, bpiece)
         )

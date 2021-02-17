@@ -2,8 +2,6 @@ include("../../chess/chess.jl")
 include("reverse_moves.jl")
 using ProgressMeter
 include("table.jl")
-import JLD2
-import FileIO
 
 function generate_3_men_piece_boards() # longest 28
     boards = Board[]
@@ -465,7 +463,7 @@ m_not_dp = Board("8/8/8/4k3/8/3K4/4P3/8 w - - 0 1")
 get_mate(three_men_tb, m_not_dp)
 get_desperate_position(three_men_tb, m_not_dp)
 
-JLD2.@save "endgame/four/tb/tb_3men.jld2" mates=three_men_tb.mates dps=three_men_tb.desperate_positions
+JLD2.@save "endgame/four/tb/tb_kqk.jld2" mates=three_men_tb.mates dps=three_men_tb.desperate_positions
 
 # 19, 150s
 @time bb_tb = gen_4_men_2v0_TB(BISHOP, BISHOP)

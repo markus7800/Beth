@@ -1,6 +1,6 @@
 include("../chess/chess.jl")
 include("evaluation.jl")
-include("../endgame/tablebase.jl")
+include("../endgame/four/tablebase.jl")
 include("../opening/opening_book.jl")
 
 using Printf
@@ -23,8 +23,7 @@ mutable struct Beth
     max_depth::Int
     max_quiesce_depth::Int
 
-    tb_3_men_mates::TableBase
-    tb_3_men_desperate_positions::TableBase
+    tbs::TableBases
 
     ob::OpeningBook
 
@@ -50,9 +49,11 @@ mutable struct Beth
         beth.n_quiesce_nodes = 0
         beth.max_quiesce_depth = 0
 
-        mates, dps = load_3_men_tablebase()
-        beth.tb_3_men_mates = mates
-        beth.tb_3_men_desperate_positions = dps
+        beth.tbs = TableBases([
+            "3_men", "KBBK", "KBNK",
+            "KQKB", "KQKN", "KQKR", "KQKQ",
+            "KRKB", "KRKN", "KRKR", "KRKQ"
+        ])
 
         beth.ob = get_queens_gambit()
 

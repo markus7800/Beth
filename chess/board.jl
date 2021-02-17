@@ -238,6 +238,10 @@ function n_pieces(board::Board, white::Bool)
     white ? count_ones(board.whites) : count_ones(board.blacks)
 end
 
+function n_pieces(board::Board)
+    count_ones(board.whites | board.blacks)
+end
+
 function count_pieces(fields::Fields)
     return count_ones(fields)
 end

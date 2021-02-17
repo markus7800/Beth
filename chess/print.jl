@@ -128,8 +128,10 @@ function print_board(board::Board; highlight=nothing, white=true)
         print("\n")
     end
     if white
-        printstyled("  a b c d e f g h", color=:magenta) # col = 13
+        printstyled("  a b c d e f g h\n", color=:magenta) # col = 13
     else
-        printstyled("  h g f e d c b a", color=:magenta) # col = 13
+        printstyled("  h g f e d c b a\n", color=:magenta) # col = 13
     end
+
+    println(FEN(board, true))
 end

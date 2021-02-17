@@ -22,10 +22,12 @@ function quiesce(beth::Beth, depth::Int, ply::Int, α::Int, β::Int, white::Bool
     sort!(capture_moves, rev=true, lt=cap_lt(beth._board))
 
 
-    if count_pieces(beth._board.blacks | beth._board.whites) ≤ 3
-        board_value, is_3_men = tb_3_men_lookup(beth.tb_3_men_mates, beth.tb_3_men_desperate_positions, beth._board, white)
-        recycle!(capture_moves)
-        return board_value
+    if count_pieces(beth._board.blacks | beth._board.whites) ≤ 4
+        board_value, is_4_men = tb_4_men_lookup(beth.tbs, beth._board, white)
+        if is_4_men
+            recycle!(capture_moves)
+            return board_value
+        end
     end
 
     board_value = beth.value_heuristic(beth._board, white)
@@ -143,8 +145,8 @@ function AlphaBeta(beth::Beth, node::ABNode, depth::Int, ply::Int, α::Int, β::
         best_value = white ? MIN_VALUE : MAX_VALUE
         value = white ? MIN_VALUE : MAX_VALUE
 
-        tb_value, is_3_men = tb_3_men_lookup(beth.tb_3_men_mates, beth.tb_3_men_desperate_positions, beth._board, white)
-        if is_3_men && ply > 0
+        tb_value, is_4_men = tb_4_men_lookup(beth.tbs, beth._board, white)
+        if is_4_men && ply > 0
             return tb_value
         end
 
@@ -425,7 +427,7 @@ function IterativeMTDF(beth::Beth; board=beth.board, white=beth.white)
 
         push!(guesses, value)
 
-        abs(value) ≥ WHITE_MATE && break # stop early for mates
+        abs(value) ≥ WHITE_MATE-100*100 && break # stop early for mates
 
         time() > t1 && break
     end

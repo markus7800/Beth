@@ -107,41 +107,16 @@ play_puzzle(staircase, beth)
 
 play_game(black_player=user_input, white_player=beth)
 
-board = Board()
-set_piece!(board, Field("e2"), true, PAWN)
-set_piece!(board, Field("e3"), true, KING)
-set_piece!(board, Field("e5"), false, KING)
-print_board(board)
 
-key_3_men(board, true)
-key_3_men(board, false)
+dp_not_m = Board("8/8/8/4k3/8/4K3/4P3/8 w - - 0 1")
+m_not_dp = Board("8/8/8/4k3/8/3K4/4P3/8 w - - 0 1")
+m40 = Board("8/2R5/8/8/7k/3K4/8/4n3 w - - 0 1")
 
-tb_3_men_lookup(beth.tb_3_men_mates, beth.tb_3_men_desperate_positions, board, true)
-tb_3_men_lookup(beth.tb_3_men_mates, beth.tb_3_men_desperate_positions, board, false)
+beth(dp_not_m, true)
+beth(dp_not_m, false)
 
-board = Board()
-set_piece!(board, Field("e7"), false, PAWN)
-set_piece!(board, Field("e6"), false, KING)
-set_piece!(board, Field("e4"), true, KING)
-print_board(board)
+play_game(m40, true, black_player=beth, white_player=beth)
 
-key_3_men(board, true)
-key_3_men(board, false)
-
-tb_3_men_lookup(beth.tb_3_men_mates, beth.tb_3_men_desperate_positions, board, true)
-tb_3_men_lookup(beth.tb_3_men_mates, beth.tb_3_men_desperate_positions, board, false)
-
-board = Board()
-set_piece!(board, Field("e2"), true, PAWN)
-set_piece!(board, Field("d3"), true, KING)
-set_piece!(board, Field("e5"), false, KING)
-print_board(board)
-
-key_3_men(board, true)
-key_3_men(board, false)
-
-tb_3_men_lookup(beth.tb_3_men_mates, beth.tb_3_men_desperate_positions, board, true)
-tb_3_men_lookup(beth.tb_3_men_mates, beth.tb_3_men_desperate_positions, board, false)
 
 beth = Beth(
     value_heuristic=evaluation,
