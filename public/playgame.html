@@ -23,6 +23,7 @@
     <button onclick="newGame(true)" id="new_white">New Game As White</button>
     <button onclick="newGame(false)" id="new_black">New Game As Black</button>
     <button onclick="printGame()" id="new_black">Print Game</button>
+    <button onclick="flip()" id="flip">Flip Board</button>
     <!-- <button id="undo" onclick="undo()">Undo Move</button> -->
   </div>
   <div id="button_div">
@@ -106,6 +107,27 @@ function loadFen() {
   fen = $( "#fen_input" ).val()
   console.log(fen);
   $.get('/load', {'fen': fen}, function(response) {
+    r = JSON.parse(response)
+    console.log(r)
+    board.position(r.fen)
+    board.orientation(r.orientation)
+    board.draggable = true
+    $( "#message" ).text(r.message)
+  });
+}
+
+function flip() {
+  $( "#message" ).text("Thinking about move...")
+  console.log("current orientation", board.orientation())
+  white = board.orientation() == 'white'
+  if (!white) {
+    board.orientation('white')
+  } else {
+    board.draggable = false
+    board.orientation('black')
+  }
+
+  $.get('/flip', {'white': !white}, function(response) {
     r = JSON.parse(response)
     console.log(r.fen)
     console.log(r.message)

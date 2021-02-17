@@ -212,6 +212,7 @@ end
 # end
 
 route("/load") do
+    global game
     fen = @params(:fen)
     if fen == ""
         game.board = StartPosition()
@@ -227,10 +228,35 @@ route("/load") do
     game.busy = false
     game.history = [Ply(0, 0, deepcopy(game.board), game.white, EMPTY_MOVE, 0.)]
 
-    return respond(json(Dict("fen"=>FEN(game.board, game.white), "message"=> "FEN loaded.")))
+    orientation = game.white ? "white" : "black"
+
+    return respond(json(Dict("fen"=>FEN(game.board, game.white), "orientation"=>orientation, "message"=> "FEN loaded.")))
+end
+
+route("/flip") do
+    @info "flip"
+    global game
+    orientation = parse(Bool, @params(:white))
+
+    println("orientation $orientation")
+    message = "Flipped board!"
+
+    if game.white != orientation
+        game.busy = true
+        (move, value) = game.beth(game.board, game.white)
+        make_move!(game.board, game.white, move)
+        game.white = !game.white
+        n_ply = game.history[end].nr + 1
+        push!(game.history, Ply(n_ply, (n_ply+1) ÷ 2, deepcopy(game.board), game.white, move, 0.))
+        game.busy = false
+        return respond(json(Dict("fen"=>FEN(game.board, game.white), "message"=> "Computer says: $move.")))
+    end
+
+    return respond(json(Dict("fen"=>FEN(game.board, game.white), "message"=> message)))
 end
 
 route("/printgame") do
+    global game
     out = ""
 
     # PGN
