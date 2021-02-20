@@ -1,4 +1,3 @@
-include("tree.jl")
 
 function cap_lt(board::Board)
     function F(m1::Move, m2::Move)

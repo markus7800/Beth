@@ -153,7 +153,7 @@ route("/move") do
             message = @sprintf "Computer says: %s." next_move
         else
             message = ""
-            if abs(value) ≥ WHITE_MATE
+            if abs(value) ≥ WHITE_MATE -100*100
                 message = @sprintf "Computer says: %s is forced mate.\n" next_move
             else
                 message = @sprintf "Computer says: %s valued at %.2f.\n" next_move value/100

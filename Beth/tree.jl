@@ -80,27 +80,9 @@ function count_nodes(node::ABNode)
     end
 end
 
-# function restore_board_position(board::Board, white::Bool, _board::Board, node::ABNode)
-#     # restore root board position
-#     _board.position .= board.position
-#     _board.can_castle .= board.can_castle
-#     _board.can_en_passant .= board.can_en_passant
-#     _white = white
-#     depth = 0
-#
-#     # update board to current position
-#     if node.move != EMPTY_MOVE
-#         parents = get_parents(node)
-#         for p in parents
-#             if p.move != EMPTY_MOVE
-#                 make_move!(_board, _white, p.move)
-#                 _white = !_white
-#             end
-#         end
-#         make_move!(_board, _white, node.move)
-#         _white = !_white
-#         depth = length(parents) - 1
-#     end
-#
-#     return _white, depth
-# end
+function print_parents(node::ABNode)
+    ps = get_parents(node)
+    for p in ps
+        println(p)
+    end
+end
