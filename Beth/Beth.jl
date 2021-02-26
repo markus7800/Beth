@@ -127,6 +127,14 @@ function make_move!(beth::Beth, move::Move; keep_tree=false)
     keep_tree && @info @sprintf "Threw away %d nodes (%.2f%%)" node_diff node_diff/node_count*100
 end
 
+function init(beth::Beth, board::Board, white::Bool)
+    beth.board = deepcopy(board)
+    beth.white = white
+    beth._board = deepcopy(board)
+    beth.root = ABNode(hash=hash(board))
+    beth.current = beth.root
+end
+
 
 
 include("search.jl")
@@ -137,7 +145,7 @@ beth = Beth(
     rank_heuristic=rank_moves_by_eval,
     search_algorithm=AlphaBeta_Search,
     search_args=Dict(
-        "depth" => 8,
+        "depth" => 6,
         "do_quiesce" => true,
         "quiesce_depth" => 20,
         "verbose" => true
@@ -158,7 +166,33 @@ make_move!(beth, Move(KNIGHT, Field("c3"), Field("b1")))
 make_move!(beth, Move(KNIGHT, Field("c6"), Field("b8")))
 
 b = Board("7k/8/1r4pp/8/K7/3q4/1r6/5Q2 w - - 0 1")
-beth(b, true)
+init(beth, b, true)
+
+make_move!(beth, Move(QUEEN, Field("f1"), Field("f8")))
+make_move!(beth, Move(KING, Field("h8"), Field("h7")))
+make_move!(beth, Move(QUEEN, Field("f8"), Field("f7")))
+make_move!(beth, Move(KING, Field("h7"), Field("h8")))
+is_draw_by_repetition(beth.current, beth.board.r50)
+
+make_move!(beth, Move(QUEEN, Field("f7"), Field("f8")))
+make_move!(beth, Move(KING, Field("h8"), Field("h7")))
+is_draw_by_repetition(beth.current, beth.board.r50)
+make_move!(beth, Move(QUEEN, Field("f8"), Field("f7")))
+make_move!(beth, Move(KING, Field("h7"), Field("h8")))
+is_draw_by_repetition(beth.current, beth.board.r50)
+make_move!(beth, Move(QUEEN, Field("f7"), Field("f8")))
+make_move!(beth, Move(KING, Field("h8"), Field("h7")))
+is_draw_by_repetition(beth.current, beth.board.r50)
+
+make_move!(beth, Move(QUEEN, Field("f8"), Field("f7")))
+make_move!(beth, Move(KING, Field("h7"), Field("h8")))
+
+
+print_parents(beth.current)
+
+beth(beth.board, beth.white)
+MTDF(beth; depth=6, do_quiesce=true, quiesce_depth=50, verbose=true,
+   guess=0, root=beth.current, t1=Inf, iter_id=1)
 
 is_draw_by_repetition(beth.current, beth.board.r50)
 

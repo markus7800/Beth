@@ -78,6 +78,10 @@ function is_draw_by_repetition(node::ABNode, r50::UInt8)
     count = 0
     current = node
 
+    if r50 == 50
+        return true
+    end
+
     for i in 0:r50
         if current.hash == h
             count += 1
