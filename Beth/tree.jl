@@ -15,9 +15,10 @@ mutable struct ABNode
     flag::UInt8
     stored_at_iteration::Int
     is_expanded::Bool
+    hash::UInt # hash of board after move
 
     function ABNode(;move=EMPTY_MOVE, best_move=EMPTY_MOVE, parent=nothing, children=ABNode[],
-        value::Int=0, flag::UInt8=NOT_STORED)
+        value::Int=0, flag::UInt8=NOT_STORED, hash=UInt(0))
 
         this = new()
 
@@ -29,6 +30,7 @@ mutable struct ABNode
         this.flag = flag
         this.stored_at_iteration = 0
         this.is_expanded = false
+        this.hash = hash
 
         return this
     end
@@ -37,17 +39,19 @@ end
 import Base.show
 function Base.show(io::IO, n::ABNode)
     if n.move == EMPTY_MOVE
-        print(io, @sprintf "Root Node, value: %.4f, %d children" n.value/100 (length(n.children)))
-
+        print(io, "Root Node, ")
     else
-        i = n.best_child_index
-        if i > 0
-            best_move = n.children[i].move
-            print(io, @sprintf "%s, value: %.4f, best move: %s, %d children" n.move n.value/100 best_move (length(n.children)))
-        else
-            print(io, @sprintf "%s, value: %.4f, %d children" n.move n.value/100 (length(n.children)))
-        end
+        print(io, "$(n.move), ")
     end
+    print(io, @sprintf "value %.2f, " n.value/100)
+
+    i = n.best_child_index
+    if i > 0
+        best_move = n.children[i].move
+        print(io, "best move: $best_move, ")
+    end
+
+    print(io, @sprintf "%d children, hash %d" length(n.children) n.hash)
 end
 
 function Base.getindex(node::ABNode, s::String)
@@ -85,4 +89,16 @@ function print_parents(node::ABNode)
     for p in ps
         println(p)
     end
+    println(node)
+end
+
+
+function best_continuation(root::ABNode)
+    current = root
+    moves = Move[]
+    while current.best_child_index != 0
+        current = current.children[current.best_child_index]
+        push!(moves, current.move)
+    end
+    return moves
 end

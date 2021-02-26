@@ -12,6 +12,7 @@ mutable struct Board
 
     castle::UInt8
     en_passant::UInt8 # file
+    r50::UInt8
 end
 
 const WHITE_SHORT_CASTLE = 0x1
@@ -69,7 +70,7 @@ function Base.hash(board::Board)
 end
 
 function Board()
-    return Board(0,0,0,0,0,0,0,0, 0, 0)
+    return Board(0,0,0,0,0,0,0,0, 0,0,0)
 end
 
 

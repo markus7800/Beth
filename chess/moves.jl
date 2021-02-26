@@ -56,6 +56,7 @@ mutable struct Undo
     castle::UInt8
     did_castle::UInt8
     en_passant::UInt8
+    r50::UInt8
 end
 
 function Base.show(io::IO, undo::Undo)
@@ -71,6 +72,9 @@ function Base.show(io::IO, undo::Undo)
     end
     if undo.en_passant > 0
         print(io, " en passant: ", undo.en_passant)
+    end
+    if undo.r50 > 0
+        print(io, " r50: ", undo.r50)
     end
     print(io, ")")
 end
@@ -90,7 +94,8 @@ function make_move!(board::Board, white::Bool, move::Move)::Undo
         to,
         board.castle,
         0,
-        board.en_passant)
+        board.en_passant,
+        board.r50)
 
 
     DEBUG_MOVE && @assert get_piece(board, from, white) == move.from_piece ("no piece at from", board, move, white)
@@ -175,6 +180,12 @@ function make_move!(board::Board, white::Bool, move::Move)::Undo
         end
     end
 
+    board.r50 += 1
+
+    if undo.captured != NO_PIECE || move.from_piece == PAWN || board.castle != undo.castle
+        board.r50 = 0
+    end
+
     return undo
 end
 
@@ -195,6 +206,7 @@ function undo_move!(board::Board, white::Bool, move::Move, undo::Undo)
 
     board.en_passant = undo.en_passant
     board.castle = undo.castle
+    board.r50 = undo.r50
 
     if undo.did_castle > 0
         r1, f1 = rankfile(move.from)

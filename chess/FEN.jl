@@ -42,6 +42,10 @@ function Board(FEN::String)
         board.en_passant = file
     end
 
+    if length(groups) > 4
+        board.r50 = parse(UInt8, groups[5])
+    end
+
     return board
 end
 
@@ -121,5 +125,7 @@ function FEN(board::Board, white::Bool, n_move::Int=1)
         end
     end
 
-    return first_group * " " * second_group * " " * third_group * " " * fourth_group * " 0 " * string(n_move)
+    fifth_group = "$(board.r50)"
+
+    return first_group * " " * second_group * " " * third_group * " " * fourth_group * " " * fifth_group * " " * string(n_move)
 end

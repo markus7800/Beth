@@ -3,6 +3,7 @@ include("evaluation.jl")
 include("../endgame/four/tablebase.jl")
 include("../opening/opening_book.jl")
 include("tree.jl")
+include("play_loop.jl")
 
 
 using Printf
@@ -45,7 +46,7 @@ mutable struct Beth
         beth.value_heuristic = value_heuristic
         beth.rank_heuristic = rank_heuristic
 
-        beth.root = ABNode()
+        beth.root = ABNode(hash=hash(board))
         beth.current = beth.root
         beth.current_ply = 0
 
@@ -72,12 +73,22 @@ mutable struct Beth
     end
 end
 
+function reset_node_count(beth::Beth)
+    beth.n_leafes = 0
+    beth.n_quiesce_nodes = 0
+    beth.n_explored_nodes = 0
+end
+
 function (beth::Beth)(board::Board, white::Bool)
     if haskey(beth.ob, board)
         move = beth.ob[board]
         @info("Computer says: Position known. Move is $move.")
         return move, :book
     end
+    beth.board = deepcopy(board)
+    beth._board = deepcopy(board)
+    beth.white = white
+    reset_node_count(beth)
 
     value, move = beth.search_algorithm(beth, board=board, white=white)
     println(@sprintf "Computer says: %s valued with %.2f." move value/100)
@@ -87,6 +98,11 @@ end
 function make_move!(beth::Beth, move::Move; keep_tree=false)
     node_count = count_nodes(beth.root)
     child = nothing
+    make_move!(beth.board, beth.white, move)
+    beth.white = !beth.white
+
+    beth._board = deepcopy(beth.board)
+
     if keep_tree
         for c in beth.current.children
             if c.move == move
@@ -100,7 +116,7 @@ function make_move!(beth::Beth, move::Move; keep_tree=false)
             error("Did not find move $move.")
         end
     else
-        child = ABNode(move=move, parent=beth.current)
+        child = ABNode(move=move, parent=beth.current, hash=hash(beth.board))
     end
 
     beth.current.children = [child]
@@ -108,19 +124,10 @@ function make_move!(beth::Beth, move::Move; keep_tree=false)
     beth.current_ply += 1
 
     node_diff = node_count - count_nodes(beth.root)
-    @info @sprintf "Threw away %d nodes (%.2f%%)" node_diff node_diff/node_count*100
-
-    make_move!(beth.board, beth.white, move)
-    beth.white = !beth.white
-
-    beth._board = deepcopy(beth.board)
+    keep_tree && @info @sprintf "Threw away %d nodes (%.2f%%)" node_diff node_diff/node_count*100
 end
 
-function reset_node_count(beth::Beth)
-    beth.n_leafes = 0
-    beth.n_quiesce_nodes = 0
-    beth.n_explored_nodes = 0
-end
+
 
 include("search.jl")
 
@@ -130,14 +137,38 @@ beth = Beth(
     rank_heuristic=rank_moves_by_eval,
     search_algorithm=AlphaBeta_Search,
     search_args=Dict(
-        "depth" => 2,
+        "depth" => 8,
         "do_quiesce" => true,
         "quiesce_depth" => 20,
         "verbose" => true
     ))
 
+beth.board = StartPosition()
 
+make_move!(beth, Move(KNIGHT, Field("b1"), Field("c3")))
+make_move!(beth, Move(KNIGHT, Field("b8"), Field("c6")))
+make_move!(beth, Move(KNIGHT, Field("c3"), Field("b1")))
+make_move!(beth, Move(KNIGHT, Field("c6"), Field("b8")))
 
+is_draw_by_repetition(beth.current, beth.board.r50)
+
+make_move!(beth, Move(KNIGHT, Field("b1"), Field("c3")))
+make_move!(beth, Move(KNIGHT, Field("b8"), Field("c6")))
+make_move!(beth, Move(KNIGHT, Field("c3"), Field("b1")))
+make_move!(beth, Move(KNIGHT, Field("c6"), Field("b8")))
+
+b = Board("7k/8/1r4pp/8/K7/3q4/1r6/5Q2 w - - 0 1")
+beth(b, true)
+
+is_draw_by_repetition(beth.current, beth.board.r50)
+
+beth(beth.board, true)
+
+m, = beth(board, true)
+make_move!(board, true, m)
+make_move!(beth, m)
+
+print_parents(beth.current)
 
 depth = 5
 v, move, _ = MTDF(beth; depth=depth, do_quiesce=true, quiesce_depth=50, verbose=true,

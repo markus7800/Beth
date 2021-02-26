@@ -73,15 +73,29 @@ function first_lt(x, y)
     return x[1] < y[1]
 end
 
-function is_inverse(m1::Move, m2::Move)
-    if m1.from_piece != m2.from_piece
-        return false
-    end
-    if m1.from == m2.to && m2.from == m1.to
-        return true
+function is_draw_by_repetition(node::ABNode, r50::UInt8)
+    h = node.hash
+    count = 0
+    current = node
+
+    for i in 0:r50
+        if current.hash == h
+            count += 1
+        end
+        # normally threefold repetition,
+        # but if best continuation leads to a repeating position it can be considered a draw
+        if count ≥ 2
+            return true
+        end
+        if isnothing(current.parent)
+            break
+        else
+            current = current.parent
+        end
     end
     return false
 end
+
 
 # TODO: alpha beta with only best move stored and fast rank moves
 function AlphaBeta(beth::Beth, node::ABNode, depth::Int, ply::Int, α::Int, β::Int, white::Bool,
@@ -110,15 +124,11 @@ function AlphaBeta(beth::Beth, node::ABNode, depth::Int, ply::Int, α::Int, β::
         end
     end
 
-    if ply ≥ 4
-        n_prev = node.parent
-        if is_inverse(node.move, node.parent.parent.move) &&
-            is_inverse(n_prev.move, n_prev.parent.parent.move)
-            return 0 # repetition, is stored higher up
-        end
-    end
+    node.hash = hash(beth._board)
 
-    if depth == 0
+    if is_draw_by_repetition(node, beth._board.r50)
+        node.value = 0
+    elseif depth == 0
         value = 0
         # cannot retrieve since dependent on α, β which are changing by the input
         if do_quiesce
@@ -260,13 +270,6 @@ function AlphaBeta(beth::Beth, node::ABNode, depth::Int, ply::Int, α::Int, β::
 end
 
 function AlphaBeta_Search(beth::Beth; board=beth.board, white=beth.white)
-
-    beth.board = deepcopy(board)
-    beth._board = deepcopy(board)
-    beth.white = white
-    beth.n_leafes = 0
-    beth.n_explored_nodes = 0
-    beth.n_quiesce_nodes = 0
     beth.max_depth = 0
     beth.max_quiesce_depth = 0
 
@@ -295,6 +298,7 @@ function AlphaBeta_Search(beth::Beth; board=beth.board, white=beth.white)
             @info(@sprintf "%d quiesce nodes (%.2f%%), %d/%d depth reached" beth.n_quiesce_nodes q_perc beth.max_quiesce_depth quiesce_depth)
         end
         @info(@sprintf "number of tree nodes: %d (%.2f MB)" count_nodes(root) Base.summarysize(root) / 10^6)
+        @info(@sprintf "Best continuation: %s." best_continuation(root))
     end
 
     @assert beth.board == beth._board
@@ -350,18 +354,13 @@ function MTDF(beth::Beth; depth::Int, do_quiesce::Bool, quiesce_depth::Int, verb
             @info(@sprintf "%d quiesce nodes (%.2f%%), %d/%d depth reached" beth.n_quiesce_nodes q_perc beth.max_quiesce_depth quiesce_depth)
         end
         # @info(@sprintf "number of tree nodes: %d (%.2f MB)" count_nodes(root) Base.summarysize(root) / 10^6)
+        @info(@sprintf "Best continuation: %s." best_continuation(root))
     end
 
     return value, root.children[root.best_child_index].move, finished
 end
 
 function MTDF_Search(beth::Beth; board=beth.board, white=beth.white)
-    beth.board = deepcopy(board)
-    beth._board = deepcopy(board)
-    beth.white = white
-    beth.n_leafes = 0
-    beth.n_explored_nodes = 0
-    beth.n_quiesce_nodes = 0
     beth.max_depth = 0
     beth.max_quiesce_depth = 0
 
@@ -382,12 +381,6 @@ function MTDF_Search(beth::Beth; board=beth.board, white=beth.white)
 end
 
 function IterativeMTDF(beth::Beth; board=beth.board, white=beth.white)
-    beth.board = deepcopy(board)
-    beth._board = deepcopy(board)
-    beth.white = white
-    beth.n_leafes = 0
-    beth.n_explored_nodes = 0
-    beth.n_quiesce_nodes = 0
     beth.max_depth = 0
     beth.max_quiesce_depth = 0
 
