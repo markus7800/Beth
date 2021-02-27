@@ -179,7 +179,6 @@ end
 
 # TODO:
 # quiesce lt function
-# browser frontend
 # faster AlphaBeta with less memory (only save best move)
 # null move pruning
 # razoring
@@ -190,11 +189,10 @@ end
 # pawn endgame tablebase to avaid wrong simplifications
 # fast principal variation search instead of alphabeta
 # faster move order
-# last position eval used in next guess
+# last position eval used in next guess, aspiration windows
 # keep search tree throughout game
 # improve quiesce: rethink not forcing captures
 # move white into board
-# fix move by rep blunders, -> player to move important
 
 board = Board("3Q4/3b1p1k/3b4/8/8/1Pq1PN2/P4PrP/1K5R w - - 0 37")
 board = Board("8/3b1pk1/3b4/8/7Q/1Pq1PN2/P4PrP/1K5R w - - 2 38")

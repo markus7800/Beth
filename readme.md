@@ -8,8 +8,9 @@ Run
 ```
 > julia setup.jl
 ```
-to install all dependencies and generate the endgame tablebase which takes approximately 8 minutes.
-Alternatively, one can download it [here](https://www.icloud.com/iclouddrive/00uhTTrimcpTFkZRd8oDL1OHg#tb3men) and place it in `endgame/tb3men.jld2`.
+to install all dependencies
+Downlaad the endgame tablebase [here](https://www.icloud.com/iclouddrive/0FXNdqCATQ04yeF2syZwjDWpg#tb), unzip and place it in `endgame/four/`.
+Alternatively, one can generate it by running the file `endgame\four\generate_endgame_tablebase.jl` which takes a few hours.
 
 
 The command
@@ -33,7 +34,7 @@ A bit of bookkeeping (close to transposition tables) is done to speed up search.
 At the leaf nodes quiescence search is performed where all capture moves are tried out.
 
 For comparison:  
-From `r2qkb1r/1Q3pp1/pN1p3p/3P1P2/3pP3/4n3/PP4PP/1R3RK1 w - -` there are can be 837,213,081 positions (804,483,605 leaf nodes) reached after six plies which takes me 7.7 seconds to generate.
+From `r2qkb1r/1Q3pp1/pN1p3p/3P1P2/3pP3/4n3/PP4PP/1R3RK1 b - -` there can be 872_389_934 positions reached after six plies which takes me 7.7 seconds to generate.
 AlphaBeta searches 832,634 positions in 1.092s, MTD(f) searches 658,447 positions in 850ms and MTD(f) with iterative deepening searches only 518,774 in 626ms. That's only 0.06 % of all possible positions.
 
 The evaluation function is built above the usual cumulative piece value evaluation.
