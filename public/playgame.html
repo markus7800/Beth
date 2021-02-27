@@ -20,17 +20,19 @@
 <div id="main">
   <div id="myBoard" style="width: 600px"></div>
   <div id="button_div">
+    <button onclick="flip()" id="flip">Flip Board</button>
+    <button id="undo" onclick="undo()">Undo Move</button>
+    <button onclick="printGame()" id="new_black">Print Game</button>
+  </div>
+  <div id="button_div">
     <button onclick="newGame(true)" id="new_white">New Game As White</button>
     <button onclick="newGame(false)" id="new_black">New Game As Black</button>
-    <button onclick="printGame()" id="new_black">Print Game</button>
-    <button onclick="flip()" id="flip">Flip Board</button>
-    <!-- <button id="undo" onclick="undo()">Undo Move</button> -->
   </div>
   <div id="button_div">
     <input type="text" style="width:400px" id="fen_input">
     <button onclick="loadFen()">Load FEN</button>
-    </div>
   </div>
+</div>
   <p id="message"></p>
 <script>
 

@@ -95,10 +95,44 @@ route("/") do
     serve_static_file("playgame.html")
 end
 
+function computer_move(game)
+    game.busy = true
+    @info("Start Search.")
+    (next_move, value), t, = @timed game.beth(game.board, game.white)
+    make_move!(game.board, game.white, next_move)
+    make_move!(game.beth, next_move)
+    game.white = !game.white
+    game.busy = false
+    @assert game.white == game.beth.white
+    @assert game.board == game.beth.board
+
+    n_ply = game.history[end].nr + 1
+    push!(game.history, Ply(n_ply, (n_ply+1) ÷ 2, deepcopy(game.board), game.white, next_move, t))
+
+    done, message = check_game_end(game.history, game.board, game.white)
+    if done
+        return respond(json(Dict("fen"=>FEN(game.board, game.white), "message"=>message)))
+    end
+
+    if value == :book
+        message = @sprintf "Computer says: %s." next_move
+    else
+        message = ""
+        if abs(value) ≥ WHITE_MATE -100*100
+            message = @sprintf "Computer says: %s is forced mate.\n" next_move
+        else
+            message = @sprintf "Computer says: %s valued at %.2f.\n" next_move value/100
+        end
+
+        message *= @sprintf "Explored %d nodes in %.2fs (%.2f kN/s).\n" game.beth.n_explored_nodes t game.beth.n_explored_nodes/(t*1000)
+        message *= @sprintf "Completely explored up to depth %d. Deepest node at depth %d." game.beth.max_depth game.beth.max_depth+game.beth.max_quiesce_depth
+    end
+
+    return json(Dict("fen"=>FEN(game.board, game.white), "message"=> message))
+end
+
 route("/move") do
-    println("***MOVE***")
     global game
-    println(@params)
 
     from_str = @params(:from)
     to_str = @params(:to)
@@ -120,21 +154,20 @@ route("/move") do
         filtered_moves = filter(m -> tofield(m.from) == from && tofield(m.to) == to, moves)
     end
 
-    println(game.board)
     if length(filtered_moves) != 1
         return respond(json(Dict("fen"=>FEN(game.board, game.white), "message"=>"Invalid Move!")))
     end
 
-    n_ply = game.history[end].nr + 1
 
     # player move
     move = filtered_moves[1]
     make_move!(game.board, game.white, move)
     make_move!(game.beth, move)
     game.white = !game.white
-    @assert game.white == beth.white
-    @assert game.board == beth.board
+    @assert(game.white == game.beth.white)
+    @assert(game.board == game.beth.board)
 
+    n_ply = game.history[end].nr + 1
     push!(game.history, Ply(n_ply, (n_ply+1) ÷ 2, deepcopy(game.board), game.white, move, 0.))
 
     done, message = check_game_end(game.history, game.board, game.white)
@@ -142,38 +175,9 @@ route("/move") do
         return respond(json(Dict("fen"=>FEN(game.board, game.white), "message"=>message)))
     end
 
-    # computer move
-    game.busy = true
-    @info("Start Search.")
-    (next_move, value), t, = @timed game.beth(game.board, game.white)
-    make_move!(game.board, game.white, next_move)
-    make_move!(game.beth, next_move)
-    game.white = !game.white
-    game.busy = false
-    @assert game.white == beth.white
-    @assert game.board == beth.board
+    response = computer_move(game)
 
-    push!(game.history, Ply(n_ply+1, (n_ply+2) ÷ 2, deepcopy(game.board), game.white, next_move, t))
-
-    done, message = check_game_end(game.history, game.board, game.white)
-    if done
-        return respond(json(Dict("fen"=>FEN(game.board, game.white), "message"=>message)))
-    end
-
-    if value == :book
-        message = @sprintf "Computer says: %s." next_move
-    else
-        message = ""
-        if abs(value) ≥ WHITE_MATE -100*100
-            message = @sprintf "Computer says: %s is forced mate.\n" next_move
-        else
-            message = @sprintf "Computer says: %s valued at %.2f.\n" next_move value/100
-        end
-
-        message *= @sprintf "Explored %d nodes in %.2fs (%.2f kN/s).\n" game.beth.n_explored_nodes t game.beth.n_explored_nodes/(t*1000)
-        message *= @sprintf "Completely explored up to depth %d. Deepest node at depth %d." game.beth.max_depth game.beth.max_depth+game.beth.max_quiesce_depth
-    end
-    return respond(json(Dict("fen"=>FEN(game.board, game.white), "message"=> message)))
+    return respond(response)
 end
 
 route("/newgame") do
@@ -188,38 +192,31 @@ route("/newgame") do
     init(game.beth, game.board, game.white)
 
     if !start_as_white
-        game.busy = true
-        (move, value) = game.beth(game.board, game.white)
-        make_move!(game.board, game.white, move)
-        make_move!(game.beth, move)
-        game.white = !game.white
-        push!(game.history, Ply(1, 1, deepcopy(game.board), game.white, move, 0.))
-        game.busy = false
-        return respond(json(Dict("fen"=>FEN(game.board, game.white), "message"=> "Computer says: $move.")))
+        response = computer_move(game)
+        return respond(response)
     else
         return respond(json(Dict("fen"=>FEN(game.board, game.white), "message"=> "")))
     end
 end
 
-# route("/undo") do
-#     global game
-#     println(game.history)
-#     println(game.busy)
-#     if !game.busy
-#         game.busy = true
-#         pop!(game.history)
-#         pop!(game.history)
-#         ply = game_history[end]
-#         game.board = deepcopy(ply.board)
-#         println(game.board)
-#         #@assert game.white == ply.white
-#         game.busy = false
-#         println("return")
-#         return respond(FEN(game.board, game.white))
-#     else
-#         return respond(FEN(game.board, game.white))
-#     end
-# end
+route("/undo") do
+    println("undo")
+    global game
+    if length(game.history) ≤ 1
+        return respond(FEN(game.board, game.white))
+    end
+
+    pop!(game.history)
+    pop!(game.history)
+
+    ply = game.history[end]
+    game.board = deepcopy(ply.board)
+    game.beth.board = deepcopy(game.board)
+    game.beth.current = game.beth.current.parent.parent
+
+    println("return")
+    return respond(FEN(game.board, game.white))
+end
 
 route("/load") do
     global game
@@ -237,6 +234,7 @@ route("/load") do
     end
     game.busy = false
     game.history = [Ply(0, 0, deepcopy(game.board), game.white, EMPTY_MOVE, 0.)]
+    init(game.beth, game.board, game.white)
 
     orientation = game.white ? "white" : "black"
 
@@ -252,18 +250,11 @@ route("/flip") do
     message = "Flipped board!"
 
     if game.white != orientation
-        game.busy = true
-        (move, value) = game.beth(game.board, game.white)
-        make_move!(game.board, game.white, move)
-        make_move!(game.beth, move)
-        game.white = !game.white
-        n_ply = game.history[end].nr + 1
-        push!(game.history, Ply(n_ply, (n_ply+1) ÷ 2, deepcopy(game.board), game.white, move, 0.))
-        game.busy = false
-        return respond(json(Dict("fen"=>FEN(game.board, game.white), "message"=> "Computer says: $move.")))
+        response = computer_move(game)
+        return respond(response)
+    else
+        return respond(json(Dict("fen"=>FEN(game.board, game.white), "message"=> message)))
     end
-
-    return respond(json(Dict("fen"=>FEN(game.board, game.white), "message"=> message)))
 end
 
 route("/printgame") do

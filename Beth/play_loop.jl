@@ -120,9 +120,11 @@ function play_game(board = StartPosition(), white = true; white_player=user_inpu
             board = deepcopy(last_ply.board)
             white = last_ply.white
             if white_player isa Beth
+                white_player.board = deepcopy(board)
                 white_player.current = white_player.current.parent.parent
             end
             if black_player isa Beth
+                black_player.board = deepcopy(board)
                 black_player.current = black_player.current.parent.parent
             end
             continue
