@@ -59,6 +59,14 @@ function play_game(board = StartPosition(), white = true; white_player=user_inpu
     game_history = [Ply(0, 0, deepcopy(board), white, EMPTY_MOVE, 0.)] # current board, white to move, last move
     n_ply = 1
 
+    if white_player isa Beth
+        init(white_player, board, white)
+    end
+    if black_player isa Beth
+        init(black_player, board, white)
+        print_parents(beth.current)
+    end
+
     board_orientation = black_player == user_input && white_player != user_input ? false : true
     # try
     while true
@@ -84,7 +92,7 @@ function play_game(board = StartPosition(), white = true; white_player=user_inpu
         end
         board_rep = 0
         for i in 0:2:board.r50
-            if board == history[end-i].board
+            if board == game_history[end-i].board
                 board_rep += 1
             end
             if board_rep ≥ 3
@@ -111,6 +119,12 @@ function play_game(board = StartPosition(), white = true; white_player=user_inpu
             n_ply -= 2
             board = deepcopy(last_ply.board)
             white = last_ply.white
+            if white_player isa Beth
+                white_player.current = white_player.current.parent.parent
+            end
+            if black_player isa Beth
+                black_player.current = black_player.current.parent.parent
+            end
             continue
         end
         if !done && (m == "abort" || m == "resign")
@@ -125,10 +139,10 @@ function play_game(board = StartPosition(), white = true; white_player=user_inpu
         push!(game_history, Ply(n_ply, n_move, deepcopy(board), white, m, move_time))
 
         if white_player isa Beth
-            make_move!(white_player, move)
+            make_move!(white_player, m)
         end
         if black_player isa Beth
-            make_move!(black_player, move)
+            make_move!(black_player, m)
         end
 
         n_ply += 1

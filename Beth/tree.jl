@@ -45,11 +45,11 @@ function Base.show(io::IO, n::ABNode)
     end
     print(io, @sprintf "value %.2f, " n.value/100)
 
-    i = n.best_child_index
-    if i > 0
-        best_move = n.children[i].move
-        print(io, "best move: $best_move, ")
-    end
+    # i = n.best_child_index
+    # if i > 0 && length(n.children) ≥ i
+    #     best_move = n.children[i].move
+    #     print(io, "best move: $best_move, ")
+    # end
 
     print(io, @sprintf "%d children, hash %d" length(n.children) n.hash)
 end

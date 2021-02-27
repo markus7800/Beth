@@ -88,13 +88,17 @@ route("/") do
     game.history = [Ply(0, 0, deepcopy(game.board), game.white, EMPTY_MOVE, 0.)]
     game.busy = false
 
+    init(game.beth, game.board, game.white)
+
     @info("Reset")
 
     serve_static_file("playgame.html")
 end
 
 route("/move") do
+    println("***MOVE***")
     global game
+    println(@params)
 
     from_str = @params(:from)
     to_str = @params(:to)
@@ -116,6 +120,7 @@ route("/move") do
         filtered_moves = filter(m -> tofield(m.from) == from && tofield(m.to) == to, moves)
     end
 
+    println(game.board)
     if length(filtered_moves) != 1
         return respond(json(Dict("fen"=>FEN(game.board, game.white), "message"=>"Invalid Move!")))
     end
@@ -125,7 +130,10 @@ route("/move") do
     # player move
     move = filtered_moves[1]
     make_move!(game.board, game.white, move)
+    make_move!(game.beth, move)
     game.white = !game.white
+    @assert game.white == beth.white
+    @assert game.board == beth.board
 
     push!(game.history, Ply(n_ply, (n_ply+1) ÷ 2, deepcopy(game.board), game.white, move, 0.))
 
@@ -139,8 +147,11 @@ route("/move") do
     @info("Start Search.")
     (next_move, value), t, = @timed game.beth(game.board, game.white)
     make_move!(game.board, game.white, next_move)
+    make_move!(game.beth, next_move)
     game.white = !game.white
     game.busy = false
+    @assert game.white == beth.white
+    @assert game.board == beth.board
 
     push!(game.history, Ply(n_ply+1, (n_ply+2) ÷ 2, deepcopy(game.board), game.white, next_move, t))
 
@@ -174,11 +185,13 @@ route("/newgame") do
     game.white = true
     game.history = [Ply(0, 0, deepcopy(game.board), game.white, EMPTY_MOVE, 0.)]
     game.busy = false
+    init(game.beth, game.board, game.white)
 
     if !start_as_white
         game.busy = true
         (move, value) = game.beth(game.board, game.white)
         make_move!(game.board, game.white, move)
+        make_move!(game.beth, move)
         game.white = !game.white
         push!(game.history, Ply(1, 1, deepcopy(game.board), game.white, move, 0.))
         game.busy = false
@@ -242,6 +255,7 @@ route("/flip") do
         game.busy = true
         (move, value) = game.beth(game.board, game.white)
         make_move!(game.board, game.white, move)
+        make_move!(game.beth, move)
         game.white = !game.white
         n_ply = game.history[end].nr + 1
         push!(game.history, Ply(n_ply, (n_ply+1) ÷ 2, deepcopy(game.board), game.white, move, 0.))

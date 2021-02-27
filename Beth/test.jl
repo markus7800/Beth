@@ -89,6 +89,8 @@ beth = Beth(
         "verbose" => 2
     ))
 
+play_game(black_player=beth)
+
 @time beth(pz.board, pz.white_to_move)
 
 beth = Beth(

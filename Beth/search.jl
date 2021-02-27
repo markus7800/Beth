@@ -400,7 +400,12 @@ function IterativeMTDF(beth::Beth; board=beth.board, white=beth.white)
     verbose = get(beth.search_args, "verbose", 0)
 
     guesses = Int[0]
-    root = ABNode() # reuse
+
+    root = ABNode()
+    if hash(beth.board) == beth.current.hash
+        root = beth.current
+    end
+
     reached_depth = 0
 
     final_best_move = EMPTY_MOVE
