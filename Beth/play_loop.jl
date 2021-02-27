@@ -82,19 +82,15 @@ function play_game(board = StartPosition(), white = true; white_player=user_inpu
                 println("Draw!")
             end
         end
-        if length(game_history) ≥ 3
-            for ply in game_history
-                board_rep = 0
-                for ply´ in game_history
-                    if ply.board == ply´.board
-                        board_rep += 1
-                    end
-                end
-                if board_rep ≥ 3
-                    done = true
-                    println("Draw by repetition!")
-                    break
-                end
+        board_rep = 0
+        for i in 0:2:board.r50
+            if board == history[end-i].board
+                board_rep += 1
+            end
+            if board_rep ≥ 3
+                done = true
+                println("Draw by repetition!")
+                break
             end
         end
 

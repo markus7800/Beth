@@ -82,7 +82,7 @@ function is_draw_by_repetition(node::ABNode, r50::UInt8)
         return true
     end
 
-    for i in 0:r50
+    for i in 0:2:r50
         if current.hash == h
             count += 1
         end
@@ -91,10 +91,10 @@ function is_draw_by_repetition(node::ABNode, r50::UInt8)
         if count ≥ 2
             return true
         end
-        if isnothing(current.parent)
+        if isnothing(current.parent) || isnothing(current.parent.parent)
             break
         else
-            current = current.parent
+            current = current.parent.parent
         end
     end
     return false
@@ -310,7 +310,7 @@ function AlphaBeta_Search(beth::Beth; board=beth.board, white=beth.white)
     return v, root.children[root.best_child_index].move
 end
 
-function MTDF(beth::Beth; depth::Int, do_quiesce::Bool, quiesce_depth::Int, verbose::Bool=false,
+function MTDF(beth::Beth; depth::Int, do_quiesce::Bool, quiesce_depth::Int=50, verbose::Bool=false,
     guess::Int=0, root=ABNode(), t1::Float64=Inf, iter_id=0)
 
     white = beth.white
@@ -364,7 +364,7 @@ function MTDF(beth::Beth; depth::Int, do_quiesce::Bool, quiesce_depth::Int, verb
     return value, root.children[root.best_child_index].move, finished
 end
 
-function MTDF_Search(beth::Beth; board=beth.board, white=beth.white)
+function MTDF_Search(beth::Beth; board=beth.board, white=beth.white, guess::Int=0)
     beth.max_depth = 0
     beth.max_quiesce_depth = 0
 
@@ -380,7 +380,7 @@ function MTDF_Search(beth::Beth; board=beth.board, white=beth.white)
 
     verbose = get(beth.search_args, "verbose", false)
 
-    value, best_move, finished =  MTDF(beth, depth=depth, do_quiesce=do_quiesce, quiesce_depth=quiesce_depth, verbose=verbose, guess=0, root=ABNode(), t1=t1, iter_id=0)
+    value, best_move, finished =  MTDF(beth, depth=depth, do_quiesce=do_quiesce, quiesce_depth=quiesce_depth, verbose=verbose, guess=guess, root=ABNode(), t1=t1, iter_id=0)
     return value, best_move
 end
 

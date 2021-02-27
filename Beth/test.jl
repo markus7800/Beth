@@ -9,6 +9,8 @@ board = Board("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 
 
 board = Board("r2qkb1r/1Q3pp1/pN1p3p/3P1P2/3pP3/4n3/PP4PP/1R3RK1 w - -")
 
+board = Board("8/k7/3p4/p2P1p2/P2P1P2/8/8/K7 w - -")
+
 @time perft(board, true, 6)
 @time count_nodes(board, true, 6) - 1
 @time perft_mem(board, true, 6)
@@ -33,7 +35,7 @@ beth = Beth(
     rank_heuristic=rank_moves_by_eval,
     search_algorithm=MTDF_Search,
     search_args=Dict(
-        "depth" => 2,
+        "depth" => 12,
         "do_quiesce" => true,
         "quiesce_depth" => 20,
         "verbose" => true
@@ -41,9 +43,14 @@ beth = Beth(
 
 @time beth(board, true)
 
-
-pz = rush_20_12_13[9]
+pz = rush_21_02_02[30]
 print_puzzle(pz)
+
+@time beth(pz.board, pz.white_to_move)
+
+init(beth, pz.board, pz.white_to_move)
+MTDF(beth, depth=12, do_quiesce=false, verbose=true, guess=BLACK_MATE)
+
 
 beth = Beth(
     value_heuristic=evaluation,
@@ -80,6 +87,19 @@ beth = Beth(
         "do_quiesce" => true,
         "quiesce_depth" => 50,
         "verbose" => 2
+    ))
+
+@time beth(pz.board, pz.white_to_move)
+
+beth = Beth(
+    value_heuristic=evaluation,
+    rank_heuristic=rank_moves_by_eval,
+    search_algorithm=IterativeMTDF,
+    search_args=Dict(
+        "max_depth" => 12,
+        "do_quiesce" => true,
+        "quiesce_depth" => 50,
+        "verbose" => 3
     ))
 
 @time beth(pz.board, pz.white_to_move)
@@ -161,7 +181,6 @@ end
 # quiesce lt function
 # browser frontend
 # faster AlphaBeta with less memory (only save best move)
-# blog entry
 # null move pruning
 # razoring
 # todos scathered throughout repo
@@ -173,9 +192,9 @@ end
 # faster move order
 # last position eval used in next guess
 # keep search tree throughout game
-# fix move by rep blunders
 # improve quiesce: rethink not forcing captures
 # move white into board
+# fix move by rep blunders, -> player to move important
 
 board = Board("3Q4/3b1p1k/3b4/8/8/1Pq1PN2/P4PrP/1K5R w - - 0 37")
 board = Board("8/3b1pk1/3b4/8/7Q/1Pq1PN2/P4PrP/1K5R w - - 2 38")
@@ -212,3 +231,34 @@ beth = Beth(
 board = Board("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1")
 
 beth(board, true)
+
+beth = Beth(
+    value_heuristic=evaluation,
+    rank_heuristic=rank_moves_by_eval,
+    search_algorithm=AlphaBeta_Search,
+    search_args=Dict(
+        "depth" => 6,
+        "do_quiesce" => true,
+        "quiesce_depth" => 20,
+        "verbose" => true
+    ))
+
+
+m, = beth(board, true)
+make_move!(board, true, m)
+make_move!(beth, m)
+
+print_parents(beth.current)
+
+depth = 5
+v, move, _ = MTDF(beth; depth=depth, do_quiesce=true, quiesce_depth=50, verbose=true,
+   guess=0, root=beth.current, t1=Inf, iter_id=1)
+reset_node_count(beth)
+
+make_move!(beth, move, keep_tree=true)
+
+depth = 4
+v, move, _ = MTDF(beth; depth=depth, do_quiesce=true, quiesce_depth=50, verbose=true,
+   guess=0, root=beth.current, t1=Inf, iter_id=1)
+
+print_parents(beth.current)

@@ -18,29 +18,29 @@ mutable struct Game
 end
 
 function Game()
-    # beth = Beth(
-    #     value_heuristic=evaluation,
-    #     rank_heuristic=rank_moves_by_eval,
-    #     search_algorithm=IterativeMTDF,
-    #     search_args=Dict(
-    #         "max_depth" => 20,
-    #         "do_quiesce" => true,
-    #         "quiesce_depth" => 50,
-    #         "verbose" => 1,
-    #         "time" => 5
-    #     ))
-
     beth = Beth(
         value_heuristic=evaluation,
         rank_heuristic=rank_moves_by_eval,
         search_algorithm=IterativeMTDF,
         search_args=Dict(
-            "max_depth" => 6,
+            "max_depth" => 20,
             "do_quiesce" => true,
             "quiesce_depth" => 50,
             "verbose" => 1,
             "time" => 5
         ))
+
+    # beth = Beth(
+    #     value_heuristic=evaluation,
+    #     rank_heuristic=rank_moves_by_eval,
+    #     search_algorithm=IterativeMTDF,
+    #     search_args=Dict(
+    #         "max_depth" => 6,
+    #         "do_quiesce" => true,
+    #         "quiesce_depth" => 50,
+    #         "verbose" => 1,
+    #         "time" => 5
+    #     ))
 
     board = StartPosition()
     white = true
@@ -63,17 +63,14 @@ function check_game_end(history::Vector{Ply}, board::Board, white::Bool)
                 return true, "Draw by insufficient material!"
             end
         end
-        if length(history) ≥ 3
-            for ply in history
-                board_rep = 0
-                for ply´ in history
-                    if ply.board == ply´.board
-                        board_rep += 1
-                    end
-                end
-                if board_rep ≥ 3
-                    return true, "Draw by repetition!"
-                end
+
+        board_rep = 0
+        for i in 0:2:board.r50
+            if board == history[end-i].board
+                board_rep += 1
+            end
+            if board_rep ≥ 3
+                return true, "Draw by repetition!"
             end
         end
     end
@@ -119,53 +116,53 @@ route("/move") do
         filtered_moves = filter(m -> tofield(m.from) == from && tofield(m.to) == to, moves)
     end
 
-    if length(filtered_moves) == 1
-        n_ply = game.history[end].nr + 1
-
-        # player move
-        move = filtered_moves[1]
-        make_move!(game.board, game.white, move)
-        game.white = !game.white
-
-        push!(game.history, Ply(n_ply, (n_ply+1) ÷ 2, deepcopy(game.board), game.white, move, 0.))
-
-        done, message = check_game_end(game.history, game.board, game.white)
-        if done
-            return respond(json(Dict("fen"=>FEN(game.board, game.white), "message"=>message)))
-        end
-
-        # computer move
-        game.busy = true
-        @info("Start Search.")
-        (next_move, value), t, = @timed game.beth(game.board, game.white)
-        make_move!(game.board, game.white, next_move)
-        game.white = !game.white
-        game.busy = false
-
-        push!(game.history, Ply(n_ply+1, (n_ply+2) ÷ 2, deepcopy(game.board), game.white, next_move, t))
-
-        done, message = check_game_end(game.history, game.board, game.white)
-        if done
-            return respond(json(Dict("fen"=>FEN(game.board, game.white), "message"=>message)))
-        end
-
-        if value == :book
-            message = @sprintf "Computer says: %s." next_move
-        else
-            message = ""
-            if abs(value) ≥ WHITE_MATE -100*100
-                message = @sprintf "Computer says: %s is forced mate.\n" next_move
-            else
-                message = @sprintf "Computer says: %s valued at %.2f.\n" next_move value/100
-            end
-
-            message *= @sprintf "Explored %d nodes in %.2fs (%.2f kN/s).\n" game.beth.n_explored_nodes t game.beth.n_explored_nodes/(t*1000)
-            message *= @sprintf "Completely explored up to depth %d. Deepest node at depth %d." game.beth.max_depth game.beth.max_depth+game.beth.max_quiesce_depth
-        end
-        return respond(json(Dict("fen"=>FEN(game.board, game.white), "message"=> message)))
-    else
+    if length(filtered_moves) != 1
         return respond(json(Dict("fen"=>FEN(game.board, game.white), "message"=>"Invalid Move!")))
     end
+
+    n_ply = game.history[end].nr + 1
+
+    # player move
+    move = filtered_moves[1]
+    make_move!(game.board, game.white, move)
+    game.white = !game.white
+
+    push!(game.history, Ply(n_ply, (n_ply+1) ÷ 2, deepcopy(game.board), game.white, move, 0.))
+
+    done, message = check_game_end(game.history, game.board, game.white)
+    if done
+        return respond(json(Dict("fen"=>FEN(game.board, game.white), "message"=>message)))
+    end
+
+    # computer move
+    game.busy = true
+    @info("Start Search.")
+    (next_move, value), t, = @timed game.beth(game.board, game.white)
+    make_move!(game.board, game.white, next_move)
+    game.white = !game.white
+    game.busy = false
+
+    push!(game.history, Ply(n_ply+1, (n_ply+2) ÷ 2, deepcopy(game.board), game.white, next_move, t))
+
+    done, message = check_game_end(game.history, game.board, game.white)
+    if done
+        return respond(json(Dict("fen"=>FEN(game.board, game.white), "message"=>message)))
+    end
+
+    if value == :book
+        message = @sprintf "Computer says: %s." next_move
+    else
+        message = ""
+        if abs(value) ≥ WHITE_MATE -100*100
+            message = @sprintf "Computer says: %s is forced mate.\n" next_move
+        else
+            message = @sprintf "Computer says: %s valued at %.2f.\n" next_move value/100
+        end
+
+        message *= @sprintf "Explored %d nodes in %.2fs (%.2f kN/s).\n" game.beth.n_explored_nodes t game.beth.n_explored_nodes/(t*1000)
+        message *= @sprintf "Completely explored up to depth %d. Deepest node at depth %d." game.beth.max_depth game.beth.max_depth+game.beth.max_quiesce_depth
+    end
+    return respond(json(Dict("fen"=>FEN(game.board, game.white), "message"=> message)))
 end
 
 route("/newgame") do
