@@ -233,26 +233,26 @@ function evaluation(board::Board, white::Bool; check_value::Int=0, no_moves::Boo
         # score doubled pawns as 1
         # penalize no pawn in front of king
         r, f = white_king_pos
-        if r < 8
+        if r == 1
             s1 = KING_SHIELD << (8 * r)
             s2 = KING_SHIELD << (8 * min(8,r+1))
             shield = (s1 | s2) & board.pawns & board.whites
             shield_struct = pawn_struct(shield)
             if f ≤ 3
-                white_king_score += sum(shield_struct[1:3] .!= 0)
+                white_king_score += 0 # sum(shield_struct[1:3] .!= 0)
             elseif f ≥ 7
                 white_king_score += sum(shield_struct[6:8] .!= 0)
             end
         end
 
         r, f = black_king_pos
-        if r > 1
+        if r == 8
             s1 = KING_SHIELD << (8*(r-2))
             s2 = KING_SHIELD << (8 * (max(1,r-1)-2))
             shield = (s1 | s2) & board.pawns & board.blacks
             shield_struct = pawn_struct(shield)
             if f ≤ 3
-                black_king_score += sum(shield_struct[1:3] .!= 0)
+                black_king_score += 0 # sum(shield_struct[1:3] .!= 0)
             elseif f ≥ 7
                 black_king_score += sum(shield_struct[6:8] .!= 0)
             end
