@@ -8,8 +8,8 @@ Run
 ```
 > julia setup.jl
 ```
-to install all dependencies
-Downlaad the endgame tablebase [here](https://www.icloud.com/iclouddrive/0FXNdqCATQ04yeF2syZwjDWpg#tb), unzip and place it in `endgame/four/`.
+to install all dependencies.
+Download the endgame tablebase [here](https://www.icloud.com/iclouddrive/0FXNdqCATQ04yeF2syZwjDWpg#tb), unzip and place it in `endgame/four/`.
 Alternatively, one can generate it by running the file `endgame/four/generate_endgame_tablebase.jl` which takes a few hours.
 
 
